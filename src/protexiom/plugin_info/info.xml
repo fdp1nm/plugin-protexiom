@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info>
+    <id>protexiom</id>
+    <name>Protexiom</name>
+    <description>Plugin pour contrôler les sytèmes d'alarme Somfy Protexiom</description>
+    <icon>fa fa-bell</icon>
+    <licence>AGPL</licence>
+    <author>Fdp1</author>
+    <installation>Aucune</installation>
+    <require>1.10</require>
+    <version>1.0</version>
+    <category>security</category>
+</info>
+
