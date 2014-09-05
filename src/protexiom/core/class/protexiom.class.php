@@ -31,7 +31,105 @@ class protexiom extends eqLogic {
     private $_WebProxyPort = '';
 
     /*     * ***********************Methode static*************************** */
-
+    /**
+     * Check wether the parameter is a valid port number.
+     *
+     * @author Fdp1
+     * @param string $port port number.
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidPort("80")
+     */
+    private static function isValidPort($port = '')
+    {
+    	$error=false;
+    	if($port){//A port number was specified. Is it a int
+    		if(ctype_digit($port)){
+    			if(intval($port,10)<1 or intval($port,10)>65534){
+    				$error="Invalid port range";
+    			}
+    
+    		}else{//It's not a int. Then, is it a service name?
+    			$port = getservbyname($port, 'tcp');
+    			if(!$port){//$port was not a valid SvcName, so the port is definetly not valid
+    				$error="Invalid service name";
+    			}//Else: $port was a valid service name, so obviously, it's a valid port.
+    		}
+    	}else{//Not port number specified.
+    		$error="No port specified";
+    	}
+    
+    	if($error){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidPort func
+    
+    /**
+     * Check wether the hostname is valid. IPV6 ready.
+     *
+     * @author Fdp1
+     * @param string $host IP address or hostname. Should NOT contain a port number
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidHost("192.168.1.111")
+     */
+    private static function isValidHost($host = '')
+    {
+    	$error=false;
+    
+    	if(!filter_var($host, FILTER_VALIDATE_IP)){//$host is neither an ipv4, nore an ipv6. Let's see if it's a hostname
+    		if (!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $host) //valid chars check
+    				&& preg_match("/^.{1,253}$/", $host) //overall length check
+    				&& preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $host)   )) //length of each label
+    		{
+    			$error="Invalid domain";
+    		}//Not a valid domain name
+    	}//Else: $host is an IP
+    
+    	if($error){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidHost func
+    
+    /**
+     * Check wether the hostname[:port] is valid. IPV6 ready.
+     *
+     * @author Fdp1
+     * @param string $hostPort IP address or hostname. May contain a port number, separated by a colon.
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidHostPort("192.168.1.111:80")
+     */
+    private function isValidHostPort($hostPort = '')
+    {
+    	$error=false;
+    	$host = strtok($hostPort, ":");
+    	$port = strtok(":");
+    	if(strtok(":")) {
+    		$error="More than one : was present in the string";
+    	}else{
+    		//First, let's check the port number
+    		if($port){//A port number was specified. Let's check it
+    			if(!$this->isValidPort($port)){
+    				$error="Invalid port";
+    			}
+    		}//else, not port number specified. So obviously, port number is OK, as we will use default protocol port to connect...
+    
+    		//Now the port number is checked (valid or not), let's take care of the hostname
+    		if(!$this->isValidHost($host)){
+    			$error="Invalid host";
+    		}
+    	}
+    		
+    	if($error){
+    		//echo($error);
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidHostPort func
+    
     /*public static function pull($_options) {
         $weather = weather::byId($_options['weather_id']);
         if (is_object($weather)) {
@@ -54,7 +152,7 @@ class protexiom extends eqLogic {
             if (is_object($cron)) {
                 $cron->remove();
             }
-            throw new Exception('Weather ID non trouvé : ' . $_options['weather_id'] . '. Tache supprimé');
+            throw new Exception('Weather ID non trouvÃ© : ' . $_options['weather_id'] . '. Tache supprimÃ©');
         }
     }*/
 
@@ -78,26 +176,30 @@ class protexiom extends eqLogic {
 
     /*     * *********************Methode d'instance************************* */
 
-    /*public function preUpdate() {
-        if ($this->getConfiguration('city') == '') {
-            throw new Exception(__('L\identifiant de la ville ne peut être vide', __FILE__));
+    public function preUpdate() {
+        if (!$this->isValidHostPort($this->getConfiguration('SomfyHostPort'))) {
+            throw new Exception(__('Adresse IP ou nom d\'hôte invalide', __FILE__));
         }
-        $this->setCategory('heating', 1);
-    }*/
+    	
+    }
+    
+    public function preInsert() {
+    	$this->setCategory('security', 1);
+    }
 
     /*public function postInsert() {
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Température', __FILE__));
+        $weatherCmd->setName(__('TempÃ©rature', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '-1');
         $weatherCmd->setConfiguration('data', 'temp');
-        $weatherCmd->setUnite('°C');
+        $weatherCmd->setUnite('Â°C');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('numeric');
         $weatherCmd->save();
 
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Humidité', __FILE__));
+        $weatherCmd->setName(__('HumiditÃ©', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '-1');
         $weatherCmd->setConfiguration('data', 'humidity');
@@ -167,21 +269,21 @@ class protexiom extends eqLogic {
         $weatherCmd->save();
 
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Température Min', __FILE__));
+        $weatherCmd->setName(__('TempÃ©rature Min', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '0');
         $weatherCmd->setConfiguration('data', 'low');
-        $weatherCmd->setUnite('°C');
+        $weatherCmd->setUnite('Â°C');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('numeric');
         $weatherCmd->save();
 
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Température Max', __FILE__));
+        $weatherCmd->setName(__('TempÃ©rature Max', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '0');
         $weatherCmd->setConfiguration('data', 'high');
-        $weatherCmd->setUnite('°C');
+        $weatherCmd->setUnite('Â°C');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('numeric');
         $weatherCmd->save();
@@ -197,21 +299,21 @@ class protexiom extends eqLogic {
         $weatherCmd->save();
 
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Température Min +1', __FILE__));
+        $weatherCmd->setName(__('TempÃ©rature Min +1', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '1');
         $weatherCmd->setConfiguration('data', 'low');
-        $weatherCmd->setUnite('°C');
+        $weatherCmd->setUnite('Â°C');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('numeric');
         $weatherCmd->save();
 
         $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Température Max +1', __FILE__));
+        $weatherCmd->setName(__('TempÃ©rature Max +1', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '1');
         $weatherCmd->setConfiguration('data', 'high');
-        $weatherCmd->setUnite('°C');
+        $weatherCmd->setUnite('Â°C');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('numeric');
         $weatherCmd->save();
@@ -249,7 +351,7 @@ class protexiom extends eqLogic {
                 '#icone#' => '',
                 '#id#' => $this->getId(),
                 '#city#' => '',
-                '#condition#' => '{{Impossible de récupérer la météo.Pas d\'internet ?}}',
+                '#condition#' => '{{Impossible de rÃ©cupÃ©rer la mÃ©tÃ©o.Pas d\'internet ?}}',
                 '#temperature#' => '',
                 '#windspeed#' => '',
                 '#humidity#' => '',
