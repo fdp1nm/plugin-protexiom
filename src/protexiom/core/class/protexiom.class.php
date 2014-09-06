@@ -177,8 +177,13 @@ class protexiom extends eqLogic {
     /*     * *********************Methode d'instance************************* */
 
     public function preUpdate() {
+    	//Let's check the config parameters. Beginning with hostPort
         if (!$this->isValidHostPort($this->getConfiguration('SomfyHostPort'))) {
             throw new Exception(__('Adresse IP ou nom d\'hôte invalide', __FILE__));
+        }
+        // Now, chegin UserPwd
+        if(!preg_match ( "/^[0-9]{4}$/" , $this->getConfiguration('UserPwd') )){
+        	throw new Exception(__('Le format du mot de passe utilisateur est invalide.', __FILE__));
         }
     	
     }
