@@ -181,9 +181,30 @@ class protexiom extends eqLogic {
         if (!$this->isValidHostPort($this->getConfiguration('SomfyHostPort'))) {
             throw new Exception(__('Adresse IP ou nom d\'hôte invalide', __FILE__));
         }
-        // Now, chegin UserPwd
+        // Now, cheking userPwd
         if(!preg_match ( "/^[0-9]{4}$/" , $this->getConfiguration('UserPwd') )){
         	throw new Exception(__('Le format du mot de passe utilisateur est invalide.', __FILE__));
+        }
+        // Now, cheking authCard:
+        //	Line 1
+        if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL1') )){
+        	throw new Exception(__('Le format de la carte d\'authentification (ligne 1) est invalide.', __FILE__));
+        }
+        //	Line 2
+        if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL2') )){
+        	throw new Exception(__('Le format de la carte d\'authentification (ligne 2) est invalide.', __FILE__));
+        }
+        //	Line 3
+        if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL3') )){
+        	throw new Exception(__('Le format de la carte d\'authentification (ligne 3) est invalide.', __FILE__));
+        }
+        //	Line 4
+        if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL4') )){
+        	throw new Exception(__('Le format de la carte d\'authentification (ligne 4) est invalide.', __FILE__));
+        }
+        //	Line 5
+        if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL5') )){
+        	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
         }
     	
     }
