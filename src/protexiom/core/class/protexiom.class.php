@@ -206,6 +206,18 @@ class protexiom extends eqLogic {
         if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL5') )){
         	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
         }
+        //Finally, if a proxy is specified, let's check it's valid
+        if($this->getConfiguration('WebProxyHostPort')){
+        	if (!$this->isValidHostPort($this->getConfiguration('WebProxyHostPort'))) {
+        		throw new Exception(__('Proxy web invalide', __FILE__));
+        	}
+        }
+        //OK. Every parameters is checked and is OK
+        
+        //SSL not supported yet.
+        if($this->getConfiguration('SSLEnabled')){
+        	throw new Exception(__('SSL pas encore supporté. Veuillez désactiver l\'option', __FILE__));
+        }
     	
     }
     

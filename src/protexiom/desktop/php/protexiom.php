@@ -63,7 +63,7 @@ sendVarToJS('eqType', 'protexiom');
 
                 <div class="form-group">
                     <label class="col-md-2 control-label" >{{SSL Enabled}}</label>
-                    <div class="col-md-1">
+                    <div class="col-md-3">
                         <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="SSLEnabled" placeholder="{{SSL Enabled}}" size="16" checked/>
 									{{SSL PAS ENCORE SUPPORTE. Ne pas activer.}}
                     </div>
