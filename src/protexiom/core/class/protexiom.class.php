@@ -130,6 +130,26 @@ class protexiom extends eqLogic {
     	}
     }//End isValidHostPort func
     
+    /**
+     * Return the corresponding authCode from the somfy code card
+     *
+     * @author Fdp1
+     * @param string $codeId Coordinates of the code on the card
+     * @return string authcode, or '' if coordinate is not valid
+     * @usage authCode = getAuthCode("A3")
+     */
+    private function getAuthCode($codeID = '')
+    {
+    	$authCard=array();
+    	$authCode='invalidcode';
+    	if(preg_match ( "/^[A-F][1-5]$/" , $codeID )){//The codeID is valid (from A1 to F5)
+    		$lineNum=substr($codeID, 1, 1);
+    		list($authCard["A$lineNum"], $authCard["B$lineNum"], $authCard["C$lineNum"], $authCard["D$lineNum"], $authCard["E$lineNum"], $authCard["F$lineNum"])=preg_split("/[^0-9]/", $this->getConfiguration("AuthCardL$lineNum"));
+    		$authCode=$authCard[$codeID];
+    	}
+    	return $authCode;
+    }//End getAuthCode func
+    
     /*public static function pull($_options) {
         $weather = weather::byId($_options['weather_id']);
         if (is_object($weather)) {
@@ -212,6 +232,7 @@ class protexiom extends eqLogic {
         		throw new Exception(__('Proxy web invalide', __FILE__));
         	}
         }
+        
         //OK. Every parameters is checked and is OK
         
         //SSL not supported yet.
