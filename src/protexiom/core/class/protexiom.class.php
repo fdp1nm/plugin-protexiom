@@ -18,6 +18,7 @@
 
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+require_once dirname(__FILE__) . '/../../3rdparty/phpProtexiom/phpProtexiom.class.php';
 
 class protexiom extends eqLogic {
     /*     * *************************Attributs****************************** */
@@ -196,6 +197,10 @@ class protexiom extends eqLogic {
 
     /*     * *********************Methode d'instance************************* */
 
+    /*
+     * Called before setting-up or updating a plugin device
+     * Standard Jeedom function
+     */
     public function preUpdate() {
     	//Let's check the config parameters. Beginning with hostPort
         if (!$this->isValidHostPort($this->getConfiguration('SomfyHostPort'))) {
@@ -242,12 +247,23 @@ class protexiom extends eqLogic {
     	
     }
     
+    /**
+     * Called before inserting a plugin device when creating it, before the first configuration
+     * Standard Jeedom function
+     *
+     */
     public function preInsert() {
     	$this->setCategory('security', 1);
     }
 
-    /*public function postInsert() {
-        $weatherCmd = new weatherCmd();
+    /**
+     * Called after inserting a plugin device when creating it, before the first configuration
+     * Standard Jeedom function
+     *
+     */
+    public function postInsert() {
+    	
+        /*$weatherCmd = new weatherCmd();
         $weatherCmd->setName(__('TempÃ©rature', __FILE__));
         $weatherCmd->setEqLogic_id($this->id);
         $weatherCmd->setConfiguration('day', '-1');
@@ -385,12 +401,49 @@ class protexiom extends eqLogic {
         $weatherCmd->setUnite('');
         $weatherCmd->setType('info');
         $weatherCmd->setSubType('string');
-        $weatherCmd->save();
-    }*/
+        $weatherCmd->save();*/
+    }
 
-    /*public function postSave() {
-        $this->reschedule();
-    }*/
+    /**
+     * Called after a plugin device configuration setup or update
+     * Standard Jeedom function
+     *
+     */
+    public function postSave() {
+    	if($this->getIsEnable()=='1'){
+    		//Let's detect hardware version only if the device isEnabled.
+    		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
+    		$myError="";
+    		 
+    		$myProtexiom = new phpProtexiom($this->getConfiguration('SomfyHostPort'));
+
+    		$myError=$myProtexiom->detectHwVersion(); 
+    		if($myError){//Hardware detection failed. it means protexiom was unreachable, or uncompatible
+    			$myError.="Deactivating $this->name";
+    			// Let's log the error in jeedom's log
+    			log::add('protexiom', 'error', $myError, $this->name);
+    		
+    			// then reset hardware version
+    			$this->setConfiguration('HwVersion', '');
+    			// then deactivate the Device
+    			$this->setIsEnable('0');
+    			// and finally save our config modifications
+    			$this->save();
+    			// Let's raise an exception
+    			throw new Exception(__('La version de votre protexiom n\'est pas compatible. Plus d\'info dans les logs de Jeedom.<br>Désactivation du device.', __FILE__));
+    		}else{//Hardware detected with sucess
+    			// Let's save hw Version to the device config, only if it has changes,to avoid infinite loop
+    			if($this->getConfiguration('HwVersion')!=$myProtexiom->getHwVersion()){
+    				$this->setConfiguration('HwVersion', $myProtexiom->getHwVersion());
+    				$this->save();
+    				log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
+    			}
+    			 
+    		}
+    	}
+    	
+        //$this->reschedule();
+    }
 
     /*public function preRemove() {
         $cron = cron::byClassAndFunction('weather', 'pull', array('weather_id' => intval($this->getId())));

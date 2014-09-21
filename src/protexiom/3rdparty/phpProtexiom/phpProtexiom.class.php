@@ -24,20 +24,43 @@ class phpProtexiom {
 	 * phpProtexiom Constructor.
 	 *
 	 * @author Fdp1
-	 * @param string $host protexiom host
-	 * @param string $port protexiom port
-	 * @param bool $sslEnabled $sslEnabled
+	 * @param string $host protexiom host[:port]
+	 * @param bool $sslEnabled sslEnabled (optional)
 	 */
-	function phpProtexiom($host, $port="80", $sslEnabled=false)
+	function phpProtexiom($host, $sslEnabled=false)
 	{
 		if($sslEnabled){
-			$this->somfyBaseURL='https://'.$host.':'.$port;
+			$this->somfyBaseURL='https://'.$host;
 		}else{
-			$this->somfyBaseURL='http://'.$host.':'.$port;
+			$this->somfyBaseURL='http://'.$host;
 		}
 		$this->sslEnabled=$sslEnabled;
 	}
 
+	/**
+	 * Parse text HTTP headers, and return them as an array
+	 *
+	 * @author Fdp1
+	 * @param string $header protexiom host
+	 * @return array headers as $key => $value
+	 */
+	private static function http_parse_headers( $header )
+	{
+		$retVal = array();
+		$fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
+		foreach( $fields as $field ) {
+			if( preg_match('/([^:]+): (.+)/m', $field, $match) ) {
+				$match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
+				if( isset($retVal[$match[1]]) ) {
+					$retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+				} else {
+					$retVal[$match[1]] = trim($match[2]);
+				}
+			}
+		}
+		return $retVal;
+	}
+	
 	/**
 	 * Get the hardware compatibility
 	 *
@@ -114,12 +137,12 @@ class phpProtexiom {
 	}
 	
 	/**
-	 * Guess (and set) the hardware version
+	 * detect (and set) the hardware version
 	 *
 	 * @author Fdp1
 	 * @return string "" in case of success, guessLog in case of failure
 	 */
-	function guessHwVersion()
+	function detectHwVersion()
 	{
 		//Creating Hardware parameters array
 		$fullHwParam=$this->getCompatibleHw();
@@ -127,50 +150,60 @@ class phpProtexiom {
 		$detectedHardwareVersion="";
 		//Lets get started
 		$guessLog="Hardware version guessing test result\r\n";
-		foreach ($fullHwParam as $currentHwVersion => $currentHwParam){
-			$guessLog.="HW Version: $currentHwVersion\r\n";
-			$response=$this->somfyWget($currentHwParam['URL']['login'], "get");
-			if($response['returnCode']=='200'){
-				$guessLog.="Login URL recognition: OK\r\n";
-				//Let's try to get the authCodeID
-				$authCodeID='';
-				if(preg_match_all($currentHwParam['AuthPattern'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
-					//it would appear that we got a code. Let's check if it's a valid one
-					$guessLog.="Auth code ID grabbing test: OK\r\n";
-					if(preg_match ( "/^[A-F][1-5]$/" , $authCodeID[0][1] )){//The codeID is valid (from A1 to F5)
-						$guessLog.="Auth code ID Validation test: OK\r\n";
-						//Let´s now check that every URL used by this HW version exists
-						$failedURL=false;
-						foreach ($currentHwParam['URL'] as $currentUrlID => $currentUrl){
-							if($currentUrlID=="login"){//no need to test login url again
-								continue;
+		//First, let's check if a basic HTTP request on the home page is OK.
+		//If not, no need to test further
+		$response=$this->somfyWget("/", "get");
+		if($response['returnCode']=='1'){
+			$guessLog.="Connection to host: FAILED\r\n";
+		}else{
+			$guessLog.="Connection to host: OK\r\n";
+			//We can go further			
+			foreach ($fullHwParam as $currentHwVersion => $currentHwParam){
+				$guessLog.="HW Version: $currentHwVersion\r\n";
+				$response=$this->somfyWget($currentHwParam['URL']['login'], "get");
+				if($response['returnCode']=='200'){
+					$guessLog.="Login URL recognition: OK\r\n";
+					//Let's try to get the authCodeID
+					$authCodeID='';
+					if(preg_match_all($currentHwParam['AuthPattern'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
+						//it would appear that we got a code. Let's check if it's a valid one
+						$guessLog.="Auth code ID grabbing test: OK\r\n";
+						if(preg_match ( "/^[A-F][1-5]$/" , $authCodeID[0][1] )){//The codeID is valid (from A1 to F5)
+							$guessLog.="Auth code ID Validation test: OK\r\n";
+							//Let´s now check that every URL used by this HW version exists
+							$failedURL=false;
+							foreach ($currentHwParam['URL'] as $currentUrlID => $currentUrl){
+								if($currentUrlID=="login"){//no need to test login url again
+									continue;
+								}
+								$response=$this->somfyWget($currentUrl, "get");
+								if($response['returnCode']=='404'){
+									$guessLog.="Test URL [$currentUrlID]: FAILED\r\n";
+									$failedURL=true;
+								}else{
+									$guessLog.="Test URL [$currentUrlID]: ".$response['returnCode']." OK\r\n";
+								}
 							}
-							$response=$this->somfyWget($currentUrl, "get");
-							if($response['returnCode']=='404'){
-								$guessLog.="Test URL [$currentUrlID]: FAILED\r\n";
-								$failedURL=true;
-							}else{
-								$guessLog.="Test URL [$currentUrlID]: ".$response['returnCode']." OK\r\n";
+							if(!$failedURL){
+								//all tests passed successfully. We found our HW version. Time to stop testing.
+								$guessLog.="Version detected: $currentHwVersion\r\n";
+								$detectedHardwareVersion=$currentHwVersion;
+								break;
 							}
+						}else{
+							$guessLog.="Auth code ID Validation test: FAILED\r\n";
 						}
-						if(!$failedURL){
-							//all tests passed successfully. We found our HW version. Time to stop testing.
-							$guessLog.="Version detected: $currentHwVersion\r\n";
-							$detectedHardwareVersion=$currentHwVersion;
-							break;
-						}
+			
 					}else{
-						$guessLog.="Auth code ID Validation test: FAILED\r\n";
+						$guessLog.="Auth code ID grabbing test: FAILED\r\n";
 					}
-						
-				}else{
-					$guessLog.="Auth code ID grabbing test: FAILED\r\n";
+				}else{//The loginURL doesn't exist. Bad version
+					$guessLog.="Login URL recognition: FAILED\r\n";
 				}
-			}else{//The loginURL doesn't exist. Bad version
-				$guessLog.="Login URL recognition: FAILED\r\n";
 			}
 		}
-		echo $guessLog;
+		
+		
 		if ($detectedHardwareVersion){
 			$this->setHwVersion($detectedHardwareVersion);
 			return "";
@@ -224,7 +257,7 @@ class phpProtexiom {
 				}else{
 					$http_status = curl_getinfo($browser, CURLINFO_HTTP_CODE);
 					list($headers, $body) = explode("\r\n\r\n", $response, 2);
-					$headers=http_parse_headers($headers);
+					$headers=$this->http_parse_headers($headers);
 				}
 				curl_close($browser);
 				unset($browser);
