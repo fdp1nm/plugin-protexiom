@@ -142,7 +142,7 @@ class protexiom extends eqLogic {
     private function getAuthCode($codeID = '')
     {
     	$authCard=array();
-    	$authCode='invalidcode';
+    	$authCode='';
     	if(preg_match ( "/^[A-F][1-5]$/" , $codeID )){//The codeID is valid (from A1 to F5)
     		$lineNum=substr($codeID, 1, 1);
     		list($authCard["A$lineNum"], $authCard["B$lineNum"], $authCard["C$lineNum"], $authCard["D$lineNum"], $authCard["E$lineNum"], $authCard["F$lineNum"])=preg_split("/[^0-9]/", $this->getConfiguration("AuthCardL$lineNum"));
