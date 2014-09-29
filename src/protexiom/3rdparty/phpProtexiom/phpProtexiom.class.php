@@ -1,4 +1,18 @@
 <?php
+
+/* Copyright � 2014 fdp1
+ * 
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ * 
+ * This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://www.wtfpl.net/ for more details.
+ */
+
 class phpProtexiom {
 	/*     * *************************Attributs privés****************************** */
 
@@ -88,35 +102,41 @@ class phpProtexiom {
 	{
 		//Creating Hardware parameters array
 		$fullHwParam=array();
-		//Version 1
-		$fullHwParam['1']['AuthPattern']="#Code d'authentification (..)</td>#";
-		$fullHwParam['1']['URL']['login']="/login.htm";
-		$fullHwParam['1']['URL']['logout']="/logout.htm";
-		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
-		$fullHwParam['1']['URL']['loginError']="/error.htm";
-		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
-		//Version 2
-		$fullHwParam['2']['AuthPattern']="#<b>(..)</b>#";
-		$fullHwParam['2']['URL']['login']="/fr/m_login.htm";
-		$fullHwParam['2']['URL']['logout']="/m_logout.htm";
-		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
-		$fullHwParam['2']['URL']['loginError']="/fr/m_error.htm";
-		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
 		//Version 3
-		$fullHwParam['3']['AuthPattern']="#<b>(..)</b>#";
+		//V1 MUST be declared after V3, to avoid a false positive
+		//V3 Hw would be positive to V1 test, but might then be broken
+		$fullHwParam['3']['Pattern']['Auth']="#<b>(..)</b>#";
+		$fullHwParam['3']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
 		$fullHwParam['3']['URL']['login']="/m_login.htm";
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
-		$fullHwParam['3']['URL']['loginError']="/m_error.htm";
+		$fullHwParam['3']['URL']['Error']="/m_error.htm";
 		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
+		//Version 1
+		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
+		$fullHwParam['1']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['1']['URL']['login']="/login.htm";
+		$fullHwParam['1']['URL']['logout']="/logout.htm";
+		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
+		$fullHwParam['1']['URL']['Error']="/error.htm";
+		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
+		//Version 2
+		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
+		$fullHwParam['2']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['2']['URL']['login']="/fr/m_login.htm";
+		$fullHwParam['2']['URL']['logout']="/m_logout.htm";
+		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
+		$fullHwParam['2']['URL']['Error']="/fr/m_error.htm";
+		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
 		//Version 4
-		//V4 MUST be declared after V2, otherwise to avoid a false positive
-		//V2 Hw would be positive to V2 test, but would then be broken
-		$fullHwParam['4']['AuthPattern']="#<b>(..)</b>#";
+		//V4 MUST be declared after V2, to avoid a false positive
+		//V2 Hw would be positive to V2 test, but might then be broken
+		$fullHwParam['4']['Pattern']['Auth']="#<b>(..)</b>#";
+		$fullHwParam['4']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
 		$fullHwParam['4']['URL']['login']="/fr/login.htm";
 		$fullHwParam['4']['URL']['logout']="/logout.htm";
 		$fullHwParam['4']['URL']['welcome']="/fr/welcome.htm";
-		$fullHwParam['4']['URL']['loginError']="/fr/error.htm";
+		$fullHwParam['4']['URL']['Error']="/fr/error.htm";
 		$fullHwParam['4']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
 		/* ActionsParam.Url = "/fr/u_pilotage.htm"
 		LogoutUrl = "/logout.htm" */
@@ -189,7 +209,7 @@ class phpProtexiom {
 					$guessLog.="Login URL recognition: OK\r\n";
 					//Let's try to get the authCodeID
 					$authCodeID='';
-					if(preg_match_all($currentHwParam['AuthPattern'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
+					if(preg_match_all($currentHwParam['Pattern']['Auth'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
 						//it would appear that we got a code. Let's check if it's a valid one
 						$guessLog.="Auth code ID grabbing test: OK\r\n";
 						if(preg_match ( "/^[A-F][1-5]$/" , $authCodeID[0][1] )){//The codeID is valid (from A1 to F5)
@@ -305,6 +325,72 @@ class phpProtexiom {
 	}//End somfyWget func
 	
 	/**
+	 * check if the HTTP(S) request returned the expected response code.
+	 *
+	 * @author Fdp1
+	 * @param array $response somfyWget response
+	 * @param string $rcode expected return code
+	 * @param string $location expected Location in case of a 302 rcode
+	 * @return string error message in case of error, "" in case of sucess
+	 * @usage $myError = isWgetError()
+	 */
+	private function isWgetError($response, $rcode, $location="")
+	{
+		$myError="";
+		
+		if($response['returnCode']==$rcode){
+			//we got the expected rcode. If it's a 302, let's check the Location.
+			if($rcode=='302'){
+				
+				if($response['responseHeaders']['Location']==$this->hwParam['URL']['Error']){
+					$myError="Somfy protexiom returned : ".$this->getSomfyError();
+				}elseif(!$response['responseHeaders']['Location']==$location){
+					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
+				}//else we got the Location. $myError=""
+			}
+		}elseif($response['returnCode']=='1'){
+			//SomfyWget returned an error
+			$myError=$response['responseBody'];
+		}else{
+			if($response['returnCode']=='302'){
+				if($response['responseHeaders']['Location']==$this->hwParam['URL']['Error']){
+					$myError="Somfy protexiom returned : ".$this->getSomfyError();					
+				}else{
+					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
+				}
+			}else{
+				$myError="Unknow error (HTTP return code ".$response['returnCode'].")";
+			}
+		}
+		return $myError;
+	}//End isWgetError func
+	
+	/**
+	 * get the error code specified by somfy in case of a 302 redirect to the error page.
+	 * Perform th web request to the error page, and parse the response to isolate the error message.
+	 *
+	 * @author Fdp1
+	 * @return string error message, or "" if unable to get the error
+	 * @usage $myError = getSomfyError()
+	 */
+	private function getSomfyError()
+	{
+		$somfyError=array();
+	
+		$response=$this->somfyWget($this->hwParam['URL']['Error'], "GET");
+		if(preg_match_all($this->hwParam['Pattern']['Error'], $response['responseBody'], $somfyError, PREG_SET_ORDER)==1){
+			// It seems we found an error pattern.
+			// Let's replace HTML newlines with CRLFs (and remove duplicates new line in the same time)
+			$myError=preg_replace('/(?:\<br(\s*)?\/?\>)+/i', "\r\n", $somfyError[0][1]);
+			// Lets's remove HTML balise and trim the string for clean display
+			$myError=trim(preg_replace('/(?:\<(.*)>)+/i', "\r\n", $somfyError[0][1]));
+			return $myError;
+		}else{
+			return "";
+		}
+	}//End getSomfyError func
+	
+	/**
 	 * Login fonction.
 	 * Authenticate and set the authentication cookie
 	 *
@@ -324,43 +410,31 @@ class phpProtexiom {
 		if(!$myError){
 			//First, let'get the authCodeID
 			$response=$this->somfyWget($this->hwParam['URL']['login'], "GET");
-			if($response['returnCode']=='200'){
-				if(preg_match_all($this->hwParam['AuthPattern'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
+			if(!$myError=$this->isWgetError($response, '200')){
+				if(preg_match_all($this->hwParam['Pattern']['Auth'], $response['responseBody'], $authCodeID, PREG_SET_ORDER)==1){
 					//it would appear that we got a code. Let's check if it's a valid one
 					if(preg_match ( "/^[A-F][1-5]$/" , $authCodeID[0][1] )){//The codeID is valid (from A1 to F5)
 						//Time to login...
 						$reqBody=preg_replace(array("/#UserPwd#/", "/#AuthKey#/"), array($this->userPwd, $this->authCard[$authCodeID[0][1]]), $this->hwParam['ReqBody']['login']);
 						$response=$this->somfyWget($this->hwParam['URL']['login'], "POST", $reqBody);
-						if($response['returnCode']=='302' AND $response['responseHeaders']['Location']==$this->hwParam['URL']['welcome']){
+						if(!$myError=$this->isWgetError($response, '302', $this->hwParam['URL']['welcome'])){
 							$response=$this->somfyWget($this->hwParam['URL']['welcome'], "GET");
-							if($response['returnCode']=='200'){
+							if(!$myError=$this->isWgetError($response, '200')){
 								// Successfull login. Let's store the session cookie
 								$this->authCookie=$response['responseHeaders']['Set-Cookie'];
-							}elseif($response['returnCode']=='1'){
-								//SomfyWget returned an error
-								$myError=$response['responseBody'];
-							}else{
-								$myError="Login failed with unknow error (HTTP return code ".$response['returnCode'].")";
-							}
-						}elseif($response['returnCode']=='302' AND $response['responseHeaders']['Location']==$this->hwParam['URL']['loginError']){
-							$myError="Login failed. Alarm busy, or wrong password";
-						}elseif($response['returnCode']=='1'){
-							$myError=$response['responseBody'];
-						}else{
-							$myError="Login failed with unknow error (HTTP return code ".$response['returnCode'].")";
-						}
+							}//else myError != '', will be returned
+						}//else myError != '', will be returned
+						
 					}else{
 						$myError="Invalid auth code ID. Login failed.";
 					}
 				}else{
-					$myError="Login failed. Unable to get auth code ID";
+					$myError="Unable to get auth code ID";
 				}
-			}else{
-				$myError="Connection to login page failed";
-			}
+			}//else myError != '', will be returned
 		}
 		if($myError){
-			return $myError;
+			return "Login failed: ".$myError;
 		}else{
 			return "";
 		}
@@ -376,18 +450,27 @@ class phpProtexiom {
 	 */
 	function doLogout()
 	{
-		$myError="";
-		$response=$this->somfyWget($this->hwParam['URL']['logout'], "GET");
-		if($response['returnCode']=='302' AND $response['responseHeaders']['Location']==$this->hwParam['URL']['login']){
+		if(!$myError=$this->isWgetError($this->somfyWget($this->hwParam['URL']['logout'], "GET"), '302', $this->hwParam['URL']['login'])){
 			$this->authCookie="";
-			return "";
-		}elseif($response['returnCode']=='1'){
-			//SomfyWget returned an error
-			$myError=$response['responseBody'];
 		}else{
-			$myError="Logout failed with unknow error (HTTP return code ".$response['returnCode'].")";
+			$myError="Logout failed: ".$myError;
 		}
+		return $myError;
 	}//End doLogout func
+	
+	/**
+	 * updateStatus fonction.
+	 * Launch login fonction only if session not already active, and the get the satus informations.
+	 * Open and close the session only if it was not already opened.
+	 *
+	 * @author Fdp1
+	 * @return int 0 in case of success, 1 in case of failure
+	 * @usage updateStatus()
+	 */
+	function updateStatus()
+	{
+		
+	}//End updateStatus func
 
 }//End phpProtexiom Class
 ?>
