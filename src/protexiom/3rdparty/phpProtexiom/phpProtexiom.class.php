@@ -547,6 +547,19 @@ class phpProtexiom {
 		
 		return $myError;	
 	}//End updateStatus func
+	
+	/**
+	 * getStatus fonction.
+	 * Get the protexiom status
+	 *
+	 * @author Fdp1
+	 * @return array status
+	 * @usage updateStatus()
+	 */
+	function getStatus()
+	{	
+		return $this->status;
+	}//End getStatus func
 
 }//End phpProtexiom Class
 ?>
