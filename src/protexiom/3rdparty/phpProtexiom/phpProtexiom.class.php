@@ -1,6 +1,6 @@
 <?php
 
-/* Copyright � 2014 fdp1
+/* Copyright (C) 2014 fdp1
  * 
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -16,7 +16,7 @@
 class phpProtexiom {
 	/*     * *************************Attributs privés****************************** */
 
-	//private $_somfyStatus = array();
+	private $status = array();
 	/* 	private $_SomfyHost = '';
 	 private $_SomfyPort = ''; */
 	private $somfyBaseURL='';
@@ -111,7 +111,21 @@ class phpProtexiom {
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
 		$fullHwParam['3']['URL']['Error']="/m_error.htm";
+		$fullHwParam['3']['URL']['Status']="/status.xml";		
 		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
+		$fullHwParam['3']['StatusTag']['ZoneA']="zone0";// ON/OFF
+		$fullHwParam['3']['StatusTag']['ZoneB']="zone1";// ON/OFF
+		$fullHwParam['3']['StatusTag']['ZoneC']="zone2";// ON/OFF
+		$fullHwParam['3']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
+		$fullHwParam['3']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
+		$fullHwParam['3']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
+		$fullHwParam['3']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['3']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
+		$fullHwParam['3']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['3']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['3']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
+		$fullHwParam['3']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
+		
 		//Version 1
 		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
 		$fullHwParam['1']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
@@ -119,7 +133,20 @@ class phpProtexiom {
 		$fullHwParam['1']['URL']['logout']="/logout.htm";
 		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
 		$fullHwParam['1']['URL']['Error']="/error.htm";
+		$fullHwParam['1']['URL']['Status']="/status.xml";
 		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
+		$fullHwParam['1']['StatusTag']['ZoneA']="zone0";// ON/OFF
+		$fullHwParam['1']['StatusTag']['ZoneB']="zone1";// ON/OFF
+		$fullHwParam['1']['StatusTag']['ZoneC']="zone2";// ON/OFF
+		$fullHwParam['1']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
+		$fullHwParam['1']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
+		$fullHwParam['1']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
+		$fullHwParam['1']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['1']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
+		$fullHwParam['1']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['1']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['1']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
+		$fullHwParam['1']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
 		//Version 2
 		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
 		$fullHwParam['2']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
@@ -127,7 +154,20 @@ class phpProtexiom {
 		$fullHwParam['2']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
 		$fullHwParam['2']['URL']['Error']="/fr/m_error.htm";
+		$fullHwParam['2']['URL']['Status']="/status.xml";
 		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
+		$fullHwParam['2']['StatusTag']['ZoneA']="zone0";// ON/OFF
+		$fullHwParam['2']['StatusTag']['ZoneB']="zone1";// ON/OFF
+		$fullHwParam['2']['StatusTag']['ZoneC']="zone2";// ON/OFF
+		$fullHwParam['2']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
+		$fullHwParam['2']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
+		$fullHwParam['2']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
+		$fullHwParam['2']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['2']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
+		$fullHwParam['2']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['2']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['2']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
+		$fullHwParam['2']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
 		//Version 4
 		//V4 MUST be declared after V2, to avoid a false positive
 		//V2 Hw would be positive to V2 test, but might then be broken
@@ -137,9 +177,21 @@ class phpProtexiom {
 		$fullHwParam['4']['URL']['logout']="/logout.htm";
 		$fullHwParam['4']['URL']['welcome']="/fr/welcome.htm";
 		$fullHwParam['4']['URL']['Error']="/fr/error.htm";
+		$fullHwParam['4']['URL']['Status']="/status.xml";
 		$fullHwParam['4']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
-		/* ActionsParam.Url = "/fr/u_pilotage.htm"
-		LogoutUrl = "/logout.htm" */
+		$fullHwParam['4']['StatusTag']['ZoneA']="zone0";// ON/OFF
+		$fullHwParam['4']['StatusTag']['ZoneB']="zone1";// ON/OFF
+		$fullHwParam['4']['StatusTag']['ZoneC']="zone2";// ON/OFF
+		$fullHwParam['4']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
+		$fullHwParam['4']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
+		$fullHwParam['4']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
+		$fullHwParam['4']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['4']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
+		$fullHwParam['4']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['4']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['4']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
+		$fullHwParam['4']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
+		/* ActionsParam.Url = "/fr/u_pilotage.htm"*/
 		
 		return $fullHwParam;
 	}
@@ -279,6 +331,7 @@ class phpProtexiom {
 						CURLOPT_HEADER => 1,
 						CURLOPT_RETURNTRANSFER => 1,
 						CURLOPT_FORBID_REUSE => 1,
+						//CURLOPT_SSL_VERIFYPEER => 1
 				);
 				if($this->authCookie){
 					$curlOpt += array(CURLOPT_COOKIE => $this->authCookie);
@@ -464,12 +517,35 @@ class phpProtexiom {
 	 * Open and close the session only if it was not already opened.
 	 *
 	 * @author Fdp1
-	 * @return int 0 in case of success, 1 in case of failure
+	 * @return string "" in case of success, $myError in case of failure
 	 * @usage updateStatus()
 	 */
 	function updateStatus()
 	{
+		$sessionHandling = false;
+		$myError="";
 		
+		if(!$this->authCookie){
+			//Not logged in. Let's log in now, and set a variable to enable logout before exit
+			$sessionHandling = true;
+			$myError=$this->doLogin();
+		}
+		
+		if(!$myError){//Login OK
+			$response=$this->somfyWget($this->hwParam['URL']['Status'], "GET");
+			if($sessionHandling){
+				$this->doLogout();
+			}
+			if(!$myError=$this->isWgetError($response, '200')){
+				$xmlStatus=simplexml_load_string($response['responseBody']);
+				foreach($this->hwParam['StatusTag'] as $key => $val){
+					$this->status[$key]=(string)$xmlStatus->$val;
+				}
+				$this->status['LastRefresh']=date("Y-m-d H:i:s");
+			}//else: $myerror should be returned
+		}
+		
+		return $myError;	
 	}//End updateStatus func
 
 }//End phpProtexiom Class
