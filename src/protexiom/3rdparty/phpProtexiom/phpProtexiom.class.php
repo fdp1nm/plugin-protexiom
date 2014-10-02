@@ -126,6 +126,18 @@ class phpProtexiom {
 		$fullHwParam['3']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
 		$fullHwParam['3']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
 		
+		$fullHwParam['3']['URL']['Pilotage']="/mu_pilotage.htm";
+		$fullHwParam['3']['Action']['ZONEA_ON']="hidden=hidden&zone=Marche%20A&img.x=40&img.y=7";
+		$fullHwParam['3']['Action']['ZONEB_ON']="hidden=hidden&zone=Marche%20B&img.x=33&img.y=5";
+		$fullHwParam['3']['Action']['ZONEC_ON']="hidden=hidden&zone=Marche%20C&img.x=40&img.y=10";
+		$fullHwParam['3']['Action']['ZONEABC_ON']="hidden=hidden&zone=Marche%20A%20B%20C&img.x=45&img.y=7";
+		$fullHwParam['3']['Action']['ALARME_OFF']="zone=Arr%eat%20A%20B%20C";
+		$fullHwParam['3']['Action']['LIGHT_ON']="hidden=hidden&action_lum=ON";
+		$fullHwParam['3']['Action']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
+		$fullHwParam['3']['Action']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
+		$fullHwParam['3']['Action']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
+		$fullHwParam['3']['Action']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		
 		//Version 1
 		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
 		$fullHwParam['1']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
@@ -134,6 +146,7 @@ class phpProtexiom {
 		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
 		$fullHwParam['1']['URL']['Error']="/error.htm";
 		$fullHwParam['1']['URL']['Status']="/status.xml";
+		$fullHwParam['1']['URL']['Pilotage']="/u_pilotage.htm";
 		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
 		$fullHwParam['1']['StatusTag']['ZoneA']="zone0";// ON/OFF
 		$fullHwParam['1']['StatusTag']['ZoneB']="zone1";// ON/OFF
@@ -147,6 +160,17 @@ class phpProtexiom {
 		$fullHwParam['1']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
 		$fullHwParam['1']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
 		$fullHwParam['1']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['1']['Action']['ZONEA_ON']="hidden=hidden&zone=Marche+A";
+		$fullHwParam['1']['Action']['ZONEB_ON']="hidden=hidden&zone=Marche+B";
+		$fullHwParam['1']['Action']['ZONEC_ON']="hidden=hidden&zone=Marche+C";
+		$fullHwParam['1']['Action']['ZONEABC_ON']="hidden=hidden&zone=Marche+A+B+C";
+		$fullHwParam['1']['Action']['ALARME_OFF']="hidden=hidden&zone=Arr%EAt+A+B+C";
+		$fullHwParam['1']['Action']['LIGHT_ON']="hidden=hidden&action_lum=ON";
+		$fullHwParam['1']['Action']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
+		$fullHwParam['1']['Action']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
+		$fullHwParam['1']['Action']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
+		$fullHwParam['1']['Action']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		
 		//Version 2
 		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
 		$fullHwParam['2']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
@@ -155,6 +179,7 @@ class phpProtexiom {
 		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
 		$fullHwParam['2']['URL']['Error']="/fr/m_error.htm";
 		$fullHwParam['2']['URL']['Status']="/status.xml";
+		$fullHwParam['2']['URL']['Pilotage']="/fr/mu_pilotage.htm";
 		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
 		$fullHwParam['2']['StatusTag']['ZoneA']="zone0";// ON/OFF
 		$fullHwParam['2']['StatusTag']['ZoneB']="zone1";// ON/OFF
@@ -168,6 +193,17 @@ class phpProtexiom {
 		$fullHwParam['2']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
 		$fullHwParam['2']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
 		$fullHwParam['2']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['2']['Action']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=ON";
+		$fullHwParam['2']['Action']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=ON";
+		$fullHwParam['2']['Action']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=ON";
+		$fullHwParam['2']['Action']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=ON";
+		$fullHwParam['2']['Action']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=OFF";
+		$fullHwParam['2']['Action']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
+		$fullHwParam['2']['Action']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
+		$fullHwParam['2']['Action']['SHUTTER_UP']="hidden=hidden&btn_vol_up=MONTEE";
+		$fullHwParam['2']['Action']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=DESCENTE";
+		$fullHwParam['2']['Action']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=STOP";
+
 		//Version 4
 		//V4 MUST be declared after V2, to avoid a false positive
 		//V2 Hw would be positive to V2 test, but might then be broken
@@ -178,6 +214,7 @@ class phpProtexiom {
 		$fullHwParam['4']['URL']['welcome']="/fr/welcome.htm";
 		$fullHwParam['4']['URL']['Error']="/fr/error.htm";
 		$fullHwParam['4']['URL']['Status']="/status.xml";
+		$fullHwParam['4']['URL']['Pilotage']="/fr/u_pilotage.htm";
 		$fullHwParam['4']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
 		$fullHwParam['4']['StatusTag']['ZoneA']="zone0";// ON/OFF
 		$fullHwParam['4']['StatusTag']['ZoneB']="zone1";// ON/OFF
@@ -191,7 +228,16 @@ class phpProtexiom {
 		$fullHwParam['4']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
 		$fullHwParam['4']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
 		$fullHwParam['4']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
-		/* ActionsParam.Url = "/fr/u_pilotage.htm"*/
+		$fullHwParam['4']['Action']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=Marche A";
+		$fullHwParam['4']['Action']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=Marche B";
+		$fullHwParam['4']['Action']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=Marche C";
+		$fullHwParam['4']['Action']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=Marche A B C";
+		$fullHwParam['4']['Action']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=Arrêt A B C";
+		$fullHwParam['4']['Action']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
+		$fullHwParam['4']['Action']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
+		$fullHwParam['4']['Action']['SHUTTER_UP']="hidden=hidden&btn_vol_up=";
+		$fullHwParam['4']['Action']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=";
+		$fullHwParam['4']['Action']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=";
 		
 		return $fullHwParam;
 	}
@@ -560,6 +606,58 @@ class phpProtexiom {
 	{	
 		return $this->status;
 	}//End getStatus func
+	
+	/**
+	 * doAction function send an action to the alarm.
+	 * First open session (Login), then send action(s), gupdate the new status,  and logout.
+	 * Open and close the session only if it was not already opened.
+	 * Possible Actions :
+	 *     ZONEA_ON
+	 *     ZONEB_ON
+	 *     ZONEC_ON
+	 *     ZONEABC_ON
+	 *     ALARME_OFF
+	 *     LIGHT_ON
+	 *     LIGHT_OFF
+	 *     SHUTTER_UP
+	 *     SHUTTER_DOWN
+	 *     SHUTTER_STOP
+	 *
+	 * @author Fdp1
+	 * @param string list of actions (one or multiple actions)
+	 * @return string "" in case of success, $myError in case of failure
+	 * @usage $myError = doAction("ALARME_OFF", "LIGHT_ON", "SHUTTER_UP")
+	 */
+	function doAction()
+	{
+		$sessionHandling = false;
+		$myError="";
+		
+		if(!$this->authCookie){
+			//Not logged in. Let's log in now, and set a variable to enable logout before exit
+			$sessionHandling = true;
+			$myError=$this->doLogin();
+		}
+		
+		if(!$myError){//Login OK
+			// multiple actions possible
+			foreach(func_get_args() as $key => $val){
+				if(array_key_exists($val , $this->hwParam['Action'])){
+					$response=$this->somfyWget($this->hwParam['URL']['Pilotage'], "POST",$this->hwParam['Action'][$val]);
+					$myError.=$this->isWgetError($response, '200');
+				}else{
+					$myError.="Unable to perform the action \"$val\": invalid action.\r\n";
+				}
+			}
+			$myError.=$this->updateStatus();
+			
+			if($sessionHandling){
+				$this->doLogout();
+			}
+		}
+		
+		return $myError;
+	}//End doAction func
 
 }//End phpProtexiom Class
 ?>
