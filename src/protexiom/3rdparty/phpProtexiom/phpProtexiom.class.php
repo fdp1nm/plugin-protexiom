@@ -111,32 +111,35 @@ class phpProtexiom {
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
 		$fullHwParam['3']['URL']['Error']="/m_error.htm";
-		$fullHwParam['3']['URL']['Status']="/status.xml";		
-		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
-		$fullHwParam['3']['StatusTag']['ZoneA']="zone0";// ON/OFF
-		$fullHwParam['3']['StatusTag']['ZoneB']="zone1";// ON/OFF
-		$fullHwParam['3']['StatusTag']['ZoneC']="zone2";// ON/OFF
-		$fullHwParam['3']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
-		$fullHwParam['3']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
-		$fullHwParam['3']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
-		$fullHwParam['3']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
-		$fullHwParam['3']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
-		$fullHwParam['3']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
-		$fullHwParam['3']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
-		$fullHwParam['3']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
-		$fullHwParam['3']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
-		
+		$fullHwParam['3']['URL']['Status']="/status.xml";
 		$fullHwParam['3']['URL']['Pilotage']="/mu_pilotage.htm";
-		$fullHwParam['3']['Action']['ZONEA_ON']="hidden=hidden&zone=Marche%20A&img.x=40&img.y=7";
-		$fullHwParam['3']['Action']['ZONEB_ON']="hidden=hidden&zone=Marche%20B&img.x=33&img.y=5";
-		$fullHwParam['3']['Action']['ZONEC_ON']="hidden=hidden&zone=Marche%20C&img.x=40&img.y=10";
-		$fullHwParam['3']['Action']['ZONEABC_ON']="hidden=hidden&zone=Marche%20A%20B%20C&img.x=45&img.y=7";
-		$fullHwParam['3']['Action']['ALARME_OFF']="zone=Arr%eat%20A%20B%20C";
-		$fullHwParam['3']['Action']['LIGHT_ON']="hidden=hidden&action_lum=ON";
-		$fullHwParam['3']['Action']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
-		$fullHwParam['3']['Action']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
-		$fullHwParam['3']['Action']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
-		$fullHwParam['3']['Action']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		$fullHwParam['3']['URL']['EraseDefault']="/mu_listelmt.htm";
+		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
+		$fullHwParam['3']['StatusTag']['ZONE_A']="zone0";// ON/OFF
+		$fullHwParam['3']['StatusTag']['ZONE_B']="zone1";// ON/OFF
+		$fullHwParam['3']['StatusTag']['ZONE_C']="zone2";// ON/OFF
+		$fullHwParam['3']['StatusTag']['BATTERY']="defaut0";// Battery default OK/?
+		$fullHwParam['3']['StatusTag']['LINK']="defaut1";// Communication default OK/?
+		$fullHwParam['3']['StatusTag']['DOOR']="defaut2";// Open door or window OK/?
+		$fullHwParam['3']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['3']['StatusTag']['TAMPERED']="defaut4";// Opened device box OK/?
+		$fullHwParam['3']['StatusTag']['GSM_LINK']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['3']['StatusTag']['GSM_SIGNAL']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['3']['StatusTag']['GSM_OPERATOR']="opegsm";//  Orange, ...
+		$fullHwParam['3']['StatusTag']['CAMERA']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['3']['Pilotage']['ZONEA_ON']="hidden=hidden&zone=Marche%20A&img.x=40&img.y=7";
+		$fullHwParam['3']['Pilotage']['ZONEB_ON']="hidden=hidden&zone=Marche%20B&img.x=33&img.y=5";
+		$fullHwParam['3']['Pilotage']['ZONEC_ON']="hidden=hidden&zone=Marche%20C&img.x=40&img.y=10";
+		$fullHwParam['3']['Pilotage']['ZONEABC_ON']="hidden=hidden&zone=Marche%20A%20B%20C&img.x=45&img.y=7";
+		$fullHwParam['3']['Pilotage']['ALARME_OFF']="zone=Arr%eat%20A%20B%20C";
+		$fullHwParam['3']['Pilotage']['LIGHT_ON']="hidden=hidden&action_lum=ON";
+		$fullHwParam['3']['Pilotage']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
+		$fullHwParam['3']['Pilotage']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
+		$fullHwParam['3']['Pilotage']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
+		$fullHwParam['3']['Pilotage']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		$fullHwParam['3']['EraseDefault']['RESET_BATTERY_ERR']="efface=Piles";
+		$fullHwParam['3']['EraseDefault']['RESET_ALARM_ERR']="efface=Alarmes";
+		$fullHwParam['3']['EraseDefault']['RESET_LINK_ERR']="efface=Liaisons";
 		
 		//Version 1
 		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
@@ -147,29 +150,33 @@ class phpProtexiom {
 		$fullHwParam['1']['URL']['Error']="/error.htm";
 		$fullHwParam['1']['URL']['Status']="/status.xml";
 		$fullHwParam['1']['URL']['Pilotage']="/u_pilotage.htm";
+		$fullHwParam['1']['URL']['EraseDefault']="/u_listelmt.htm";
 		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
-		$fullHwParam['1']['StatusTag']['ZoneA']="zone0";// ON/OFF
-		$fullHwParam['1']['StatusTag']['ZoneB']="zone1";// ON/OFF
-		$fullHwParam['1']['StatusTag']['ZoneC']="zone2";// ON/OFF
-		$fullHwParam['1']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
-		$fullHwParam['1']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
-		$fullHwParam['1']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
-		$fullHwParam['1']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
-		$fullHwParam['1']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
-		$fullHwParam['1']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
-		$fullHwParam['1']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
-		$fullHwParam['1']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
-		$fullHwParam['1']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
-		$fullHwParam['1']['Action']['ZONEA_ON']="hidden=hidden&zone=Marche+A";
-		$fullHwParam['1']['Action']['ZONEB_ON']="hidden=hidden&zone=Marche+B";
-		$fullHwParam['1']['Action']['ZONEC_ON']="hidden=hidden&zone=Marche+C";
-		$fullHwParam['1']['Action']['ZONEABC_ON']="hidden=hidden&zone=Marche+A+B+C";
-		$fullHwParam['1']['Action']['ALARME_OFF']="hidden=hidden&zone=Arr%EAt+A+B+C";
-		$fullHwParam['1']['Action']['LIGHT_ON']="hidden=hidden&action_lum=ON";
-		$fullHwParam['1']['Action']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
-		$fullHwParam['1']['Action']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
-		$fullHwParam['1']['Action']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
-		$fullHwParam['1']['Action']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		$fullHwParam['1']['StatusTag']['ZONE_A']="zone0";// ON/OFF
+		$fullHwParam['1']['StatusTag']['ZONE_B']="zone1";// ON/OFF
+		$fullHwParam['1']['StatusTag']['ZONE_C']="zone2";// ON/OFF
+		$fullHwParam['1']['StatusTag']['BATTERY']="defaut0";// Battery default OK/?
+		$fullHwParam['1']['StatusTag']['LINK']="defaut1";// Communication default OK/?
+		$fullHwParam['1']['StatusTag']['DOOR']="defaut2";// Open door or window OK/?
+		$fullHwParam['1']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['1']['StatusTag']['TAMPERED']="defaut4";// Opened device box OK/?
+		$fullHwParam['1']['StatusTag']['GSM_LINK']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['1']['StatusTag']['GSM_SIGNAL']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['1']['StatusTag']['GSM_OPERATOR']="opegsm";//  Orange, ...
+		$fullHwParam['1']['StatusTag']['CAMERA']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['1']['Pilotage']['ZONEA_ON']="hidden=hidden&zone=Marche+A";
+		$fullHwParam['1']['Pilotage']['ZONEB_ON']="hidden=hidden&zone=Marche+B";
+		$fullHwParam['1']['Pilotage']['ZONEC_ON']="hidden=hidden&zone=Marche+C";
+		$fullHwParam['1']['Pilotage']['ZONEABC_ON']="hidden=hidden&zone=Marche+A+B+C";
+		$fullHwParam['1']['Pilotage']['ALARME_OFF']="hidden=hidden&zone=Arr%EAt+A+B+C";
+		$fullHwParam['1']['Pilotage']['LIGHT_ON']="hidden=hidden&action_lum=ON";
+		$fullHwParam['1']['Pilotage']['LIGHT_OFF']="hidden=hidden&action_lum=OFF";
+		$fullHwParam['1']['Pilotage']['SHUTTER_UP']="hidden=hidden&action_vol_montee=";
+		$fullHwParam['1']['Pilotage']['SHUTTER_DOWN']="hidden=hidden&action_vol_descente=";
+		$fullHwParam['1']['Pilotage']['SHUTTER_STOP']="hidden=hidden&action_vol_stop=";
+		$fullHwParam['1']['EraseDefault']['RESET_BATTERY_ERR']="efface=Piles";
+		$fullHwParam['1']['EraseDefault']['RESET_ALARM_ERR']="efface=Alarmes";
+		$fullHwParam['1']['EraseDefault']['RESET_LINK_ERR']="efface=Liaisons";
 		
 		//Version 2
 		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
@@ -180,29 +187,33 @@ class phpProtexiom {
 		$fullHwParam['2']['URL']['Error']="/fr/m_error.htm";
 		$fullHwParam['2']['URL']['Status']="/status.xml";
 		$fullHwParam['2']['URL']['Pilotage']="/fr/mu_pilotage.htm";
+		$fullHwParam['2']['URL']['EraseDefault']="/fr/u_listelmt.htm";
 		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
-		$fullHwParam['2']['StatusTag']['ZoneA']="zone0";// ON/OFF
-		$fullHwParam['2']['StatusTag']['ZoneB']="zone1";// ON/OFF
-		$fullHwParam['2']['StatusTag']['ZoneC']="zone2";// ON/OFF
-		$fullHwParam['2']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
-		$fullHwParam['2']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
-		$fullHwParam['2']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
-		$fullHwParam['2']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
-		$fullHwParam['2']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
-		$fullHwParam['2']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
-		$fullHwParam['2']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
-		$fullHwParam['2']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
-		$fullHwParam['2']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
-		$fullHwParam['2']['Action']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=ON";
-		$fullHwParam['2']['Action']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=ON";
-		$fullHwParam['2']['Action']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=ON";
-		$fullHwParam['2']['Action']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=ON";
-		$fullHwParam['2']['Action']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=OFF";
-		$fullHwParam['2']['Action']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
-		$fullHwParam['2']['Action']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
-		$fullHwParam['2']['Action']['SHUTTER_UP']="hidden=hidden&btn_vol_up=MONTEE";
-		$fullHwParam['2']['Action']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=DESCENTE";
-		$fullHwParam['2']['Action']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=STOP";
+		$fullHwParam['2']['StatusTag']['ZONE_A']="zone0";// ON/OFF
+		$fullHwParam['2']['StatusTag']['ZONE_B']="zone1";// ON/OFF
+		$fullHwParam['2']['StatusTag']['ZONE_C']="zone2";// ON/OFF
+		$fullHwParam['2']['StatusTag']['BATTERY']="defaut0";// Battery default OK/?
+		$fullHwParam['2']['StatusTag']['LINK']="defaut1";// Communication default OK/?
+		$fullHwParam['2']['StatusTag']['DOOR']="defaut2";// Open door or window OK/?
+		$fullHwParam['2']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['2']['StatusTag']['TAMPERED']="defaut4";// Opened device box OK/?
+		$fullHwParam['2']['StatusTag']['GSM_LINK']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['2']['StatusTag']['GSM_SIGNAL']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['2']['StatusTag']['GSM_OPERATOR']="opegsm";//  Orange, ...
+		$fullHwParam['2']['StatusTag']['CAMERA']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['2']['Pilotage']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=ON";
+		$fullHwParam['2']['Pilotage']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=ON";
+		$fullHwParam['2']['Pilotage']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=ON";
+		$fullHwParam['2']['Pilotage']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=ON";
+		$fullHwParam['2']['Pilotage']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=OFF";
+		$fullHwParam['2']['Pilotage']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
+		$fullHwParam['2']['Pilotage']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
+		$fullHwParam['2']['Pilotage']['SHUTTER_UP']="hidden=hidden&btn_vol_up=MONTEE";
+		$fullHwParam['2']['Pilotage']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=DESCENTE";
+		$fullHwParam['2']['Pilotage']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=STOP";
+		$fullHwParam['2']['EraseDefault']['RESET_BATTERY_ERR']="btn_del_pil=Piles";
+		$fullHwParam['2']['EraseDefault']['RESET_ALARM_ERR']="btn_del_alm=Alarmes";
+		$fullHwParam['2']['EraseDefault']['RESET_LINK_ERR']="btn_del_lia=Liaisons";
 
 		//Version 4
 		//V4 MUST be declared after V2, to avoid a false positive
@@ -215,29 +226,33 @@ class phpProtexiom {
 		$fullHwParam['4']['URL']['Error']="/fr/error.htm";
 		$fullHwParam['4']['URL']['Status']="/status.xml";
 		$fullHwParam['4']['URL']['Pilotage']="/fr/u_pilotage.htm";
+		$fullHwParam['4']['URL']['EraseDefault']="/fr/u_listelmt.htm";
 		$fullHwParam['4']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
-		$fullHwParam['4']['StatusTag']['ZoneA']="zone0";// ON/OFF
-		$fullHwParam['4']['StatusTag']['ZoneB']="zone1";// ON/OFF
-		$fullHwParam['4']['StatusTag']['ZoneC']="zone2";// ON/OFF
-		$fullHwParam['4']['StatusTag']['LowBattery']="defaut0";// Battery default OK/?
-		$fullHwParam['4']['StatusTag']['CommDefault']="defaut1";// Communication default OK/?
-		$fullHwParam['4']['StatusTag']['DoorOpen']="defaut2";// Open door or window OK/?
-		$fullHwParam['4']['StatusTag']['AlarmIntru']="defaut3";// Alarm trggered OK/?
-		$fullHwParam['4']['StatusTag']['DeviceOpen']="defaut4";// Opened device box OK/?
-		$fullHwParam['4']['StatusTag']['GsmConnected']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
-		$fullHwParam['4']['StatusTag']['GsmSignal']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
-		$fullHwParam['4']['StatusTag']['GsmOperator']="opegsm";//  Orange, ...
-		$fullHwParam['4']['StatusTag']['Camera']="camera";// Web cam connected (disabled or ?)
-		$fullHwParam['4']['Action']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=Marche A";
-		$fullHwParam['4']['Action']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=Marche B";
-		$fullHwParam['4']['Action']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=Marche C";
-		$fullHwParam['4']['Action']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=Marche A B C";
-		$fullHwParam['4']['Action']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=Arrêt A B C";
-		$fullHwParam['4']['Action']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
-		$fullHwParam['4']['Action']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
-		$fullHwParam['4']['Action']['SHUTTER_UP']="hidden=hidden&btn_vol_up=";
-		$fullHwParam['4']['Action']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=";
-		$fullHwParam['4']['Action']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=";
+		$fullHwParam['4']['StatusTag']['ZONE_A']="zone0";// ON/OFF
+		$fullHwParam['4']['StatusTag']['ZONE_B']="zone1";// ON/OFF
+		$fullHwParam['4']['StatusTag']['ZONE_C']="zone2";// ON/OFF
+		$fullHwParam['4']['StatusTag']['BATTERY']="defaut0";// Battery default OK/?
+		$fullHwParam['4']['StatusTag']['LINK']="defaut1";// Communication default OK/?
+		$fullHwParam['4']['StatusTag']['DOOR']="defaut2";// Open door or window OK/?
+		$fullHwParam['4']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['4']['StatusTag']['TAMPERED']="defaut4";// Opened device box OK/?
+		$fullHwParam['4']['StatusTag']['GSM_LINK']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
+		$fullHwParam['4']['StatusTag']['GSM_SIGNAL']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
+		$fullHwParam['4']['StatusTag']['GSM_OPERATOR']="opegsm";//  Orange, ...
+		$fullHwParam['4']['StatusTag']['CAMERA']="camera";// Web cam connected (disabled or ?)
+		$fullHwParam['4']['Pilotage']['ZONEA_ON']="hidden=hidden&btn_zone_on_A=Marche A";
+		$fullHwParam['4']['Pilotage']['ZONEB_ON']="hidden=hidden&btn_zone_on_B=Marche B";
+		$fullHwParam['4']['Pilotage']['ZONEC_ON']="hidden=hidden&btn_zone_on_C=Marche C";
+		$fullHwParam['4']['Pilotage']['ZONEABC_ON']="hidden=hidden&btn_zone_on_ABC=Marche A B C";
+		$fullHwParam['4']['Pilotage']['ALARME_OFF']="hidden=hidden&btn_zone_off_ABC=Arrêt A B C";
+		$fullHwParam['4']['Pilotage']['LIGHT_ON']="hidden=hidden&btn_lum_on=ON";
+		$fullHwParam['4']['Pilotage']['LIGHT_OFF']="hidden=hidden&btn_lum_off=OFF";
+		$fullHwParam['4']['Pilotage']['SHUTTER_UP']="hidden=hidden&btn_vol_up=";
+		$fullHwParam['4']['Pilotage']['SHUTTER_DOWN']="hidden=hidden&btn_vol_down=";
+		$fullHwParam['4']['Pilotage']['SHUTTER_STOP']="hidden=hidden&btn_vol_stop=";
+		$fullHwParam['4']['EraseDefault']['RESET_BATTERY_ERR']="btn_del_pil=Piles";
+		$fullHwParam['4']['EraseDefault']['RESET_ALARM_ERR']="btn_del_alm=Alarmes";
+		$fullHwParam['4']['EraseDefault']['RESET_LINK_ERR']="btn_del_lia=Liaisons";
 		
 		return $fullHwParam;
 	}
@@ -622,6 +637,9 @@ class phpProtexiom {
 	 *     SHUTTER_UP
 	 *     SHUTTER_DOWN
 	 *     SHUTTER_STOP
+	 *     RESET_BATTERY_ERR
+	 *     RESET_ALARM_ERR
+	 *     RESET_LINK_ERR
 	 *
 	 * @author Fdp1
 	 * @param string list of actions (one or multiple actions)
@@ -642,8 +660,11 @@ class phpProtexiom {
 		if(!$myError){//Login OK
 			// multiple actions possible
 			foreach(func_get_args() as $key => $val){
-				if(array_key_exists($val , $this->hwParam['Action'])){
-					$response=$this->somfyWget($this->hwParam['URL']['Pilotage'], "POST",$this->hwParam['Action'][$val]);
+				if(array_key_exists($val , $this->hwParam['Pilotage'])){
+					$response=$this->somfyWget($this->hwParam['URL']['Pilotage'], "POST",$this->hwParam['Pilotage'][$val]);
+					$myError.=$this->isWgetError($response, '200');
+				}elseif(array_key_exists($val , $this->hwParam['EraseDefault'])){
+					$response=$this->somfyWget($this->hwParam['URL']['EraseDefault']."?".$this->hwParam['EraseDefault'][$val], "GET");
 					$myError.=$this->isWgetError($response, '200');
 				}else{
 					$myError.="Unable to perform the action \"$val\": invalid action.\r\n";

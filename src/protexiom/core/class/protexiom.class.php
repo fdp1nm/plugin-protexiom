@@ -1,6 +1,6 @@
 <?php
 
-/* Copyright � 2014 fdp1
+/* Copyright   2014 fdp1
  * 
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -129,27 +129,27 @@ class protexiom extends eqLogic {
     }//End isValidHostPort func
     
     /**
-     * Return the corresponding authCode from the somfy code card
+     * Return the somfy authCard at once from the configuration authLines
      *
      * @author Fdp1
-     * @param string $codeId Coordinates of the code on the card
-     * @return string authcode, or '' if coordinate is not valid
-     * @usage authCode = getAuthCode("A3")
+     * @return array authcard
+     * @usage authCard = getAuthCar()
      */
-    private function getAuthCode($codeID = '')
+    function getAuthCard()
     {
     	$authCard=array();
     	$authCode='';
-    	if(preg_match ( "/^[A-F][1-5]$/" , $codeID )){//The codeID is valid (from A1 to F5)
-    		$lineNum=substr($codeID, 1, 1);
+    	
+    	$lineNum = 1;
+    	do {
     		list($authCard["A$lineNum"], $authCard["B$lineNum"], $authCard["C$lineNum"], $authCard["D$lineNum"], $authCard["E$lineNum"], $authCard["F$lineNum"])=preg_split("/[^0-9]/", $this->getConfiguration("AuthCardL$lineNum"));
-    		$authCode=$authCard[$codeID];
-    	}
-    	return $authCode;
-    }//End getAuthCode func
+    		$lineNum++;
+    	} while ($lineNum < 6);
+    	return $authCard;
+    }//End getAuthCard func
     
-    /*public static function pull($_options) {
-        $weather = weather::byId($_options['weather_id']);
+    public static function pull($_options) {
+        /*$protexiom = protexiom::byId($_options['protexiom_id']);
         if (is_object($weather)) {
             $weather_xml = $weather->getWeatherFromYahooXml();
             $sunrise = $weather_xml['astronomy']['sunrise'];
@@ -171,8 +171,41 @@ class protexiom extends eqLogic {
                 $cron->remove();
             }
             throw new Exception('Weather ID non trouvÃ© : ' . $_options['weather_id'] . '. Tache supprimÃ©');
-        }
-    }*/
+        }*/
+    }
+    
+    /*
+     * Refresh every info Cmd at once
+     * @return 0 in case of sucess, 1 otherwise
+     */
+    public function refreshStatus() {
+    	// TODO debug this function
+    	// For now, let's do noting...
+    	return 0;
+    	
+    	$myError="";
+    	
+    	$mySP=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
+    	$mySP->userPwd=$this->getConfiguration('UserPwd');
+    	$mySP->authCard=$this->getAuthCard;
+    	$mySP->setHwVersion($this->getConfiguration('HwVersion'));
+    	if($myError=$mySP->updateStatus()){
+    		//An error occured. Let's Log the error
+    		log::add('protexiom', 'error', "An error occured during $this->name status update: ".$myError, $this->name);
+    		return 1;
+    	}else{
+    		//Status pulled. Let's now refreh CMD
+    		$status=$mySP->getStatus();
+    		foreach ($this->getCmd() as $cmd) {
+    			if ($cmd->type == "info") {
+    				if($cmd->value != $status[$cmd->getConfiguration('somfyCmd')])
+    					// TODO:  check if event is the good method
+    					$cmd->event($cmd->getConfiguration('somfyCmd'));
+    			}
+    		}
+    		return 0;
+    	}
+    }
 
     /*public static function cronHourly() {
         foreach (self::byType('weather') as $weather) {
@@ -260,145 +293,227 @@ class protexiom extends eqLogic {
      */
     public function postInsert() {
     	
-        /*$weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('TempÃ©rature', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'temp');
-        $weatherCmd->setUnite('Â°C');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
+    	//Action CMD
+    	
+    	$protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Marche A+B+C', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONEABC_ON');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
 
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('HumiditÃ©', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'humidity');
-        $weatherCmd->setUnite('%');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Marche A', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONEA_ON');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
 
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Pression', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'pressure');
-        $weatherCmd->setUnite('Pa');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Marche B', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONEB_ON');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
 
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Condition Actuelle', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'condition');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('string');
-        $weatherCmd->save();
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Marche C', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONEC_ON');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
 
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Vitesse du vent', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'wind_speed');
-        $weatherCmd->setUnite('km/h');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Direction du vent', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'wind_direction');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('string');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Lever du soleil', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'sunrise');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Coucher du soleil', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '-1');
-        $weatherCmd->setConfiguration('data', 'sunset');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('TempÃ©rature Min', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '0');
-        $weatherCmd->setConfiguration('data', 'low');
-        $weatherCmd->setUnite('Â°C');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('TempÃ©rature Max', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '0');
-        $weatherCmd->setConfiguration('data', 'high');
-        $weatherCmd->setUnite('Â°C');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Condition', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '0');
-        $weatherCmd->setConfiguration('data', 'condition');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('string');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('TempÃ©rature Min +1', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '1');
-        $weatherCmd->setConfiguration('data', 'low');
-        $weatherCmd->setUnite('Â°C');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('TempÃ©rature Max +1', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '1');
-        $weatherCmd->setConfiguration('data', 'high');
-        $weatherCmd->setUnite('Â°C');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('numeric');
-        $weatherCmd->save();
-
-        $weatherCmd = new weatherCmd();
-        $weatherCmd->setName(__('Condition +1', __FILE__));
-        $weatherCmd->setEqLogic_id($this->id);
-        $weatherCmd->setConfiguration('day', '1');
-        $weatherCmd->setConfiguration('data', 'condition');
-        $weatherCmd->setUnite('');
-        $weatherCmd->setType('info');
-        $weatherCmd->setSubType('string');
-        $weatherCmd->save();*/
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Arret A+B+C', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ALARME_OFF');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Marche lumières', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_ON');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Arrêt lumières', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_OFF');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Ouverture volets', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_UP');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Fermeture volets', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_DOWN');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Arrêt volets', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_STOP');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Effacement defaut alarme', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'RESET_ALARM_ERR');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Effacement defaut piles', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'RESET_BATTERY_ERR');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Effacement defaut liaison', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'RESET_LINK_ERR');
+        $protexiomCmd->setType('action');
+        $protexiomCmd->setSubType('other');
+        $protexiomCmd->save();
+        
+        // Info CMD
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Zone A', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_A');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+         
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Zone B', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_B');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+         
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Zone C', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_C');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Piles', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Liaison', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'LINK');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Portes', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'DOOR');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Alarme', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Sabotage', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'TAMPERED');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Liaison GSM', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'GSM_LINK');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Récéption GSM', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'GSM_SIGNAL');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('numeric');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Opérateur GSM', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'GSM_OPERATOR');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Camera', __FILE__));
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'CAMERA');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+  
     }
 
     /**
@@ -439,6 +554,7 @@ class protexiom extends eqLogic {
     		}
     	}
     	
+        // TODO Schedule crontab
         //$this->reschedule();
     }
 
@@ -529,14 +645,52 @@ class protexiomCmd extends cmd {
 
     /*     * *********************Methode d'instance************************* */
 
-    /*
+    
+    /**
+     * Tells Jeedom if it should remove existing commands during update in case they no longer exists in the POSTed form
+     * Usefull, for exemple, in case you command list is static and created during postInsert
+     * and you don't want to bother putting them in the desktop/plugin.php form.
+     * Default to False (if you don't create the function), meaning missing commands ARE removed
+     * Standard 
+     *
+     * @return bool
+     */
     public function dontRemoveCmd() {
         return true;
     }
-     */
+    
 
     public function execute($_options = array()) {
-        return false;
+    	$protexiom=$this->getEqLogic();
+    	$myError="";
+  
+    	$mySP=new phpProtexiom($protexiom->getConfiguration('SomfyHostPort'), $protexiom->getConfiguration('SSLEnabled'));
+    	$mySP->userPwd=$protexiom->getConfiguration('UserPwd');
+    	$mySP->authCard=$protexiom->getAuthCard();
+    	$mySP->setHwVersion($protexiom->getConfiguration('HwVersion'));
+    	if ($this->getType() == 'info') {
+    	// TODO : implementer la commande de type info
+        return "Not implemented yet";
+      }elseif ($this->getType() == 'action') {
+        if($myError=$mySP->doAction($this->getConfiguration('somfyCmd'))){
+    			//an error occured
+    			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
+				throw new Exception(__($myError,__FILE__));
+        }else{
+    			//Command successfull
+    			// TODO let's refresh status and return success
+        		$protexiom->refreshStatus();
+        		return;
+        }
+      }else{
+        //unknown cmd type
+      	log::add('protexiom', 'error', "$this->getType(): Unknown command type for $this->name", $protexiom->getName());
+        throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
+      }
+    	
+    	
+    	
+    	
         /*
         $eqLogic_weather = $this->getEqLogic();
         $weather = $eqLogic_weather->getWeatherFromYahooXml();

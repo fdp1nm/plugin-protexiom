@@ -111,36 +111,32 @@ sendVarToJS('eqType', 'protexiom');
 									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">{{Proxy Hostname:port}}</label>
-                    <div class="col-md-3">
-                        <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="WebProxyHostPort" placeholder="{{Proxy Hostname:port}}"/>
-									{{Optionnel (utilisé en debug avec Fiddler)}}. {{Exemple}}: alarme.mondomaine.com:80 {{or}} 192.168.1.253:80
-                    </div>
-                </div>
            </fieldset> 
         </form>
 
 <?php
-/* TODO
-* this would be the place to list protexiom cmd, for ease of use (documentation purpose only)
-* see weather.php line 68 as an exemple, and the printWeather js function in weather.js
-* this is a good idea, but low priority. let´s keep it in the TODO LIST for now
-
-        <legend>{{Protexiom}}</legend>
-        <div id="div_protexiom"></div>
-        <table id="table_protexiom" class="table table-bordered table-condensed">
+/* Command list
+ * will be populated be the addCmdToTable() js function in desktop/protexiom.js
+*/
+?>
+<?php 
+/* TODO afficher la liste des commandes
+        <legend>{{Commandes}}</legend>
+        <a class="btn btn-success btn-sm cmdAction" data-action="add"><i class="fa fa-plus-circle"></i> {{Commandes}}</a><br/><br/>
+        <table id="table_cmd" class="table table-bordered table-condensed">
             <thead>
                 <tr>
-                    <th>{{Nom}}</th><th>{{Valeur}}</th>
+                    <th style="width: 50px;">{{ID}}</th>
+                    <th style="width: 400px;">{{Nom}}</th>
+                    <th style="width: 100px;">{{Paramètres}}</th>
+                    <th style="width: 100px;"></th>
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
-END TODO
-*/
-?>
+*/ ?>
+
         <form class="form-horizontal">
             <fieldset>
                 <div class="form-actions">
