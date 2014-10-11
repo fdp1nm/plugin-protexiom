@@ -76,23 +76,6 @@ class phpProtexiom {
 	}
 	
 	/**
-	 * Remove the first char of a string if it's a /
-	 * 
-	 * @author Fdp1
-	 * @param strinf string2strip,
-	 * @return strippedString <string>
-	 * @usage $strippedString = StripLeadingSlash($string2strip);
-	 */
-	private static function stripLeadingSlash($string2strip)
-	{
-		if (substr($string2strip, 1 , 1) == "/"){
-			return substr($string2strip, 2);
-		}else{
-			return $string2strip;
-		}
-	}
-	
-	/**
 	 * Get the hardware compatibility
 	 *
 	 * @author Fdp1
@@ -461,10 +444,10 @@ class phpProtexiom {
 		if($response['returnCode']==$rcode){
 			//we got the expected rcode. If it's a 302, let's check the Location.
 			if($rcode=='302'){
-				
-				if($response['responseHeaders']['Location']==$this->hwParam['URL']['Error']){
+				//Let's strip the leading / (if exists) since somfy only put it "sometimes"
+				if(preg_replace('/^\//', " ", $response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $this->hwParam['URL']['Error'])){
 					$myError="Somfy protexiom returned : ".$this->getSomfyError();
-				}elseif(!$response['responseHeaders']['Location']==$location){
+				}elseif(preg_replace('/^\//', " ", !$response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $location)){
 					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
 				}//else we got the Location. $myError=""
 			}
@@ -473,7 +456,8 @@ class phpProtexiom {
 			$myError=$response['responseBody'];
 		}else{
 			if($response['returnCode']=='302'){
-				if($response['responseHeaders']['Location']==$this->hwParam['URL']['Error']){
+				//Let's strip the leading / (if exists) since somfy only put it "sometimes"
+				if(preg_replace('/^\//', " ", $response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $this->hwParam['URL']['Error'])){
 					$myError="Somfy protexiom returned : ".$this->getSomfyError();					
 				}else{
 					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
