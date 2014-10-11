@@ -106,7 +106,8 @@ class phpProtexiom {
 		//V1 MUST be declared after V3, to avoid a false positive
 		//V3 Hw would be positive to V1 test, but might then be broken
 		$fullHwParam['3']['Pattern']['Auth']="#<b>(..)</b>#";
-		$fullHwParam['3']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['3']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
+		$fullHwParam['3']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
 		$fullHwParam['3']['URL']['login']="/m_login.htm";
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
@@ -143,7 +144,8 @@ class phpProtexiom {
 		
 		//Version 1
 		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
-		$fullHwParam['1']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['1']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
+		$fullHwParam['1']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
 		$fullHwParam['1']['URL']['login']="/login.htm";
 		$fullHwParam['1']['URL']['logout']="/logout.htm";
 		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
@@ -180,7 +182,8 @@ class phpProtexiom {
 		
 		//Version 2
 		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
-		$fullHwParam['2']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['2']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
+		$fullHwParam['2']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
 		$fullHwParam['2']['URL']['login']="/fr/m_login.htm";
 		$fullHwParam['2']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
@@ -219,7 +222,8 @@ class phpProtexiom {
 		//V4 MUST be declared after V2, to avoid a false positive
 		//V2 Hw would be positive to V2 test, but might then be broken
 		$fullHwParam['4']['Pattern']['Auth']="#<b>(..)</b>#";
-		$fullHwParam['4']['Pattern']['Error']='#<div id="infobox">(.*)\(0x[0-9]+\)#s';
+		$fullHwParam['4']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
+		$fullHwParam['4']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
 		$fullHwParam['4']['URL']['login']="/fr/login.htm";
 		$fullHwParam['4']['URL']['logout']="/logout.htm";
 		$fullHwParam['4']['URL']['welcome']="/fr/welcome.htm";
@@ -413,6 +417,8 @@ class phpProtexiom {
 				$browser=curl_init();
 				curl_setopt_array($browser, $curlOpt);
 				curl_setopt($browser, CURLOPT_URL, $this->somfyBaseURL.$url);
+				//Let's use a fiddler proxy for debug purpose
+				//curl_setopt($browser, CURLOPT_PROXY, "192.168.1.24:8888");
 
 				if( ! $response=curl_exec($browser))
 				{
@@ -490,18 +496,28 @@ class phpProtexiom {
 	private function getSomfyError()
 	{
 		$somfyError=array();
+		$myError="";
 	
 		$response=$this->somfyWget($this->hwParam['URL']['Error'], "GET");
-		if(preg_match_all($this->hwParam['Pattern']['Error'], $response['responseBody'], $somfyError, PREG_SET_ORDER)==1){
-			// It seems we found an error pattern.
-			// Let's replace HTML newlines with CRLFs (and remove duplicates new line in the same time)
-			$myError=preg_replace('/(?:\<br(\s*)?\/?\>)+/i', "\r\n", $somfyError[0][1]);
-			// Lets's remove HTML balise and trim the string for clean display
-			$myError=trim(preg_replace('/(?:\<(.*)>)+/i', "\r\n", $somfyError[0][1]));
-			return $myError;
-		}else{
-			return "";
+		foreach ($this->hwParam['Pattern']['Error'] as $currentPatternID => $currentPattern){
+			if(preg_match_all($currentPattern, $response['responseBody'], $somfyError, PREG_SET_ORDER)==1){
+				// It seems we found an error pattern.
+				// Let's replace HTML newlines (<br>) with " "
+				$myError=preg_replace('/(?:\<br(\s*)?\/?\>)+/i', " ", $somfyError[0][1]);
+				// Lets's remove HTML tag
+				$myError=strip_tags($myError);
+				$myError=str_replace ("&nbsp;", " ", $myError);
+				//Let's remove the somfy error code
+				$myError=preg_replace('/\(0x[0-9 a-z A-Z]+\)/s', "", $myError);
+				//Let's trim the string and remove duplicates spaces / lineend for clean display
+				$myError=trim(str_replace ("/(\s)+/s", " ", $myError));
+				//Somfy reply ends with CRLF, and others with LF. LF only are not striped by the precedent line. Lets's remove them explicitely
+				$myError=str_replace ("\n", " ", $myError);
+				break;	
+			}	
 		}
+		
+		return $myError;
 	}//End getSomfyError func
 	
 	/**

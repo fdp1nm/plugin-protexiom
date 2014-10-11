@@ -179,15 +179,12 @@ class protexiom extends eqLogic {
      * @return 0 in case of sucess, 1 otherwise
      */
     public function refreshStatus() {
-    	// TODO debug this function
-    	// For now, let's do noting...
-    	return 0;
     	
     	$myError="";
     	
     	$mySP=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
     	$mySP->userPwd=$this->getConfiguration('UserPwd');
-    	$mySP->authCard=$this->getAuthCard;
+    	$mySP->authCard=$this->getAuthCard();
     	$mySP->setHwVersion($this->getConfiguration('HwVersion'));
     	if($myError=$mySP->updateStatus()){
     		//An error occured. Let's Log the error
@@ -195,12 +192,12 @@ class protexiom extends eqLogic {
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
+    		log::add('protexiom', 'info', 'Status refreshed', $this->name);
     		$status=$mySP->getStatus();
     		foreach ($this->getCmd() as $cmd) {
-    			if ($cmd->type == "info") {
-    				if($cmd->value != $status[$cmd->getConfiguration('somfyCmd')])
-    					// TODO:  check if event is the good method
-    					$cmd->event($cmd->getConfiguration('somfyCmd'));
+    			if ($cmd->getType() == "info") {
+    				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
+    					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
     			}
     		}
     		return 0;
@@ -672,7 +669,7 @@ class protexiomCmd extends cmd {
     	// TODO : implementer la commande de type info
         return "Not implemented yet";
       }elseif ($this->getType() == 'action') {
-        if($myError=$mySP->doAction($this->getConfiguration('somfyCmd'))){
+        /* if($myError=$mySP->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured
     			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
 				throw new Exception(__($myError,__FILE__));
@@ -681,7 +678,8 @@ class protexiomCmd extends cmd {
     			// TODO let's refresh status and return success
         		$protexiom->refreshStatus();
         		return;
-        }
+        } */
+        $protexiom->refreshStatus();
       }else{
         //unknown cmd type
       	log::add('protexiom', 'error', "$this->getType(): Unknown command type for $this->name", $protexiom->getName());
