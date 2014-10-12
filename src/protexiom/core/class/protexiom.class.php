@@ -27,6 +27,8 @@ class protexiom extends eqLogic {
     private $_SomfyPort = '';
     private $_WebProxyHost = '';
     private $_WebProxyPort = '';
+    
+    public $_spBrowser;
 
     /*     * ***********************Methode static*************************** */
     /**
@@ -135,7 +137,7 @@ class protexiom extends eqLogic {
      * @return array authcard
      * @usage authCard = getAuthCar()
      */
-    function getAuthCard()
+    private function getAuthCard()
     {
     	$authCard=array();
     	$authCode='';
@@ -147,6 +149,21 @@ class protexiom extends eqLogic {
     	} while ($lineNum < 6);
     	return $authCard;
     }//End getAuthCard func
+    
+    /**
+     * initSpBrowser instanciate and initialise $this->_spBrowser phpProtexiom object
+     *
+     * @author Fdp1
+     * @return 
+     */
+    public function initSpBrowser()
+    {
+    	$this->_spBrowser=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
+    	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
+    	$this->_spBrowser->authCard=$this->getAuthCard();
+    	$this->_spBrowser->setHwVersion($this->getConfiguration('HwVersion'));
+    	return;
+    }//End initSpBrowser func
     
     public static function pull($_options) {
         /*$protexiom = protexiom::byId($_options['protexiom_id']);
@@ -182,18 +199,14 @@ class protexiom extends eqLogic {
     	
     	$myError="";
     	
-    	$mySP=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
-    	$mySP->userPwd=$this->getConfiguration('UserPwd');
-    	$mySP->authCard=$this->getAuthCard();
-    	$mySP->setHwVersion($this->getConfiguration('HwVersion'));
-    	if($myError=$mySP->updateStatus()){
+    	if($myError=$this->_spBrowser->updateStatus()){
     		//An error occured. Let's Log the error
     		log::add('protexiom', 'error', "An error occured during $this->name status update: ".$myError, $this->name);
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
     		log::add('protexiom', 'info', 'Status refreshed', $this->name);
-    		$status=$mySP->getStatus();
+    		$status=$this->_spBrowser->getStatus();
     		foreach ($this->getCmd() as $cmd) {
     			if ($cmd->getType() == "info") {
     				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
@@ -661,33 +674,26 @@ class protexiomCmd extends cmd {
     	$protexiom=$this->getEqLogic();
     	$myError="";
   
-    	$mySP=new phpProtexiom($protexiom->getConfiguration('SomfyHostPort'), $protexiom->getConfiguration('SSLEnabled'));
-    	$mySP->userPwd=$protexiom->getConfiguration('UserPwd');
-    	$mySP->authCard=$protexiom->getAuthCard();
-    	$mySP->setHwVersion($protexiom->getConfiguration('HwVersion'));
     	if ($this->getType() == 'info') {
-    	// TODO : implementer la commande de type info
-        return "Not implemented yet";
-      }elseif ($this->getType() == 'action') {
-        /* if($myError=$mySP->doAction($this->getConfiguration('somfyCmd'))){
+    		// TODO if polling = no, force refresh
+        	return $this->getValue();
+      	}elseif ($this->getType() == 'action') {
+      		$protexiom->initSpBrowser();
+        	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured
     			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
 				throw new Exception(__($myError,__FILE__));
-        }else{
+        	}else{
     			//Command successfull
-    			// TODO let's refresh status and return success
         		$protexiom->refreshStatus();
         		return;
-        } */
-        $protexiom->refreshStatus();
-      }else{
-        //unknown cmd type
-      	log::add('protexiom', 'error', "$this->getType(): Unknown command type for $this->name", $protexiom->getName());
-        throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
-      }
-    	
-    	
-    	
+        	}
+      	}else{
+        	//unknown cmd type
+      		log::add('protexiom', 'error', "$this->getType(): Unknown command type for $this->name", $protexiom->getName());
+        	throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
+      	}
+    		
     	
         /*
         $eqLogic_weather = $this->getEqLogic();
