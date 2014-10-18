@@ -105,7 +105,7 @@ class phpProtexiom {
 		$fullHwParam['3']['StatusTag']['BATTERY']="defaut0";// Battery default OK/?
 		$fullHwParam['3']['StatusTag']['LINK']="defaut1";// Communication default OK/?
 		$fullHwParam['3']['StatusTag']['DOOR']="defaut2";// Open door or window OK/?
-		$fullHwParam['3']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/?
+		$fullHwParam['3']['StatusTag']['ALARM']="defaut3";// Alarm trggered OK/nok_int
 		$fullHwParam['3']['StatusTag']['TAMPERED']="defaut4";// Opened device box OK/?
 		$fullHwParam['3']['StatusTag']['GSM_LINK']="gsm";// "GSM connectÃ© au rÃ©seau" or ?
 		$fullHwParam['3']['StatusTag']['GSM_SIGNAL']="recgsm";// Reception level (Interger, 1, 2, 3, 4)
@@ -401,7 +401,7 @@ class phpProtexiom {
 				curl_setopt_array($browser, $curlOpt);
 				curl_setopt($browser, CURLOPT_URL, $this->somfyBaseURL.$url);
 				//Let's use a fiddler proxy for debug purpose
-				//curl_setopt($browser, CURLOPT_PROXY, "192.168.1.24:8888");
+				//curl_setopt($browser, CURLOPT_PROXY, "192.168.1.21:8888");
 
 				if( ! $response=curl_exec($browser))
 				{
@@ -664,7 +664,8 @@ class phpProtexiom {
 					$response=$this->somfyWget($this->hwParam['URL']['Pilotage'], "POST",$this->hwParam['Pilotage'][$val]);
 					$myError.=$this->isWgetError($response, '200');
 				}elseif(array_key_exists($val , $this->hwParam['EraseDefault'])){
-					$response=$this->somfyWget($this->hwParam['URL']['EraseDefault']."?".$this->hwParam['EraseDefault'][$val], "GET");
+					// TODO tester l'effacement de defaut alarme
+					$response=$this->somfyWget($this->hwParam['URL']['EraseDefault'], "POST", $this->hwParam['EraseDefault'][$val]);
 					$myError.=$this->isWgetError($response, '200');
 				}else{
 					$myError.="Unable to perform the action \"$val\": invalid action.\r\n";
