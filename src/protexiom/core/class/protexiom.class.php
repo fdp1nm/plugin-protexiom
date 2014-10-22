@@ -190,32 +190,44 @@ class protexiom extends eqLogic {
             throw new Exception('Weather ID non trouvÃ© : ' . $_options['weather_id'] . '. Tache supprimÃ©');
         }*/
     }
+
+    /*
+     * Update status from spBrowser
+    * @return 0 in case of sucess, 1 otherwise
+    */
+    public function setStatusFromSpBrowser() {
+    	 
+    	$myError="";
+    	 
+    	$status=$this->_spBrowser->getStatus();
+    	foreach ($this->getCmd() as $cmd) {
+    		if ($cmd->getType() == "info") {
+    			if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
+    				$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
+    		}
+    	}
+    	return;
+    }//End function setStatusFromSpBrowser    
     
     /*
      * Refresh every info Cmd at once
      * @return 0 in case of sucess, 1 otherwise
      */
-    public function refreshStatus() {
+    public function pullStatus() {
     	
     	$myError="";
     	
-    	if($myError=$this->_spBrowser->updateStatus()){
+    	if($myError=$this->_spBrowser->pullStatus()){
     		//An error occured. Let's Log the error
     		log::add('protexiom', 'error', "An error occured during $this->name status update: ".$myError, $this->name);
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
     		log::add('protexiom', 'info', 'Status refreshed', $this->name);
-    		$status=$this->_spBrowser->getStatus();
-    		foreach ($this->getCmd() as $cmd) {
-    			if ($cmd->getType() == "info") {
-    				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
-    					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
-    			}
-    		}
+    		$status=$this->setStatusFromSpBrowser();
     		return 0;
     	}
-    }
+    }//End function pullStatus()
 
     /*public static function cronHourly() {
         foreach (self::byType('weather') as $weather) {
@@ -682,10 +694,10 @@ class protexiomCmd extends cmd {
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured
     			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
-				throw new Exception(__($myError,__FILE__));
+				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
         	}else{
     			//Command successfull
-        		$protexiom->refreshStatus();
+        		$protexiom->setStatusFromSpBrowser();
         		return;
         	}
       	}else{
@@ -694,57 +706,6 @@ class protexiomCmd extends cmd {
         	throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
       	}
     		
-    	
-        /*
-        $eqLogic_weather = $this->getEqLogic();
-        $weather = $eqLogic_weather->getWeatherFromYahooXml();
-
-        if (!is_array($weather)) {
-            sleep(1);
-            $weather = $eqLogic_weather->getWeatherFromYahooXml();
-            if (!is_array($weather)) {
-                return false;
-            }
-        }
-
-        if ($this->getConfiguration('day') == -1) {
-            if ($this->getConfiguration('data') == 'condition') {
-                return $weather['condition']['text'];
-            }
-            if ($this->getConfiguration('data') == 'temp') {
-                return $weather['condition']['temperature'];
-            }
-            if ($this->getConfiguration('data') == 'humidity') {
-                return $weather['atmosphere']['humidity'];
-            }
-            if ($this->getConfiguration('data') == 'pressure') {
-                return $weather['atmosphere']['pressure'];
-            }
-            if ($this->getConfiguration('data') == 'wind_speed') {
-                return $weather['wind']['speed'];
-            }
-            if ($this->getConfiguration('data') == 'wind_direction') {
-                return $weather['wind']['direction'];
-            }
-            if ($this->getConfiguration('data') == 'sunrise') {
-                return $weather['astronomy']['sunrise'];
-            }
-            if ($this->getConfiguration('data') == 'sunset') {
-                return $weather['astronomy']['sunset'];
-            }
-        }
-
-        if ($this->getConfiguration('data') == 'condition') {
-            return $weather['forecast'][$this->getConfiguration('day')]['condition'];
-        }
-        if ($this->getConfiguration('data') == 'low') {
-            return $weather['forecast'][$this->getConfiguration('day')]['low_temperature'];
-        }
-        if ($this->getConfiguration('data') == 'high') {
-            return $weather['forecast'][$this->getConfiguration('day')]['high_temperature'];
-        }
-        return false;
-        */
     }
 
     /*     * **********************Getteur Setteur*************************** */

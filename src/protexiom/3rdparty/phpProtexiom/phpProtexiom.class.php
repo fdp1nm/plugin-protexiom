@@ -573,15 +573,14 @@ class phpProtexiom {
 	}//End doLogout func
 	
 	/**
-	 * updateStatus fonction.
+	 * pullStatus fonction.
 	 * Launch login fonction only if session not already active, and the get the satus informations.
 	 * Open and close the session only if it was not already opened.
 	 *
 	 * @author Fdp1
 	 * @return string "" in case of success, $myError in case of failure
-	 * @usage updateStatus()
 	 */
-	function updateStatus()
+	function pullStatus()
 	{
 		$sessionHandling = false;
 		$myError="";
@@ -607,7 +606,7 @@ class phpProtexiom {
 		}
 		
 		return $myError;	
-	}//End updateStatus func
+	}//End pullStatus func
 	
 	/**
 	 * getStatus fonction.
@@ -615,7 +614,6 @@ class phpProtexiom {
 	 *
 	 * @author Fdp1
 	 * @return array status
-	 * @usage updateStatus()
 	 */
 	function getStatus()
 	{	
@@ -671,7 +669,7 @@ class phpProtexiom {
 					$myError.="Unable to perform the action \"$val\": invalid action.\r\n";
 				}
 			}
-			$myError.=$this->updateStatus();
+			$myError.=$this->pullStatus();
 			
 			if($sessionHandling){
 				$this->doLogout();
