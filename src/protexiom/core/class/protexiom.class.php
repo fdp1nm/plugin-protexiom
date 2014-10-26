@@ -27,8 +27,10 @@ class protexiom extends eqLogic {
     private $_SomfyPort = '';
     private $_WebProxyHost = '';
     private $_WebProxyPort = '';
+    private $_SomfySessionTimeout=5400;
     
     public $_spBrowser;
+    
 
     /*     * ***********************Methode static*************************** */
     /**
@@ -162,52 +164,42 @@ class protexiom extends eqLogic {
     	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
     	$this->_spBrowser->authCard=$this->getAuthCard();
     	$this->_spBrowser->setHwVersion($this->getConfiguration('HwVersion'));
+    	//Let's set the authCookie if cached
+    	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    	$cachedCookie=$cache->getValue();
+    	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    		log::add('protexiom', 'debug', 'Cached protexiom cookie found during initSpBrowser.', $this->name);
+    		$this->_spBrowser->authCookie=$cachedCookie;
+    		$cache->setLifetime($this->_SomfySessionTimeout);
+    		$cache->save();
+    	}
     	return;
     }//End initSpBrowser func
     
     public static function pull($_options) {
-        /*$protexiom = protexiom::byId($_options['protexiom_id']);
-        if (is_object($weather)) {
-            $weather_xml = $weather->getWeatherFromYahooXml();
-            $sunrise = $weather_xml['astronomy']['sunrise'];
-            $sunset = $weather_xml['astronomy']['sunset'];
-            if ((date('Hi') + 100) >= $sunrise && (date('Hi') + 100 ) < $sunset) {
-                $search = 'sunrise';
-            } else {
-                $search = 'sunset';
-            }
-            foreach ($weather->getCmd() as $cmd) {
-                if ($cmd->getConfiguration('data') == $search) {
-                    $cmd->event(date('Hi'));
-                }
-            }
-            $weather->reschedule();
+       /*  $protexiom = protexiom::byId($_options['protexiom_id']);
+        log::add('protexiom', 'debug', 'Running pull function for protexiom ($protexiom->name)', $protexiom->name);
+        if (is_object($protexiom)) {
+        	// TODO Vérifier si l'eqLogic est actif. Si non, déprogrammer le pull et remonter une exception.
+        	$protexiom->initSpBrowser();
+        	if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
+        		if($myError=$protexiom->doLogin()){
+        			log::add('protexiom', 'error', 'Login failed during scheduled pull. Pull aborted.', $protexiom->name);
+        			throw new Exception('Login failed during scheduled pull. Pull aborted.');
+        		}else{//Login OK
+        			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
+        			log::add('protexiom', 'debug', 'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
+        		}	
+        	}
+        	$protexiom->pullStatus();	
         } else {
-            $cron = cron::byClassAndFunction('weather', 'pull', $_options);
-            if (is_object($cron)) {
-                $cron->remove();
-            }
-            throw new Exception('Weather ID non trouvÃ© : ' . $_options['weather_id'] . '. Tache supprimÃ©');
-        }*/
-    }
-
-    /*
-     * Update status from spBrowser
-    * @return 0 in case of sucess, 1 otherwise
-    */
-    public function setStatusFromSpBrowser() {
-    	 
-    	$myError="";
-    	 
-    	$status=$this->_spBrowser->getStatus();
-    	foreach ($this->getCmd() as $cmd) {
-    		if ($cmd->getType() == "info") {
-    			if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
-    				$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
-    		}
-    	}
+            $protexiom>unSchedule();
+            log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©', $protexiom->name);
+            throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©');
+        } */
+    	log::add('protexiom', 'debug', 'Pulling Protexiom ID  : ' . $_options['protexiom_id'], $protexiom->name);
     	return;
-    }//End function setStatusFromSpBrowser    
+    }  
     
     /*
      * Refresh every info Cmd at once
@@ -228,6 +220,24 @@ class protexiom extends eqLogic {
     		return 0;
     	}
     }//End function pullStatus()
+    
+    /*
+     * Update status from spBrowser
+    * @return 0 in case of sucess, 1 otherwise
+    */
+    public function setStatusFromSpBrowser() {
+    
+    	$myError="";
+    
+    	$status=$this->_spBrowser->getStatus();
+    	foreach ($this->getCmd() as $cmd) {
+    		if ($cmd->getType() == "info") {
+    			if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
+    				$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
+    		}
+    	}
+    	return;
+    }//End function setStatusFromSpBrowser
 
     /*public static function cronHourly() {
         foreach (self::byType('weather') as $weather) {
@@ -283,12 +293,12 @@ class protexiom extends eqLogic {
         if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL5') )){
         	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
         }
-        //Finally, if a proxy is specified, let's check it's valid
+        /* //Finally, if a proxy is specified, let's check it's valid
         if($this->getConfiguration('WebProxyHostPort')){
         	if (!$this->isValidHostPort($this->getConfiguration('WebProxyHostPort'))) {
         		throw new Exception(__('Proxy web invalide', __FILE__));
         	}
-        }
+        } */
         
         //OK. Every parameters is checked and is OK
         
@@ -544,6 +554,9 @@ class protexiom extends eqLogic {
      *
      */
     public function postSave() {
+    	//Let's unschedule protexiom pull
+    	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
+    	$this->unSchedule();
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
     		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
@@ -572,20 +585,44 @@ class protexiom extends eqLogic {
     				$this->save();
     				log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
     			}
-    			 
+    			log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
+    			$this->schedule();
     		}
-    	}
-    	
-        // TODO Schedule crontab
-        //$this->reschedule();
+    	}//else{//eqLogic disabled
     }
-
-    /*public function preRemove() {
-        $cron = cron::byClassAndFunction('weather', 'pull', array('weather_id' => intval($this->getId())));
-        if (is_object($cron)) {
-            $cron->remove();
-        }
-    }*/
+    
+    public function preRemove(){
+    	$this->unSchedule();
+    }
+    
+    public function schedule(){
+    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
+    	if (!is_object($cron)) {
+    		$cron=new cron();
+    		$cron->setClass('protexiom');
+    		$cron->setFunction('pull');
+    		$cron->setOption(array('protexiom_id' => intval($this->getId())));
+    		$cron->setEnable(1);
+    		//$cron->setDaemon(1);
+    		$cron->setSchedule('* * * * *');
+    		$cron->save();
+    		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement $this->name', $this->name);
+    	}
+    }//end schedule function
+    
+    public function unSchedule(){
+		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
+    	if (is_object($cron)) {
+    		$cron->remove();
+    		log::add('protexiom', 'info', 'Removing protexiom pull schedule for equipement $this->name', $this->name);
+    	}
+		$cron = cron::byClassAndFunction('protexiom', 'pull', $_options);
+    	if (is_object($cron)) {
+    		$cron->remove();
+			echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
+    		log::add('protexiom', 'error', 'Unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it.', $this->name);
+    	}
+    }//end unSchedule function
 
     /*public function toHtml($_version = 'dashboard') {
         if ($this->getIsEnable() != 1) {
