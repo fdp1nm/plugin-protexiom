@@ -177,27 +177,24 @@ class protexiom extends eqLogic {
     }//End initSpBrowser func
     
     public static function pull($_options) {
-       /*  $protexiom = protexiom::byId($_options['protexiom_id']);
-        log::add('protexiom', 'debug', 'Running pull function for protexiom ($protexiom->name)', $protexiom->name);
+        $protexiom = protexiom::byId($_options['protexiom_id']);
         if (is_object($protexiom)) {
-        	// TODO Vérifier si l'eqLogic est actif. Si non, déprogrammer le pull et remonter une exception.
         	$protexiom->initSpBrowser();
         	if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
-        		if($myError=$protexiom->doLogin()){
-        			log::add('protexiom', 'error', 'Login failed during scheduled pull. Pull aborted.', $protexiom->name);
-        			throw new Exception('Login failed during scheduled pull. Pull aborted.');
+        		if($myError=$protexiom->_spBrowser->doLogin()){
+        			log::add('protexiom', 'error', 'Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted.', $protexiom->name);
+        			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted.');
         		}else{//Login OK
         			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
         			log::add('protexiom', 'debug', 'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
-        		}	
+        		}
         	}
         	$protexiom->pullStatus();	
         } else {
             $protexiom>unSchedule();
             log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©', $protexiom->name);
             throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©');
-        } */
-    	log::add('protexiom', 'debug', 'Pulling Protexiom ID  : ' . $_options['protexiom_id'], $protexiom->name);
+        }
     	return;
     }  
     
@@ -604,6 +601,7 @@ class protexiom extends eqLogic {
     		$cron->setOption(array('protexiom_id' => intval($this->getId())));
     		$cron->setEnable(1);
     		//$cron->setDaemon(1);
+    		// TODO Passer le polling en mode daemon
     		$cron->setSchedule('* * * * *');
     		$cron->save();
     		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement $this->name', $this->name);
@@ -611,10 +609,22 @@ class protexiom extends eqLogic {
     }//end schedule function
     
     public function unSchedule(){
+    	//Before stopping polling, let's logoff en clear authCookie
+    	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    	$cachedCookie=$cache->getValue();
+    	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    		$this->initSpBrowser();
+    		$this->_spBrowser->doLogout();
+    		//$cache->flush();
+    		$cache->setValue('');
+    		$cache->save();
+    		log::add('protexiom', 'info', 'Removing cached cookie while unscheduling '.$this->name.'.', $this->name);
+    	}
+    	
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
     		$cron->remove();
-    		log::add('protexiom', 'info', 'Removing protexiom pull schedule for equipement $this->name', $this->name);
+    		log::add('protexiom', 'info', 'Removing protexiom pull schedule for equipement '.$this->name.'.', $this->name);
     	}
 		$cron = cron::byClassAndFunction('protexiom', 'pull', $_options);
     	if (is_object($cron)) {

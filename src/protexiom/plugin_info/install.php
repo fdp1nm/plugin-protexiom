@@ -18,6 +18,7 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 /*function protexiom_install() {
 }*/
 
+// TODO restart cron after an update?
 /*function protexiom_update() {
     $cron = cron::byClassAndFunction('protexiom', 'pull');
     if (!is_object($cron)) {
