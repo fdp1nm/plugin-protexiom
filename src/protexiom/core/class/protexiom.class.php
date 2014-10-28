@@ -177,6 +177,7 @@ class protexiom extends eqLogic {
     }//End initSpBrowser func
     
     public static function pull($_options) {
+    	log::add('protexiom', 'debug', 'Running protexiom PULL '.date("Y-m-d H:i:s"), $protexiom->name);
         $protexiom = protexiom::byId($_options['protexiom_id']);
         if (is_object($protexiom)) {
         	$protexiom->initSpBrowser();
@@ -207,7 +208,26 @@ class protexiom extends eqLogic {
     	$myError="";
     	
     	if($myError=$this->_spBrowser->pullStatus()){
-    		//An error occured. Let's Log the error
+    		//An error occured while pulling status. If polling is on, this may be a session timeout issue.
+    		//Let's check if polling is on and if yes, try to start a new session
+    		$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    		$cachedCookie=$cache->getValue();
+    		if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    			//The session was cached, so the timeout issue is possible. Starting a new session
+    			$this->_spBrowser->doLogout();
+    			$cache->setValue('');
+    			log::add('protexiom', 'debug', 'Logout to workaround somfy session timeout bug on device '.$this->name.'.', $this->name);
+    			if($this->_spBrowser->doLogin()){
+    				log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$protexiom->name.'.', $protexiom->name);
+    			}else{//Login OK
+    				$cache->setValue($this->_spBrowser->authCookie);
+    				$myError=$this->_spBrowser->pullStatus();
+    			}
+    			$cache->save();
+    		}
+    	}
+    	if($myError){
+    		//An error occured.
     		log::add('protexiom', 'error', "An error occured during $this->name status update: ".$myError, $this->name);
     		return 1;
     	}else{
@@ -290,6 +310,13 @@ class protexiom extends eqLogic {
         if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL5') )){
         	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
         }
+        //Checking polling interval
+        if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
+        	if(!filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
+        		throw new Exception(__('La frequence de mise à jour (polling) est invalide. Elle doit vide ou égale a zero si vous souhaitez désactiver le polling. Elle doit contenir un nombre (entier) de seconde superieur a 5 sinon.', __FILE__));
+        	}
+        }//else, PollInt empty or 0, means polling is off.
+			
         /* //Finally, if a proxy is specified, let's check it's valid
         if($this->getConfiguration('WebProxyHostPort')){
         	if (!$this->isValidHostPort($this->getConfiguration('WebProxyHostPort'))) {
@@ -583,7 +610,9 @@ class protexiom extends eqLogic {
     				log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
     			}
     			log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
-    			$this->schedule();
+    			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
+    				$this->schedule();
+    			}
     		}
     	}//else{//eqLogic disabled
     }
@@ -600,11 +629,11 @@ class protexiom extends eqLogic {
     		$cron->setFunction('pull');
     		$cron->setOption(array('protexiom_id' => intval($this->getId())));
     		$cron->setEnable(1);
-    		//$cron->setDaemon(1);
-    		// TODO Passer le polling en mode daemon
+    		$cron->setDeamon(1);(1);
+    		$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
     		$cron->save();
-    		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement $this->name', $this->name);
+    		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement '.$this->name.'.', $this->name);
     	}
     }//end schedule function
     
@@ -626,9 +655,8 @@ class protexiom extends eqLogic {
     		$cron->remove();
     		log::add('protexiom', 'info', 'Removing protexiom pull schedule for equipement '.$this->name.'.', $this->name);
     	}
-		$cron = cron::byClassAndFunction('protexiom', 'pull', $_options);
+		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
-    		$cron->remove();
 			echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
     		log::add('protexiom', 'error', 'Unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it.', $this->name);
     	}
@@ -734,12 +762,17 @@ class protexiomCmd extends cmd {
     	$myError="";
   
     	if ($this->getType() == 'info') {
-    		// TODO if polling = no, force refresh
+    		if(!filter_var($protexiom->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
+    			//Polling is off. Let's pull status before getting the value
+    			$protexiom->pullStatus();
+    			$protexiom->setStatusFromSpBrowser();
+    		}
         	return $this->getValue();
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured
+    			// TODO Let's workaround the somfy session timeout bug
     			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
 				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
         	}else{

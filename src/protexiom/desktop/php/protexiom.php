@@ -111,6 +111,17 @@ sendVarToJS('eqType', 'protexiom');
 									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">{{Interval de mise à jour}}</label>
+                    <div class="col-md-3">
+                        <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="PollInt" placeholder="{{Interval de polling}}"/>
+									{{Interval (en secondes) de mise à jour de l'etat.}}<br/>
+									{{Si vide ou 0, polling désactivé.<br/>
+									{{Valeur minimum: 5 secondes.}}<br/>
+									{{Valeur recommandée: 10 secondes}}<br/>
+									{{Exemple}}: 10
+                    </div>
+                </div>
            </fieldset> 
         </form>
 
