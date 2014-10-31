@@ -225,6 +225,37 @@ class protexiom extends eqLogic {
     			}
     			$cache->save();
     		}
+    	}else{
+    		//Due to a somfy bug on some HW version, when a session is maintaned for a long time
+    		//Somfy sometimes return an empty XML file. This never happends whith a fresh session, but can happen here. Let's check
+    		$status=$this->_spBrowser->getStatus();
+    		if($status['ALARM']==""){
+    			//Empty XML file detected
+    			//Let's log off and on again to workaround this somfy bug
+    			log::add('protexiom', 'info', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
+    			// TODO remove duplicate log
+    			log::add('protexiom', 'error', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
+    			$this->_spBrowser->doLogout();
+    			if($this->_spBrowser->doLogin()){
+    				log::add('protexiom', 'error', 'Login failed while trying to workaround somfy empty XML bug on device '.$protexiom->name.'.', $protexiom->name);
+    				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    				$cachedCookie=$cache->getValue();
+    				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    					//The session was cached. Let's empty the cached cookie as we just logged off
+    					$cache->setValue('');
+    					$cache->save();
+    				}
+    				return 1;
+    			}else{//Login OK
+    				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    				$cachedCookie=$cache->getValue();
+    				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    					$cache->setValue($this->_spBrowser->authCookie);
+    					$cache->save();
+    				}
+    				$myError=$this->_spBrowser->pullStatus();
+    			}
+    		}
     	}
     	if($myError){
     		//An error occured.
