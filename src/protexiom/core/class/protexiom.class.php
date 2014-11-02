@@ -58,12 +58,49 @@ class protexiom extends eqLogic {
         	}
         	$protexiom->pullStatus();	
         } else {
-            $protexiom>unSchedule();
-            log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©', $protexiom->name);
-            throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©');
+            $protexiom->unSchedulePull();
+            log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $protexiom->name);
+            throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©');
         }
     	return;
     } //end pull function 
+    
+    /**
+     * Instanciate protexiom eqLogic and tries to login. If login OK, set needs_reboot cmd to 0
+     *
+     * @author Fdp1
+     * @param array $_options['protexiom_id']
+     * @return
+     */
+    public static function isRebooted($_options) {
+    	log::add('protexiom', 'debug', 'Trying to login to check reboot '.date("Y-m-d H:i:s"), $protexiom->name);
+    	$protexiom = protexiom::byId($_options['protexiom_id']);
+    	if (is_object($protexiom)) {
+    		$protexiom->initSpBrowser();
+    		if(!($myError=$protexiom->_spBrowser->doLogin())){
+    			//Login OK
+    			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
+    			log::add('protexiom', 'debug', 'Sucessfull login during reboot check. authCookie cached.', $protexiom->name);
+    			$protexiom->pullStatus();
+    			$protexiom->unScheduleIsRebooted();
+    			if(filter_var($protexiom->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
+    				$protexiom->schedulePull();
+    			}
+    			$needsRebootCmd=$protexiom->getCmd(null, 'needs_reboot');
+    			if(is_object($needsRebootCmd)){
+    				$cmd->event("0");
+    			}else{
+    				log::add('protexiom', 'error', 'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd', $protexiom->name);
+    				throw new Exception('Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
+    			}
+    		}	
+    	}else{
+    		$protexiom->unScheduleIsRebooted();
+    		log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.', $protexiom->name);
+    		throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.');
+    	}
+    	return;
+    } //end isRebooted function
 
     /*     * **********************Instance methods************************** */
 
@@ -85,13 +122,23 @@ class protexiom extends eqLogic {
     			//The session was cached, so the timeout issue is possible. Starting a new session
     			$this->_spBrowser->doLogout();
     			$cache->setValue('');
+    			$cache->save();
     			log::add('protexiom', 'debug', 'Logout to workaround somfy session timeout bug on device '.$this->name.'.', $this->name);
     			if($this->_spBrowser->doLogin()){
-    				log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$protexiom->name.'.', $protexiom->name);
-    				//Login failed again. This may be due to the somfy freeze bug
+    				//Login failed again. This may be due to the somfy needs_reboot bug
     				//Some hardware versions, freeze once or twice a day under polling
     				//If this is the case, the somfy IP module needs et reboot (power off and on) before a new try
-    				// TODO: call the reboot funct, then pullStatus again
+    				//Let's set the needs_reboot cmd to 1 so that the reboot can be launched from an external scenario
+    				$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
+    				if (is_object($needsRebootCmd)){
+    					log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$protexiom->name.'. The protexiom may need a reboot', $protexiom->name);
+    					$cmd->event("1");
+    					$this->unSchedulePull();
+    					$this->scheduleIsRebooted();
+    				}else{
+    					log::add('protexiom', 'error', 'It would appear that the protexiom may need a reboot, but I\'ve been unable to find needs_reboot cmd', $protexiom->name);
+    				}
+    				
     			}else{//Login OK
     				$cache->setValue($this->_spBrowser->authCookie);
     				$myError=$this->_spBrowser->pullStatus();
@@ -154,8 +201,11 @@ class protexiom extends eqLogic {
     	$status=$this->_spBrowser->getStatus();
     	foreach ($this->getCmd() as $cmd) {
     		if ($cmd->getType() == "info") {
-    			if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')])
-    				$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
+    			if($cmd->getNamegetLogicalId() != 'needs_reboot'){    			
+    				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')]){
+    					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
+    				}
+    			}//else do noting, as needs_reboot is not retrieved from spBrowser
     		}
     	}
     	return;
@@ -434,7 +484,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_ON');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
-        $protexiomCmd->setIsVisible(0);
+        //$protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -444,7 +494,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_OFF');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
-        $protexiomCmd->setIsVisible(0);
+        //$protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -454,7 +504,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_UP');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
-        $protexiomCmd->setIsVisible(0);
+        //$protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -464,7 +514,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_DOWN');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
-        $protexiomCmd->setIsVisible(0);
+        //$protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -474,7 +524,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_STOP');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
-        $protexiomCmd->setIsVisible(0);
+        //$protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -627,13 +677,14 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Connexion', __FILE__));
-        $protexiomCmd->setLogicalId('ip_cnx');
+        $protexiomCmd->setName(__('Red�marrage requis', __FILE__));
+        $protexiomCmd->setLogicalId('needs_reboot');
         $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'IP_CNX');
+        //$protexiomCmd->setConfiguration('somfyCmd', 'needs_reboot');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setIsVisible(0);
         $protexiomCmd->save();
   
     }
@@ -647,7 +698,7 @@ class protexiom extends eqLogic {
     public function postSave() {
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
-    	$this->unSchedule();
+    	$this->unSchedulePull();
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
     		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
@@ -678,7 +729,7 @@ class protexiom extends eqLogic {
     			}
     			log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
-    				$this->schedule();
+    				$this->schedulePull();
     			}
     		}
     	}//else{//eqLogic disabled
@@ -691,7 +742,7 @@ class protexiom extends eqLogic {
      *
      */
     public function preRemove(){
-    	$this->unSchedule();
+    	$this->unSchedulePull();
     }
     
     /**
@@ -699,7 +750,7 @@ class protexiom extends eqLogic {
      * @author Fdp1
      *
      */
-    public function schedule(){
+    public function schedulePull(){
     	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (!is_object($cron)) {
     		$cron=new cron();
@@ -713,14 +764,14 @@ class protexiom extends eqLogic {
     		$cron->save();
     		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement '.$this->name.'.', $this->name);
     	}
-    }//end schedule function
+    }//end schedulePull function
     
     /**
      * Unchedule periodic status update
      * @author Fdp1
      *
      */
-    public function unSchedule(){
+    public function unSchedulePull(){
     	//Before stopping polling, let's logoff en clear authCookie
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
@@ -743,8 +794,47 @@ class protexiom extends eqLogic {
 			echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
     		log::add('protexiom', 'error', 'Unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it.', $this->name);
     	}
-    }//end unSchedule function
+    }//end unSchedulePull function
 
+    /**
+     * Schedule login test to check connection to the device
+     * @author Fdp1
+     *
+     */
+    public function scheduleIsRebooted(){
+    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
+    	if (!is_object($cron)) {
+    		$cron=new cron();
+    		$cron->setClass('protexiom');
+    		$cron->setFunction('isRebooted');
+    		$cron->setOption(array('protexiom_id' => intval($this->getId())));
+    		$cron->setEnable(1);
+    		//$cron->setDeamon(1);(1);
+    		//$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
+    		$cron->setSchedule('* * * * *');
+    		$cron->save();
+    		log::add('protexiom', 'info', 'Scheduling protexiom isRebooted for equipement '.$this->name.'.', $this->name);
+    	}
+    }//end scheduleIsRebooted function
+
+    /**
+     * Unchedule login test
+     * @author Fdp1
+     *
+     */
+    public function unScheduleIsRebooted(){	 
+    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
+    	if (is_object($cron)) {
+    		$cron->remove();
+    		log::add('protexiom', 'info', 'Removing protexiom isRebooted schedule for equipement '.$this->name.'.', $this->name);
+    	}
+    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
+    	if (is_object($cron)) {
+    		echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom isRebooted scheduled task for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
+    		log::add('protexiom', 'error', 'Unable to remove protexiom isRebooted scheduled task for device '.$this->name.'. You may have to manually remove it.', $this->name);
+    	}
+    }//end unScheduleIsRebooted function
+        
     /*public function toHtml($_version = 'dashboard') {
         if ($this->getIsEnable() != 1) {
             return '';
