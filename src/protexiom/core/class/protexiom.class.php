@@ -32,150 +32,16 @@ class protexiom extends eqLogic {
     public $_spBrowser;
     
 
-    /*     * ***********************Methode static*************************** */
-    /**
-     * Check wether the parameter is a valid port number.
+    /*     * ***********************Static methods*************************** */
+    /*     * ****accessible without needing an instantiation of the class**** */
+   
+     /**
+     * Instanciate protexiom eqLogic and pull status
      *
      * @author Fdp1
-     * @param string $port port number.
-     * @return bool True if the string is valid, false otherwise
-     * @usage isValid = isValidPort("80")
-     */
-    private static function isValidPort($port = '')
-    {
-    	$error=false;
-    	if($port){//A port number was specified. Is it a int
-    		if(ctype_digit($port)){
-    			if(intval($port,10)<1 or intval($port,10)>65534){
-    				$error="Invalid port range";
-    			}
-    
-    		}else{//It's not a int. Then, is it a service name?
-    			$port = getservbyname($port, 'tcp');
-    			if(!$port){//$port was not a valid SvcName, so the port is definetly not valid
-    				$error="Invalid service name";
-    			}//Else: $port was a valid service name, so obviously, it's a valid port.
-    		}
-    	}else{//Not port number specified.
-    		$error="No port specified";
-    	}
-    
-    	if($error){
-    		return false;
-    	}else{
-    		return true;
-    	}
-    }//End isValidPort func
-    
-    /**
-     * Check wether the hostname is valid. IPV6 ready.
-     *
-     * @author Fdp1
-     * @param string $host IP address or hostname. Should NOT contain a port number
-     * @return bool True if the string is valid, false otherwise
-     * @usage isValid = isValidHost("192.168.1.111")
-     */
-    private static function isValidHost($host = '')
-    {
-    	$error=false;
-    
-    	if(!filter_var($host, FILTER_VALIDATE_IP)){//$host is neither an ipv4, nore an ipv6. Let's see if it's a hostname
-    		if (!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $host) //valid chars check
-    				&& preg_match("/^.{1,253}$/", $host) //overall length check
-    				&& preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $host)   )) //length of each label
-    		{
-    			$error="Invalid domain";
-    		}//Not a valid domain name
-    	}//Else: $host is an IP
-    
-    	if($error){
-    		return false;
-    	}else{
-    		return true;
-    	}
-    }//End isValidHost func
-    
-    /**
-     * Check wether the hostname[:port] is valid. IPV6 ready.
-     *
-     * @author Fdp1
-     * @param string $hostPort IP address or hostname. May contain a port number, separated by a colon.
-     * @return bool True if the string is valid, false otherwise
-     * @usage isValid = isValidHostPort("192.168.1.111:80")
-     */
-    private function isValidHostPort($hostPort = '')
-    {
-    	$error=false;
-    	$host = strtok($hostPort, ":");
-    	$port = strtok(":");
-    	if(strtok(":")) {
-    		$error="More than one : was present in the string";
-    	}else{
-    		//First, let's check the port number
-    		if($port){//A port number was specified. Let's check it
-    			if(!$this->isValidPort($port)){
-    				$error="Invalid port";
-    			}
-    		}//else, not port number specified. So obviously, port number is OK, as we will use default protocol port to connect...
-    
-    		//Now the port number is checked (valid or not), let's take care of the hostname
-    		if(!$this->isValidHost($host)){
-    			$error="Invalid host";
-    		}
-    	}
-    		
-    	if($error){
-    		//echo($error);
-    		return false;
-    	}else{
-    		return true;
-    	}
-    }//End isValidHostPort func
-    
-    /**
-     * Return the somfy authCard at once from the configuration authLines
-     *
-     * @author Fdp1
-     * @return array authcard
-     * @usage authCard = getAuthCar()
-     */
-    private function getAuthCard()
-    {
-    	$authCard=array();
-    	$authCode='';
-    	
-    	$lineNum = 1;
-    	do {
-    		list($authCard["A$lineNum"], $authCard["B$lineNum"], $authCard["C$lineNum"], $authCard["D$lineNum"], $authCard["E$lineNum"], $authCard["F$lineNum"])=preg_split("/[^0-9]/", $this->getConfiguration("AuthCardL$lineNum"));
-    		$lineNum++;
-    	} while ($lineNum < 6);
-    	return $authCard;
-    }//End getAuthCard func
-    
-    /**
-     * initSpBrowser instanciate and initialise $this->_spBrowser phpProtexiom object
-     *
-     * @author Fdp1
+     * @param array $_options['protexiom_id']
      * @return 
      */
-    public function initSpBrowser()
-    {
-    	$this->_spBrowser=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
-    	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
-    	$this->_spBrowser->authCard=$this->getAuthCard();
-    	$this->_spBrowser->setHwVersion($this->getConfiguration('HwVersion'));
-    	//Let's set the authCookie if cached
-    	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
-    	$cachedCookie=$cache->getValue();
-    	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    		log::add('protexiom', 'debug', 'Cached protexiom cookie found during initSpBrowser.', $this->name);
-    		$this->_spBrowser->authCookie=$cachedCookie;
-    		$cache->setLifetime($this->_SomfySessionTimeout);
-    		$cache->save();
-    	}
-    	return;
-    }//End initSpBrowser func
-    
     public static function pull($_options) {
     	log::add('protexiom', 'debug', 'Running protexiom PULL '.date("Y-m-d H:i:s"), $protexiom->name);
         $protexiom = protexiom::byId($_options['protexiom_id']);
@@ -197,16 +63,19 @@ class protexiom extends eqLogic {
             throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache supprimÃ©');
         }
     	return;
-    }  
-    
-    /*
-     * Refresh every info Cmd at once
+    } //end pull function 
+
+    /*     * **********************Instance methods************************** */
+
+    /**
+     * Pull status and refresh every info Cmd at once
+     * @author Fdp1
      * @return 0 in case of sucess, 1 otherwise
      */
     public function pullStatus() {
-    	
+    	 
     	$myError="";
-    	
+    	 
     	if($myError=$this->_spBrowser->pullStatus()){
     		//An error occured while pulling status. If polling is on, this may be a session timeout issue.
     		//Let's check if polling is on and if yes, try to start a new session
@@ -219,6 +88,10 @@ class protexiom extends eqLogic {
     			log::add('protexiom', 'debug', 'Logout to workaround somfy session timeout bug on device '.$this->name.'.', $this->name);
     			if($this->_spBrowser->doLogin()){
     				log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$protexiom->name.'.', $protexiom->name);
+    				//Login failed again. This may be due to the somfy freeze bug
+    				//Some hardware versions, freeze once or twice a day under polling
+    				//If this is the case, the somfy IP module needs et reboot (power off and on) before a new try
+    				// TODO: call the reboot funct, then pullStatus again
     			}else{//Login OK
     				$cache->setValue($this->_spBrowser->authCookie);
     				$myError=$this->_spBrowser->pullStatus();
@@ -269,10 +142,11 @@ class protexiom extends eqLogic {
     	}
     }//End function pullStatus()
     
-    /*
+    /**
      * Update status from spBrowser
-    * @return 0 in case of sucess, 1 otherwise
-    */
+     * @author Fdp1
+     * @return 0 in case of sucess, 1 otherwise
+     */
     public function setStatusFromSpBrowser() {
     
     	$myError="";
@@ -286,30 +160,154 @@ class protexiom extends eqLogic {
     	}
     	return;
     }//End function setStatusFromSpBrowser
-
-    /*public static function cronHourly() {
-        foreach (self::byType('weather') as $weather) {
-            if ($weather->getIsEnable() == 1) {
-                $cron = cron::byClassAndFunction('weather', 'pull', array('weather_id' => intval($weather->getId())));
-                if (!is_object($cron)) {
-                    $weather->reschedule();
-                } else {
-                    $c = new Cron\CronExpression($cron->getSchedule(), new Cron\FieldFactory);
-                    try {
-                        $c->getNextRunDate();
-                    } catch (Exception $ex) {
-                        $weather->reschedule();
-                    }
-                }
-            }
-        }
-    }*/
-
-    /*     * *********************Methode d'instance************************* */
-
-    /*
+    
+    /**
+     * Check wether the parameter is a valid port number.
+     *
+     * @author Fdp1
+     * @param string $port port number.
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidPort("80")
+     */
+    private function isValidPort($port = '')
+    {
+    	$error=false;
+    	if($port){//A port number was specified. Is it a int
+    		if(ctype_digit($port)){
+    			if(intval($port,10)<1 or intval($port,10)>65534){
+    				$error="Invalid port range";
+    			}
+    
+    		}else{//It's not a int. Then, is it a service name?
+    			$port = getservbyname($port, 'tcp');
+    			if(!$port){//$port was not a valid SvcName, so the port is definetly not valid
+    				$error="Invalid service name";
+    			}//Else: $port was a valid service name, so obviously, it's a valid port.
+    		}
+    	}else{//Not port number specified.
+    		$error="No port specified";
+    	}
+    
+    	if($error){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidPort func
+    
+    /**
+     * Check wether the hostname is valid. IPV6 ready.
+     *
+     * @author Fdp1
+     * @param string $host IP address or hostname. Should NOT contain a port number
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidHost("192.168.1.111")
+     */
+    private function isValidHost($host = '')
+    {
+    	$error=false;
+    
+    	if(!filter_var($host, FILTER_VALIDATE_IP)){//$host is neither an ipv4, nore an ipv6. Let's see if it's a hostname
+    		if (!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $host) //valid chars check
+    				&& preg_match("/^.{1,253}$/", $host) //overall length check
+    				&& preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $host)   )) //length of each label
+    		{
+    			$error="Invalid domain";
+    		}//Not a valid domain name
+    	}//Else: $host is an IP
+    
+    	if($error){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidHost func
+    
+    /**
+     * Check wether the hostname[:port] is valid. IPV6 ready.
+     *
+     * @author Fdp1
+     * @param string $hostPort IP address or hostname. May contain a port number, separated by a colon.
+     * @return bool True if the string is valid, false otherwise
+     * @usage isValid = isValidHostPort("192.168.1.111:80")
+     */
+    private function isValidHostPort($hostPort = '')
+    {
+    	$error=false;
+    	$host = strtok($hostPort, ":");
+    	$port = strtok(":");
+    	if(strtok(":")) {
+    		$error="More than one : was present in the string";
+    	}else{
+    		//First, let's check the port number
+    		if($port){//A port number was specified. Let's check it
+    			if(!$this->isValidPort($port)){
+    				$error="Invalid port";
+    			}
+    		}//else, not port number specified. So obviously, port number is OK, as we will use default protocol port to connect...
+    
+    		//Now the port number is checked (valid or not), let's take care of the hostname
+    		if(!$this->isValidHost($host)){
+    			$error="Invalid host";
+    		}
+    	}
+    
+    	if($error){
+    		//echo($error);
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }//End isValidHostPort func
+    
+    /**
+     * Return the somfy authCard at once from the configuration authLines
+     *
+     * @author Fdp1
+     * @return array authcard
+     * @usage authCard = getAuthCar()
+     */
+    private function getAuthCard()
+    {
+    	$authCard=array();
+    	$authCode='';
+    	 
+    	$lineNum = 1;
+    	do {
+    		list($authCard["A$lineNum"], $authCard["B$lineNum"], $authCard["C$lineNum"], $authCard["D$lineNum"], $authCard["E$lineNum"], $authCard["F$lineNum"])=preg_split("/[^0-9]/", $this->getConfiguration("AuthCardL$lineNum"));
+    		$lineNum++;
+    	} while ($lineNum < 6);
+    	return $authCard;
+    }//End getAuthCard func
+    
+    /**
+     * initSpBrowser instanciate and initialise $this->_spBrowser phpProtexiom object
+     *
+     * @author Fdp1
+     * @return
+     */
+    public function initSpBrowser()
+    {
+    	$this->_spBrowser=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
+    	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
+    	$this->_spBrowser->authCard=$this->getAuthCard();
+    	$this->_spBrowser->setHwVersion($this->getConfiguration('HwVersion'));
+    	//Let's set the authCookie if cached
+    	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    	$cachedCookie=$cache->getValue();
+    	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    		log::add('protexiom', 'debug', 'Cached protexiom cookie found during initSpBrowser.', $this->name);
+    		$this->_spBrowser->authCookie=$cachedCookie;
+    		$cache->setLifetime($this->_SomfySessionTimeout);
+    		$cache->save();
+    	}
+    	return;
+    }//End initSpBrowser func
+    
+    /**
      * Called before setting-up or updating a plugin device
-     * Standard Jeedom function
+     * Standard Jeedom function_exists
+     * @author Fdp1
      */
     public function preUpdate() {
     	//Let's check the config parameters. Beginning with hostPort
@@ -366,7 +364,8 @@ class protexiom extends eqLogic {
     
     /**
      * Called before inserting a plugin device when creating it, before the first configuration
-     * Standard Jeedom function
+     * Standard Jeedom function_exists
+     * @author Fdp1
      *
      */
     public function preInsert() {
@@ -375,7 +374,8 @@ class protexiom extends eqLogic {
 
     /**
      * Called after inserting a plugin device when creating it, before the first configuration
-     * Standard Jeedom function
+     * Standard Jeedom function_exists
+     * @author Fdp1
      *
      */
     public function postInsert() {
@@ -384,6 +384,7 @@ class protexiom extends eqLogic {
     	
     	$protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche A+B+C', __FILE__));
+        $protexiomCmd->setLogicalId('zoneabc_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEABC_ON');
         $protexiomCmd->setType('action');
@@ -392,6 +393,7 @@ class protexiom extends eqLogic {
 
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche A', __FILE__));
+        $protexiomCmd->setLogicalId('zonea_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEA_ON');
         $protexiomCmd->setType('action');
@@ -400,6 +402,7 @@ class protexiom extends eqLogic {
 
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche B', __FILE__));
+        $protexiomCmd->setLogicalId('zoneb_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEB_ON');
         $protexiomCmd->setType('action');
@@ -408,6 +411,7 @@ class protexiom extends eqLogic {
 
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche C', __FILE__));
+        $protexiomCmd->setLogicalId('zonec_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEC_ON');
         $protexiomCmd->setType('action');
@@ -416,6 +420,7 @@ class protexiom extends eqLogic {
 
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Arret A+B+C', __FILE__));
+        $protexiomCmd->setLogicalId('abc_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARME_OFF');
         $protexiomCmd->setType('action');
@@ -424,6 +429,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche lumières', __FILE__));
+        $protexiomCmd->setLogicalId('light_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_ON');
         $protexiomCmd->setType('action');
@@ -433,6 +439,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Arrêt lumières', __FILE__));
+        $protexiomCmd->setLogicalId('light_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_OFF');
         $protexiomCmd->setType('action');
@@ -442,6 +449,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Ouverture volets', __FILE__));
+        $protexiomCmd->setLogicalId('shutter_up');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_UP');
         $protexiomCmd->setType('action');
@@ -451,6 +459,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Fermeture volets', __FILE__));
+        $protexiomCmd->setLogicalId('shutter_down');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_DOWN');
         $protexiomCmd->setType('action');
@@ -460,6 +469,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Arrêt volets', __FILE__));
+        $protexiomCmd->setLogicalId('shutter_stop');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_STOP');
         $protexiomCmd->setType('action');
@@ -469,6 +479,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Effacement defaut alarme', __FILE__));
+        $protexiomCmd->setLogicalId('reset_alarm_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_ALARM_ERR');
         $protexiomCmd->setType('action');
@@ -477,6 +488,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Effacement defaut piles', __FILE__));
+        $protexiomCmd->setLogicalId('reset_battery_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_BATTERY_ERR');
         $protexiomCmd->setType('action');
@@ -485,6 +497,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Effacement defaut liaison', __FILE__));
+        $protexiomCmd->setLogicalId('reset_link_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_LINK_ERR');
         $protexiomCmd->setType('action');
@@ -495,6 +508,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Zone A', __FILE__));
+        $protexiomCmd->setLogicalId('zone_a');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_A');
         $protexiomCmd->setUnite('');
@@ -504,6 +518,7 @@ class protexiom extends eqLogic {
          
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Zone B', __FILE__));
+        $protexiomCmd->setLogicalId('zone_b');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_B');
         $protexiomCmd->setUnite('');
@@ -513,6 +528,7 @@ class protexiom extends eqLogic {
          
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Zone C', __FILE__));
+        $protexiomCmd->setLogicalId('zone_c');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_C');
         $protexiomCmd->setUnite('');
@@ -522,6 +538,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Piles', __FILE__));
+        $protexiomCmd->setLogicalId('battery');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
         $protexiomCmd->setUnite('');
@@ -531,6 +548,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Liaison', __FILE__));
+        $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LINK');
         $protexiomCmd->setUnite('');
@@ -540,6 +558,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Portes', __FILE__));
+        $protexiomCmd->setLogicalId('door');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'DOOR');
         $protexiomCmd->setUnite('');
@@ -549,6 +568,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Alarme', __FILE__));
+        $protexiomCmd->setLogicalId('alarm');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
         $protexiomCmd->setUnite('');
@@ -558,6 +578,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Sabotage', __FILE__));
+        $protexiomCmd->setLogicalId('tampered');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'TAMPERED');
         $protexiomCmd->setUnite('');
@@ -567,6 +588,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Liaison GSM', __FILE__));
+        $protexiomCmd->setLogicalId('gsm_link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_LINK');
         $protexiomCmd->setUnite('');
@@ -576,6 +598,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Récéption GSM', __FILE__));
+        $protexiomCmd->setLogicalId('gsm_signal');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_SIGNAL');
         $protexiomCmd->setUnite('');
@@ -585,6 +608,7 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Opérateur GSM', __FILE__));
+        $protexiomCmd->setLogicalId('gsm_operator');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_OPERATOR');
         $protexiomCmd->setUnite('');
@@ -594,11 +618,22 @@ class protexiom extends eqLogic {
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Camera', __FILE__));
+        $protexiomCmd->setLogicalId('camera');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'CAMERA');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Connexion', __FILE__));
+        $protexiomCmd->setLogicalId('ip_cnx');
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'IP_CNX');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
   
     }
@@ -606,6 +641,7 @@ class protexiom extends eqLogic {
     /**
      * Called after a plugin device configuration setup or update
      * Standard Jeedom function
+     * @author Fdp1
      *
      */
     public function postSave() {
@@ -648,10 +684,21 @@ class protexiom extends eqLogic {
     	}//else{//eqLogic disabled
     }
     
+    /**
+     * Called before removing a protexiom eqLogic
+     * Standard Jeedom function_exists
+     * @author Fdp1
+     *
+     */
     public function preRemove(){
     	$this->unSchedule();
     }
     
+    /**
+     * Schedule status update of polling is turned on
+     * @author Fdp1
+     *
+     */
     public function schedule(){
     	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (!is_object($cron)) {
@@ -668,6 +715,11 @@ class protexiom extends eqLogic {
     	}
     }//end schedule function
     
+    /**
+     * Unchedule periodic status update
+     * @author Fdp1
+     *
+     */
     public function unSchedule(){
     	//Before stopping polling, let's logoff en clear authCookie
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
@@ -768,10 +820,11 @@ class protexiomCmd extends cmd {
     /*     * *************************Attributs****************************** */
 
 
-    /*     * ***********************Methode static*************************** */
+    /*     * ***********************Static methods*************************** */
+    /*     * ****accessible without needing an instantiation of the class**** */
 
 
-    /*     * *********************Methode d'instance************************* */
+    /*     * **********************Instance methods************************** */
 
     
     /**
@@ -779,7 +832,7 @@ class protexiomCmd extends cmd {
      * Usefull, for exemple, in case you command list is static and created during postInsert
      * and you don't want to bother putting them in the desktop/plugin.php form.
      * Default to False (if you don't create the function), meaning missing commands ARE removed
-     * Standard 
+     * Standard Jeedom function
      *
      * @return bool
      */
@@ -787,7 +840,12 @@ class protexiomCmd extends cmd {
         return true;
     }
     
-
+    /**
+     * Execute CMD
+     * Standard Jeedom function
+     * @param array $_options
+     * @author Fdp1
+     */
     public function execute($_options = array()) {
     	$protexiom=$this->getEqLogic();
     	$myError="";
