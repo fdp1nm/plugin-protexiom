@@ -88,7 +88,7 @@ class protexiom extends eqLogic {
     			}
     			$needsRebootCmd=$protexiom->getCmd(null, 'needs_reboot');
     			if(is_object($needsRebootCmd)){
-    				$cmd->event("0");
+    				$needsRebootCmd->event("0");
     			}else{
     				log::add('protexiom', 'error', 'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd', $protexiom->name);
     				throw new Exception('Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
@@ -132,7 +132,7 @@ class protexiom extends eqLogic {
     				$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     				if (is_object($needsRebootCmd)){
     					log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$protexiom->name.'. The protexiom may need a reboot', $protexiom->name);
-    					$cmd->event("1");
+    					$needsRebootCmd->event("1");
     					$this->unSchedulePull();
     					$this->scheduleIsRebooted();
     				}else{
@@ -725,9 +725,16 @@ class protexiom extends eqLogic {
     			if($this->getConfiguration('HwVersion')!=$myProtexiom->getHwVersion()){
     				$this->setConfiguration('HwVersion', $myProtexiom->getHwVersion());
     				$this->save();
-    				log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
+    				log::add('protexiom', 'info', 'HwVersion set to '.$myProtexiom->getHwVersion(), $this->name);
     			}
-    			log::add('protexiom', 'info', 'HwVersion changed to '.$myProtexiom->getHwVersion(), $this->name);
+    			// Let's initialise the needs_reboot cmd to 0
+    			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
+    			if(is_object($needsRebootCmd)){
+    				$needsRebootCmd->event("0");
+    			}else{
+    				log::add('protexiom', 'error', 'Unable to reset needs_reboot cmd while saving '.$this->name.' protexiom eqLogic', $this->name);
+    			}
+    			// Let's schedul pull if polling is on
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
     				$this->schedulePull();
     			}
