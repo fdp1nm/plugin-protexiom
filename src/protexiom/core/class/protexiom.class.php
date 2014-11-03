@@ -201,7 +201,7 @@ class protexiom extends eqLogic {
     	$status=$this->_spBrowser->getStatus();
     	foreach ($this->getCmd() as $cmd) {
     		if ($cmd->getType() == "info") {
-    			if($cmd->getNamegetLogicalId() != 'needs_reboot'){    			
+    			if($cmd->getLogicalId() != 'needs_reboot'){
     				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')]){
     					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
     				}
