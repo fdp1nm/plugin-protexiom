@@ -201,11 +201,17 @@ class protexiom extends eqLogic {
     	$status=$this->_spBrowser->getStatus();
     	foreach ($this->getCmd() as $cmd) {
     		if ($cmd->getType() == "info") {
-    			if($cmd->getLogicalId() != 'needs_reboot'){
-    				if($cmd->getValue() != $status[$cmd->getConfiguration('somfyCmd')]){
+    			log::add('protexiom', 'info', $cmd->getLogicalId().' is ready to update', $this->name);
+    			if($cmd->getLogicalId() == 'needs_reboot'){
+    				//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
+    				continue;
+    			}else{
+    				if($cmd->getSubType()=='binary'){
+    					$cmd->event((string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]));
+    				}else{
     					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
     				}
-    			}//else do noting, as needs_reboot is not retrieved from spBrowser
+    			}
     		}
     	}
     	return;
@@ -563,7 +569,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_A');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
          
         $protexiomCmd = new protexiomCmd();
@@ -573,7 +579,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_B');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
          
         $protexiomCmd = new protexiomCmd();
@@ -583,7 +589,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_C');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -593,7 +599,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -603,7 +609,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'LINK');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -613,7 +619,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'DOOR');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -623,7 +629,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -633,7 +639,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'TAMPERED');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -673,11 +679,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'CAMERA');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setSubType('binary');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Red�marrage requis', __FILE__));
+        $protexiomCmd->setName(__('Redémarrage requis', __FILE__));
         $protexiomCmd->setLogicalId('needs_reboot');
         $protexiomCmd->setEqLogic_id($this->id);
         //$protexiomCmd->setConfiguration('somfyCmd', 'needs_reboot');
