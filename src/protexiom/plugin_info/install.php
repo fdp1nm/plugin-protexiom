@@ -13,7 +13,7 @@
 * http://www.wtfpl.net/ for more details.
 */
 
-require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 /*function protexiom_install() {
 }*/
