@@ -199,9 +199,10 @@ class protexiom extends eqLogic {
     	$myError="";
     
     	$status=$this->_spBrowser->getStatus();
+    	// TODO: use getCmd with a param
+    	// foreach ($weather->getCmd('info') as $cmd) {
     	foreach ($this->getCmd() as $cmd) {
     		if ($cmd->getType() == "info") {
-    			log::add('protexiom', 'info', $cmd->getLogicalId().' is ready to update', $this->name);
     			if($cmd->getLogicalId() == 'needs_reboot'){
     				//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
     				continue;
@@ -959,6 +960,10 @@ class protexiomCmd extends cmd {
     			$protexiom->pullStatus();
     			$protexiom->setStatusFromSpBrowser();
     		}
+    		
+    		// TODO let's getInfoFromCache to return it
+    		
+    		log::add('protexiom', 'debug', "$this->name action returned: ".$this->getDisplay(), $protexiom->getName());
         	return $this->getValue();
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();

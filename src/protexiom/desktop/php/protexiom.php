@@ -127,18 +127,23 @@ sendVarToJS('eqType', 'protexiom');
 
 <?php
 /* Command list
- * will be populated be the addCmdToTable() js function in desktop/protexiom.js
+ * will be populated by the addCmdToTable() js function in desktop/protexiom.js
 */
 ?>
 <?php 
 /* TODO afficher la liste des commandes
+*/ ?>
         <legend>{{Commandes}}</legend>
+        <?php /* The command list is static. Lets not offer the possibility to remove them
         <a class="btn btn-success btn-sm cmdAction" data-action="add"><i class="fa fa-plus-circle"></i> {{Commandes}}</a><br/><br/>
+        */ ?>
         <table id="table_cmd" class="table table-bordered table-condensed">
             <thead>
                 <tr>
                     <th style="width: 50px;">{{ID}}</th>
-                    <th style="width: 400px;">{{Nom}}</th>
+                    <th style="width: 200px;">{{Nom}}</th>
+                    <th style="width: 100px;">{{Type}}</th>
+                    <th style="width: 100px;">{{Commande}}</th>
                     <th style="width: 100px;">{{Paramètres}}</th>
                     <th style="width: 100px;"></th>
                 </tr>
@@ -146,7 +151,6 @@ sendVarToJS('eqType', 'protexiom');
             <tbody>
             </tbody>
         </table>
-*/ ?>
 
         <form class="form-horizontal">
             <fieldset>
