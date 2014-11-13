@@ -153,8 +153,6 @@ class protexiom extends eqLogic {
     			//Empty XML file detected
     			//Let's log off and on again to workaround this somfy bug
     			log::add('protexiom', 'info', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
-    			// TODO remove duplicate log
-    			log::add('protexiom', 'error', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
     			$this->_spBrowser->doLogout();
     			if($this->_spBrowser->doLogin()){
     				log::add('protexiom', 'error', 'Login failed while trying to workaround somfy empty XML bug on device '.$protexiom->name.'.', $protexiom->name);
@@ -199,19 +197,26 @@ class protexiom extends eqLogic {
     	$myError="";
     
     	$status=$this->_spBrowser->getStatus();
-    	// TODO: use getCmd with a param
-    	// foreach ($weather->getCmd('info') as $cmd) {
-    	foreach ($this->getCmd() as $cmd) {
-    		if ($cmd->getType() == "info") {
-    			if($cmd->getLogicalId() == 'needs_reboot'){
-    				//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
-    				continue;
+    	foreach ($this->getCmd('info') as $cmd) {
+    		if($cmd->getLogicalId() == 'needs_reboot'){
+    			//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
+    			continue;
+    		}else{
+    			if($cmd->getSubType()=='binary'){
+    				//$cmd->event((string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]));
+    				$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
     			}else{
-    				if($cmd->getSubType()=='binary'){
-    					$cmd->event((string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]));
-    				}else{
-    					$cmd->event($status[$cmd->getConfiguration('somfyCmd')]);
+    				$newValue=$status[$cmd->getConfiguration('somfyCmd')];
+    			}
+    			//To avoid systematic cache write that would burn SDCard, let's refres event only in case of state change, or if cache expired
+    			$mc = cache::byKey('cmd' . $cmd->getId());
+    			if($mc->getValue()==$newValue){//Unchanged value. Let's check if cache expired
+    				if($mc->hasExpired()){
+    					$mc->setLifetime($cmd->getCacheLifetime());
+    					$mc->save();
     				}
+    			}else{//Changed value
+    				$cmd->event($newValue);
     			}
     		}
     	}
@@ -792,7 +797,7 @@ class protexiom extends eqLogic {
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		$this->initSpBrowser();
     		$this->_spBrowser->doLogout();
-    		//$cache->flush();
+    		// TODO $cache->remove()
     		$cache->setValue('');
     		$cache->save();
     		log::add('protexiom', 'info', 'Removing cached cookie while unscheduling '.$this->name.'.', $this->name);
@@ -955,15 +960,22 @@ class protexiomCmd extends cmd {
     	$myError="";
   
     	if ($this->getType() == 'info') {
-    		if(!filter_var($protexiom->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
-    			//Polling is off. Let's pull status before getting the value
+    			$protexiom->initSpBrowser();
     			$protexiom->pullStatus();
     			$protexiom->setStatusFromSpBrowser();
+    		
+    		if($this->getLogicalId() == 'needs_reboot'){
+    			//needs_reboot is only set in case of error, and does not need to be retrieved.
+    			// Let's get it from the cache (if no cached, will return false anyway)
+    			$mc = cache::byKey('cmd' . $this->getId());
+    			return $mc->getValue();
+    		}else{
+    			if($this->getSubType()=='binary'){
+    				return((string)preg_match("/^o[k n]$/i", $protexiom->_spBrowser->getStatus()[$this->getConfiguration('somfyCmd')]));
+    			}else{
+    				return($protexiom->_spBrowser->getStatus()[$this->getConfiguration('somfyCmd')]);
+    			}
     		}
-    		
-    		// TODO let's getInfoFromCache to return it
-    		
-    		log::add('protexiom', 'debug', "$this->name action returned: ".$this->getDisplay(), $protexiom->getName());
         	return $this->getValue();
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();

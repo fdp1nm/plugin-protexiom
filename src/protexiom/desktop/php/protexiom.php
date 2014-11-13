@@ -130,9 +130,6 @@ sendVarToJS('eqType', 'protexiom');
  * will be populated by the addCmdToTable() js function in desktop/protexiom.js
 */
 ?>
-<?php 
-/* TODO afficher la liste des commandes
-*/ ?>
         <legend>{{Commandes}}</legend>
         <?php /* The command list is static. Lets not offer the possibility to remove them
         <a class="btn btn-success btn-sm cmdAction" data-action="add"><i class="fa fa-plus-circle"></i> {{Commandes}}</a><br/><br/>
