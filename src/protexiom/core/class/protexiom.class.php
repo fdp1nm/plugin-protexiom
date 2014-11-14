@@ -752,6 +752,14 @@ class protexiom extends eqLogic {
     			}
     		}
     	}//else{//eqLogic disabled
+    	
+    	//Let's set specific CMD configuration
+    	foreach ($this->getCmd('info') as $cmd) {
+    		if($cmd->getLogicalId() == 'gsm_signal'){
+    			$cmd->setConfiguration('maxValue', 5);
+    			$cmd->save();
+    		}
+    	}
     }
     
     /**
