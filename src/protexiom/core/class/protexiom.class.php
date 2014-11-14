@@ -490,7 +490,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Marche lumières', __FILE__));
+        $protexiomCmd->setName(__('Lumières On', __FILE__));
         $protexiomCmd->setLogicalId('light_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_ON');
@@ -500,7 +500,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Arrêt lumières', __FILE__));
+        $protexiomCmd->setName(__('Lumières Off', __FILE__));
         $protexiomCmd->setLogicalId('light_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_OFF');
@@ -510,7 +510,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Ouverture volets', __FILE__));
+        $protexiomCmd->setName(__('Volets montée', __FILE__));
         $protexiomCmd->setLogicalId('shutter_up');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_UP');
@@ -520,7 +520,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Fermeture volets', __FILE__));
+        $protexiomCmd->setName(__('Volets descente', __FILE__));
         $protexiomCmd->setLogicalId('shutter_down');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_DOWN');
@@ -530,7 +530,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Arrêt volets', __FILE__));
+        $protexiomCmd->setName(__('Volets stop', __FILE__));
         $protexiomCmd->setLogicalId('shutter_stop');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_STOP');
@@ -540,7 +540,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Effacement defaut alarme', __FILE__));
+        $protexiomCmd->setName(__('Eff. defaut alarm', __FILE__));
         $protexiomCmd->setLogicalId('reset_alarm_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_ALARM_ERR');
@@ -549,7 +549,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Effacement defaut piles', __FILE__));
+        $protexiomCmd->setName(__('Eff. defaut piles', __FILE__));
         $protexiomCmd->setLogicalId('reset_battery_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_BATTERY_ERR');
@@ -558,7 +558,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Effacement defaut liaison', __FILE__));
+        $protexiomCmd->setName(__('Eff. defaut liaison', __FILE__));
         $protexiomCmd->setLogicalId('reset_link_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_LINK_ERR');
@@ -758,7 +758,34 @@ class protexiom extends eqLogic {
     		if($cmd->getLogicalId() == 'gsm_signal'){
     			$cmd->setConfiguration('maxValue', 5);
     			$cmd->save();
+    		}elseif($cmd->getLogicalId() == 'zoneabc_on'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'On A+B+C');
+    		}elseif($cmd->getLogicalId() == 'zonea_on'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'On A');
+    		}elseif($cmd->getLogicalId() == 'zoneb_on'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'On B');
+    		}elseif($cmd->getLogicalId() == 'zonec_on'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'On C');
+    		}elseif($cmd->getLogicalId() == 'abc_off'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Off A+B+ C');
+    		}elseif($cmd->getLogicalId() == 'light_on'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Lum. On');
+    		}elseif($cmd->getLogicalId() == 'light_off'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Lum. Off');
+    		}elseif($cmd->getLogicalId() == 'shutter_up'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ouv');
+    		}elseif($cmd->getLogicalId() == 'shutter_down'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ferm');
+    		}elseif($cmd->getLogicalId() == 'shutter_stop'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop');
+    		}elseif($cmd->getLogicalId() == 'reset_alarm_err'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. alarm');
+    		}elseif($cmd->getLogicalId() == 'reset_battery_err'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. piles');
+    		}elseif($cmd->getLogicalId() == 'reset_link_err'){
+    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. comm');
     		}
+    		
     	}
     }
     
