@@ -122,6 +122,13 @@ sendVarToJS('eqType', 'protexiom');
 									{{Exemple}}: 10
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">{{Version hardware}}<br></label>
+                    <div class="col-md-3">
+                    	<input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="HwVersion" placeholder="{{Non détéctée}}" disabled/>
+                        	{{Autodétéctée}}
+                    </div>
+                </div>
            </fieldset> 
         </form>
 
