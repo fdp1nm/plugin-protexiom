@@ -188,42 +188,6 @@ class protexiom extends eqLogic {
     }//End function pullStatus()
     
     /**
-     * Update status from spBrowser
-     * @author Fdp1
-     * @return 0 in case of sucess, 1 otherwise
-     */
-    public function setStatusFromSpBrowser() {
-    
-    	$myError="";
-    
-    	$status=$this->_spBrowser->getStatus();
-    	foreach ($this->getCmd('info') as $cmd) {
-    		if($cmd->getLogicalId() == 'needs_reboot'){
-    			//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
-    			continue;
-    		}else{
-    			if($cmd->getSubType()=='binary'){
-    				//$cmd->event((string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]));
-    				$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
-    			}else{
-    				$newValue=$status[$cmd->getConfiguration('somfyCmd')];
-    			}
-    			//To avoid systematic cache write that would burn SDCard, let's refres event only in case of state change, or if cache expired
-    			$mc = cache::byKey('cmd' . $cmd->getId());
-    			if($mc->getValue()==$newValue){//Unchanged value. Let's check if cache expired
-    				if($mc->hasExpired()){
-    					$mc->setLifetime($cmd->getCacheLifetime());
-    					$mc->save();
-    				}
-    			}else{//Changed value
-    				$cmd->event($newValue);
-    			}
-    		}
-    	}
-    	return;
-    }//End function setStatusFromSpBrowser
-    
-    /**
      * Check wether the parameter is a valid port number.
      *
      * @author Fdp1
@@ -950,13 +914,41 @@ class protexiom extends eqLogic {
 
     /*     * **********************Getteur Setteur*************************** */
 
-    /*public function getCollectDate() {
-        return $this->_collectDate;
-    }*/
-
-    /*public function setCollectDate($_collectDate) {
-        $this->_collectDate = $_collectDate;
-    }*/
+    /**
+     * Update status from spBrowser
+     * @author Fdp1
+     * @return 0 in case of sucess, 1 otherwise
+     */
+    public function setStatusFromSpBrowser() {
+    
+    	$myError="";
+    
+    	$status=$this->_spBrowser->getStatus();
+    	foreach ($this->getCmd('info') as $cmd) {
+    		if($cmd->getLogicalId() == 'needs_reboot'){
+    			//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
+    			continue;
+    		}else{
+    			if($cmd->getSubType()=='binary'){
+    				$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
+    			}else{
+    				$newValue=$status[$cmd->getConfiguration('somfyCmd')];
+    			}
+    			//To avoid systematic cache write that would burn SDCard, let's refres event only in case of state change, or if cache expired
+    			$mc = cache::byKey('cmd' . $cmd->getId());
+    			if($mc->getValue()==$newValue){//Unchanged value. Let's check if cache expired
+    				if($mc->hasExpired()){
+    					$mc->setLifetime($cmd->getCacheLifetime());
+    					$mc->save();
+    					log::add('protexiom', 'debug', 'Reseting cache lifeTime for CMD info value '.$cmd->getLogicalId().'.', $this->name);
+    				}
+    			}else{//Changed value
+    				$cmd->event($newValue);
+    			}
+    		}
+    	}
+    	return;
+    }//End function setStatusFromSpBrowser
 
 }
 
