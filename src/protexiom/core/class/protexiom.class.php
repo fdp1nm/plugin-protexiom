@@ -796,12 +796,7 @@ class protexiom extends eqLogic {
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		$this->initSpBrowser();
     		$this->_spBrowser->doLogout();
-    		// $cache->remove() would be the right and strait way. However, it would appear that it's not working.
-    		// see https://forum.jeedom.fr/viewtopic.php?f=27&t=1145&p=49796#p49796
-    		// Setting an empty value allow us to workaround this bug
-    		$cache->setValue('');
-    		$cache->save();
-    		$cache->remove();
+    		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     		log::add('protexiom', 'info', 'Removing cached cookie while unscheduling '.$this->name.'.', $this->name);
     	}
     	
