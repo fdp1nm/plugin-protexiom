@@ -16,15 +16,11 @@
 class phpProtexiom {
 	/*     * *************************Attributs privés****************************** */
 
-	private $status = array();
-	/* 	private $_SomfyHost = '';
-	 private $_SomfyPort = ''; */
-	private $somfyBaseURL='';
-	private $sslEnabled = false;
+	protected $status = array();
+	protected $somfyBaseURL='';
+	protected $sslEnabled = false;
 	// TODO test SSL
-	private $hwParam=array("Version"  => ""); //Store pretexiom hardware versions parameters
-	//private $_webProxyHost = '';
-	//private $_webProxyPort = '';
+	protected $hwParam=array("Version"  => ""); //Store pretexiom hardware versions parameters
 
 	/*     * *************************Attributs publics	****************************** */
 
@@ -58,7 +54,7 @@ class phpProtexiom {
 	 * @param string $header protexiom host
 	 * @return array headers as $key => $value
 	 */
-	private static function http_parse_headers( $header )
+	protected static function http_parse_headers( $header )
 	{
 		$retVal = array();
 		$fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
@@ -81,7 +77,7 @@ class phpProtexiom {
 	 * @author Fdp1
 	 * @return array compatible hardware versions, and their parameters
 	 */
-	private static function getCompatibleHw()
+	protected static function getCompatibleHw()
 	{
 		//Creating Hardware parameters array
 		$fullHwParam=array();
@@ -367,7 +363,7 @@ class phpProtexiom {
 	 * @return array('returnCode'=>$returnCode, 'responseBody'=>$responseBody, 'responseHeaders'=>$responseHeader)
 	 * @usage response = SomfyWget("/login.htm", "POST", array('username' => $login, 'password' => $password))
 	 */
-	private function somfyWget($url, $method, $reqBody="")
+	protected function somfyWget($url, $method, $reqBody="")
 	{
 		$myError="";
 
@@ -437,7 +433,7 @@ class phpProtexiom {
 	 * @return string error message in case of error, "" in case of sucess
 	 * @usage $myError = isWgetError()
 	 */
-	private function isWgetError($response, $rcode, $location="")
+	protected function isWgetError($response, $rcode, $location="")
 	{
 		$myError="";
 		
@@ -477,7 +473,7 @@ class phpProtexiom {
 	 * @return string error message, or "" if unable to get the error
 	 * @usage $myError = getSomfyError()
 	 */
-	private function getSomfyError()
+	protected function getSomfyError()
 	{
 		$somfyError=array();
 		$myError="";
@@ -662,7 +658,6 @@ class phpProtexiom {
 					$response=$this->somfyWget($this->hwParam['URL']['Pilotage'], "POST",$this->hwParam['Pilotage'][$val]);
 					$myError.=$this->isWgetError($response, '200');
 				}elseif(array_key_exists($val , $this->hwParam['EraseDefault'])){
-					// TODO tester l'effacement de defaut alarme
 					$response=$this->somfyWget($this->hwParam['URL']['EraseDefault'], "POST", $this->hwParam['EraseDefault'][$val]);
 					$myError.=$this->isWgetError($response, '200');
 				}else{

@@ -20,14 +20,14 @@ require_once dirname(__FILE__) . '/../../3rdparty/phpProtexiom/phpProtexiom.clas
 class protexiom extends eqLogic {
     /*     * *************************Attributs****************************** */
 
-    private $_UpdateDate = '';
-    private $_HwVersion = '';
-    private $_SomfyAuthCookie = '';
-    private $_SomfyHost = '';
-    private $_SomfyPort = '';
-    private $_WebProxyHost = '';
-    private $_WebProxyPort = '';
-    private $_SomfySessionTimeout=5400;
+    protected $_UpdateDate = '';
+    protected $_HwVersion = '';
+    protected $_SomfyAuthCookie = '';
+    protected $_SomfyHost = '';
+    protected $_SomfyPort = '';
+    protected $_WebProxyHost = '';
+    protected $_WebProxyPort = '';
+    protected $_SomfySessionTimeout=5400;
     
     public $_spBrowser;
     
@@ -195,7 +195,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidPort("80")
      */
-    private function isValidPort($port = '')
+    protected function isValidPort($port = '')
     {
     	$error=false;
     	if($port){//A port number was specified. Is it a int
@@ -229,7 +229,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidHost("192.168.1.111")
      */
-    private function isValidHost($host = '')
+    protected function isValidHost($host = '')
     {
     	$error=false;
     
@@ -257,7 +257,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidHostPort("192.168.1.111:80")
      */
-    private function isValidHostPort($hostPort = '')
+    protected function isValidHostPort($hostPort = '')
     {
     	$error=false;
     	$host = strtok($hostPort, ":");
@@ -293,7 +293,7 @@ class protexiom extends eqLogic {
      * @return array authcard
      * @usage authCard = getAuthCar()
      */
-    private function getAuthCard()
+    protected function getAuthCard()
     {
     	$authCard=array();
     	$authCode='';
