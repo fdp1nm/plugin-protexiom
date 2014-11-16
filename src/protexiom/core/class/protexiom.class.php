@@ -28,6 +28,7 @@ class protexiom extends eqLogic {
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
     protected $_SomfySessionTimeout=5400;
+    protected $_SomfyStatusTimeout=300;
     
     public $_spBrowser;
     
@@ -43,7 +44,7 @@ class protexiom extends eqLogic {
      * @return 
      */
     public static function pull($_options) {
-    	log::add('protexiom', 'debug', 'Running protexiom PULL '.date("Y-m-d H:i:s"), $protexiom->name);
+    	log::add('protexiom', 'debug', 'Running protexiom pull '.date("Y-m-d H:i:s"), $protexiom->name);
         $protexiom = protexiom::byId($_options['protexiom_id']);
         if (is_object($protexiom)) {
         	$protexiom->initSpBrowser();
@@ -112,7 +113,9 @@ class protexiom extends eqLogic {
     public function pullStatus() {
     	 
     	$myError="";
-    	 
+    	if (!is_object($this->_spBrowser)) {
+    		$this->initSpBrowser();
+    	}
     	if($myError=$this->_spBrowser->pullStatus()){
     		//An error occured while pulling status. This may be a session timeout issue.
     		if(!$this->workaroundSomfySessionTimeoutBug()){
@@ -155,7 +158,7 @@ class protexiom extends eqLogic {
     	}else{
     		//Status pulled. Let's now refreh CMD
     		log::add('protexiom', 'info', 'Status refreshed', $this->name);
-    		$status=$this->setStatusFromSpBrowser();
+    		$this->setStatusFromSpBrowser();
     		return 0;
     	}
     }//End function pullStatus()
@@ -922,18 +925,33 @@ class protexiom extends eqLogic {
     		return 1; 
     	}
     }//End function workaroundSomfySessionTimeoutBug
+    
+    /**
+     * Cache status from spBrowser
+     * @author Fdp1
+     */
+    public function cacheStatusFromSpBrowser() {
+    	if (!is_object($this->_spBrowser)) {
+    		throw new Exception(__('Fatal error: cacheStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
+    	}
+    	cache::set('somfyStatus::'.$this->getId(), json_encode($this->_spBrowser->getStatus()), $this->_SomfyStatusTimeout);
+    	
+    	return;
+    }//End function cacheStatusFromSpBrowser
 
     /*     * **********************Getteur Setteur*************************** */
 
     /**
      * Update status from spBrowser
      * @author Fdp1
-     * @return 0 in case of sucess, 1 otherwise
      */
     public function setStatusFromSpBrowser() {
     
     	$myError="";
     
+    	if (!is_object($this->_spBrowser)) {
+    		throw new Exception(__('Fatal error: setStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
+    	}
     	$status=$this->_spBrowser->getStatus();
     	foreach ($this->getCmd('info') as $cmd) {
     		if($cmd->getLogicalId() == 'needs_reboot'){
@@ -996,6 +1014,7 @@ class protexiomCmd extends cmd {
     public function execute($_options = array()) {
     	$protexiom=$this->getEqLogic();
     	$myError="";
+    	log::add('protexiom', 'debug', "Running ".$this->name." CMD", $protexiom->getName());
   
     	if ($this->getType() == 'info') {
     			$protexiom->initSpBrowser();
