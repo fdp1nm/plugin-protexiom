@@ -28,7 +28,7 @@ class protexiom extends eqLogic {
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
     protected $_SomfySessionTimeout=5400;
-    protected $_SomfyStatusTimeout=300;
+    protected $_SomfyStatusCacheLifetime=30;
     
     public $_spBrowser;
     
@@ -57,7 +57,7 @@ class protexiom extends eqLogic {
         			log::add('protexiom', 'debug', 'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
         		}
         	}
-        	$protexiom->pullStatus();	
+        	$protexiom->pullStatus();
         } else {
             $protexiom->unSchedulePull();
             log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $protexiom->name);
@@ -294,7 +294,7 @@ class protexiom extends eqLogic {
     	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
     	$this->_spBrowser->authCard=$this->getAuthCard();
     	$this->_spBrowser->setHwVersion($this->getConfiguration('HwVersion'));
-    	//Let's set the authCookie if cached
+    	//Let's get the authCookie if cached
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
@@ -651,6 +651,7 @@ class protexiom extends eqLogic {
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
     	$this->unSchedulePull();
+    	cache::deleteBySearch('somfyStatus::'.$this->getId());
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
     		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
@@ -690,6 +691,8 @@ class protexiom extends eqLogic {
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
     				$this->schedulePull();
     			}
+    			// And finally, let's initialize status
+    			$this->pullStatus();
     		}
     	}//else{//eqLogic disabled
     	
@@ -737,6 +740,7 @@ class protexiom extends eqLogic {
      */
     public function preRemove(){
     	$this->unSchedulePull();
+    	cache::deleteBySearch('somfyStatus::'.$this->getId());
     }
     
     /**
@@ -925,19 +929,7 @@ class protexiom extends eqLogic {
     		return 1; 
     	}
     }//End function workaroundSomfySessionTimeoutBug
-    
-    /**
-     * Cache status from spBrowser
-     * @author Fdp1
-     */
-    public function cacheStatusFromSpBrowser() {
-    	if (!is_object($this->_spBrowser)) {
-    		throw new Exception(__('Fatal error: cacheStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
-    	}
-    	cache::set('somfyStatus::'.$this->getId(), json_encode($this->_spBrowser->getStatus()), $this->_SomfyStatusTimeout);
-    	
-    	return;
-    }//End function cacheStatusFromSpBrowser
+
 
     /*     * **********************Getteur Setteur*************************** */
 
@@ -978,6 +970,31 @@ class protexiom extends eqLogic {
     	}
     	return;
     }//End function setStatusFromSpBrowser
+    
+    /**
+     * get protexiom status from cache. If not availlable in cache, puul and cache it
+     * @author Fdp1
+     * @return array status
+     */
+    public function getStatusFromCache() {
+    	$cache=cache::byKey('somfyStatus::'.$this->getId());
+    	$status=$cache->getValue();
+    	if(!($status==='' || $status===null || $status=='false')){
+    		if(!$cache->hasExpired()){
+    			log::add('protexiom', 'debug', 'Cached protexiom status found.', $this->name);
+    			return json_decode($status, true); 
+    		}
+    	}
+    	log::add('protexiom', 'debug', 'No (unexpired) cached protexiom status found. Let\'s pull status.', $this->name);
+    	if ($this->pullStatus()){
+    		//An error occured while pulling status
+    		throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
+    	}else{
+    		cache::set('somfyStatus::'.$this->getId(), json_encode($this->_spBrowser->getStatus()), $this->_SomfyStatusCacheLifetime);
+    		log::add('protexiom', 'debug', 'Somfy protexiom status successfully pulled and cache', $this->name);
+    		return $this->_spBrowser->getStatus();
+    	}
+    }//End function getStatusFromCache
 
 }
 
@@ -1017,10 +1034,6 @@ class protexiomCmd extends cmd {
     	log::add('protexiom', 'debug', "Running ".$this->name." CMD", $protexiom->getName());
   
     	if ($this->getType() == 'info') {
-    			$protexiom->initSpBrowser();
-    			$protexiom->pullStatus();
-    			$protexiom->setStatusFromSpBrowser();
-    		
     		if($this->getLogicalId() == 'needs_reboot'){
     			//needs_reboot is only set in case of error, and does not need to be retrieved.
     			// Let's get it from the cache (if no cached, will return false anyway)
@@ -1028,12 +1041,11 @@ class protexiomCmd extends cmd {
     			return $mc->getValue();
     		}else{
     			if($this->getSubType()=='binary'){
-    				return((string)preg_match("/^o[k n]$/i", $protexiom->_spBrowser->getStatus()[$this->getConfiguration('somfyCmd')]));
+    				return (string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
     			}else{
-    				return($protexiom->_spBrowser->getStatus()[$this->getConfiguration('somfyCmd')]);
+    				return $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
     			}
     		}
-        	return $this->getValue();
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
