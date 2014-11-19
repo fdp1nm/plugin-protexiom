@@ -690,6 +690,23 @@ class protexiom extends eqLogic {
     			// Let's schedul pull if polling is on
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
     				$this->schedulePull();
+    				// If polling is on, we can set every info CMD to setEventOnly
+    				// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
+    				foreach ($this->getCmd('info') as $cmd) {
+    						$cmd->setEventOnly(1);
+    						$cmd->save();
+    				}
+    			}else{// Polling is off
+    				// As no event will be thrown by polling, let's let jeedom refresh collect info CMD when cache is expired
+    				foreach ($this->getCmd('info') as $cmd) {
+    					if($cmd->getLogicalId() == 'needs_reboot'){
+    						//needs_reboot state is only changed by event wether polling is on or of
+    						$cmd->setEventOnly(1);
+    					}else{
+    						$cmd->setEventOnly(0);
+    					}
+    					$cmd->save();
+    				}
     			}
     			// And finally, let's initialize status
     			$this->pullStatus();
@@ -955,17 +972,10 @@ class protexiom extends eqLogic {
     			}else{
     				$newValue=$status[$cmd->getConfiguration('somfyCmd')];
     			}
-    			//To avoid systematic cache write that would burn SDCard, let's refres event only in case of state change, or if cache expired
-    			$mc = cache::byKey('cmd' . $cmd->getId());
-    			if($mc->getValue()==$newValue){//Unchanged value. Let's check if cache expired
-    				if($mc->hasExpired()){
-    					$mc->setLifetime($cmd->getCacheLifetime());
-    					$mc->save();
-    					log::add('protexiom', 'debug', 'Reseting cache lifeTime for CMD info value '.$cmd->getLogicalId().'.', $this->name);
-    				}
-    			}else{//Changed value
+    			
+    			if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
     				$cmd->event($newValue);
-    			}
+    			}// else, unchanged value. Let's keep the cached one
     		}
     	}
     	return;
