@@ -30,6 +30,8 @@ class protexiom extends eqLogic {
     protected $_SomfySessionTimeout=5400;
     protected $_SomfyStatusCacheLifetime=30;
     
+    private static $_templateArray = array();
+    
     public $_spBrowser;
     
 
@@ -308,7 +310,7 @@ class protexiom extends eqLogic {
     
     /**
      * Called before setting-up or updating a plugin device
-     * Standard Jeedom function_exists
+     * Standard Jeedom function
      * @author Fdp1
      */
     public function preUpdate() {
@@ -366,7 +368,7 @@ class protexiom extends eqLogic {
     
     /**
      * Called before inserting a plugin device when creating it, before the first configuration
-     * Standard Jeedom function_exists
+     * Standard Jeedom function
      * @author Fdp1
      *
      */
@@ -376,7 +378,7 @@ class protexiom extends eqLogic {
 
     /**
      * Called after inserting a plugin device when creating it, before the first configuration
-     * Standard Jeedom function_exists
+     * Standard Jeedom function
      * @author Fdp1
      *
      */
@@ -735,7 +737,7 @@ class protexiom extends eqLogic {
     
     /**
      * Called before removing a protexiom eqLogic
-     * Standard Jeedom function_exists
+     * Standard Jeedom function
      * @author Fdp1
      *
      */
@@ -743,6 +745,109 @@ class protexiom extends eqLogic {
     	$this->unSchedulePull();
     	cache::deleteBySearch('somfyStatus::'.$this->getId());
     }
+    
+    /**
+     * Called to display the widget
+     * Standard Jeedom function
+     * @param string $_version Widget version to display (mobile, dashboard or scenario)
+     * @return string widget HTML code
+     * @author Fdp1
+     *
+     */
+    public function toHtml($_version = 'dashboard') {
+    	if ($_version == '') {
+    		throw new Exception(__('La version demandé ne peut être vide (mobile, dashboard ou scenario)', __FILE__));
+    	}
+    	$cmdDisplayOrder=array(
+    			"alarm",
+    			"link",
+    			"battery",
+    			"door",
+    			"tampered",
+    			"camera",
+    			"zone_a",
+    			"zone_b",
+    			"zone_c",
+    			"zoneabc_on",
+    			"zonea_on",
+    			"zoneb_on",
+    			"zonec_on",
+    			"abc_off",
+    			"gsm_link",
+    			"gsm_signal",
+    			"gsm_operator",
+    			"light_on",
+    			"light_off",
+    			"shutter_upp",
+    			"shutter_stop",
+    			"shutter_down",
+    			"reset_alarm_err",
+    			"reset_battery_err",
+    			"reset_link_err",
+    			"needs_reboot",
+    	);
+    	$info = '';
+    	$version = jeedom::versionAlias($_version);
+    	$vcolor = 'cmdColor';
+    	if ($version == 'mobile') {
+    		$vcolor = 'mcmdColor';
+    	}
+    	if ($this->getPrimaryCategory() == '') {
+    		$cmdColor = '';
+    	} else {
+    		$cmdColor = jeedom::getConfiguration('eqLogic:category:' . $this->getPrimaryCategory() . ':' . $vcolor);
+    	}
+    	if ($this->getIsEnable()) {
+    		foreach ($cmdDisplayOrder as $cmdLogicId) {
+    			$cmd=$this->getCmd(null, $cmdLogicId, true);
+    			if(is_object($cmd) && is_numeric($cmd->getId()) && $cmd->getIsVisible()){
+    					$info.=$cmd->toHtml($_version, '', $cmdColor);
+    			}	
+    		}
+    		//Let's check if some CMDs are missing in $cmdDisplayOrder
+    		foreach ($this->getCmd(null, null, true) as $cmd) {
+    			if (!in_array($cmd->getLogicalId(), $cmdDisplayOrder)) {
+    				$info.=$cmd->toHtml($_version, '', $cmdColor);
+    			}
+    		}
+    		
+    		
+    	}
+    	$replace = array(
+    			'#id#' => $this->getId(),
+    			'#name#' => ($this->getIsEnable()) ? $this->getName() : '<del>' . $this->getName() . '</del>',
+    			'#eqLink#' => $this->getLinkToConfiguration(),
+    			'#category#' => $this->getPrimaryCategory(),
+    			'#background_color#' => $this->getBackgroundColor($version),
+    			'#info#' => $info,
+    			'#style#' => '',
+    	);
+    	if ($_version == 'dview' || $_version == 'mview') {
+    		$object = $this->getObject();
+    		$replace['#object_name#'] = (is_object($object)) ? '(' . $object->getName() . ')' : '';
+    	} else {
+    		$replace['#object_name#'] = '';
+    	}
+    	if (($_version == 'dview' || $_version == 'mview') && $this->getDisplay('doNotShowNameOnView') == 1) {
+    		$replace['#name#'] = '';
+    		$replace['#object_name#'] = (is_object($object)) ? $object->getName() : '';
+    	}
+    	if (($_version == 'mobile' || $_version == 'dashboard') && $this->getDisplay('doNotShowNameOnDashboard') == 1) {
+    		$replace['#name#'] = '<br/>';
+    		$replace['#object_name#'] = (is_object($object)) ? $object->getName() : '';
+    	}
+    	$parameters = $this->getDisplay('parameters');
+    	if (is_array($parameters)) {
+    		foreach ($parameters as $key => $value) {
+    			$replace['#' . $key . '#'] = $value;
+    		}
+    	}
+    
+    	if (!isset(self::$_templateArray[$version])) {
+    		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic');
+    	}
+    	return template_replace($replace, self::$_templateArray[$version]);
+    }  
     
     /**
      * Schedule status update of polling is turned on
