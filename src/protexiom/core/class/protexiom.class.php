@@ -431,7 +431,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
         
-        $protexiomCmd = new protexiomCmd();
+        /* $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Lumières On', __FILE__));
         $protexiomCmd->setLogicalId('light_on');
         $protexiomCmd->setEqLogic_id($this->id);
@@ -479,7 +479,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save();
+        $protexiomCmd->save(); */
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Eff. defaut alarm', __FILE__));
@@ -714,7 +714,7 @@ class protexiom extends eqLogic {
     			$protexiomCmd->setConfiguration('mobileTag', 'On C');
     		}elseif($cmd->getLogicalId() == 'abc_off'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Off A+B+ C');
-    		}elseif($cmd->getLogicalId() == 'light_on'){
+    		/* }elseif($cmd->getLogicalId() == 'light_on'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Lum. On');
     		}elseif($cmd->getLogicalId() == 'light_off'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Lum. Off');
@@ -723,7 +723,7 @@ class protexiom extends eqLogic {
     		}elseif($cmd->getLogicalId() == 'shutter_down'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ferm');
     		}elseif($cmd->getLogicalId() == 'shutter_stop'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop');
+    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop'); */
     		}elseif($cmd->getLogicalId() == 'reset_alarm_err'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Eff. alarm');
     		}elseif($cmd->getLogicalId() == 'reset_battery_err'){
@@ -776,11 +776,6 @@ class protexiom extends eqLogic {
     			"gsm_link",
     			"gsm_signal",
     			"gsm_operator",
-    			"light_on",
-    			"light_off",
-    			"shutter_upp",
-    			"shutter_stop",
-    			"shutter_down",
     			"reset_alarm_err",
     			"reset_battery_err",
     			"reset_link_err",
