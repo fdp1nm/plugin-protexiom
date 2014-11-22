@@ -1,0 +1,5 @@
+* Relookage du widget
+* Rajout d'un subdevice pour piloter un volet roulant (ou groupe de volet roulants) somfy RTS
+* Rajout d'un subdevice pour piloter une lumière (ou un groupe de lumières) somfy RTS
+* Rajout de sudevices correspondants aux detecteurs d'ouverture de l'alarme
+* Récupération des logs de l'alarme

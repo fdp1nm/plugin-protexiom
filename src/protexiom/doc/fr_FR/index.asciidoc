@@ -1,0 +1,92 @@
+= Plugin Alarme Somfy
+fdp1
+v1.0, 2014-11-22 
+
+== description
+
+Ce module virtuel permet de contrôler une alarme Somfy Protexiom via son interface web.
+
+A ce jour la solution permet de :
+
+* Connaître l'état de l'alarme (etat des zones, et alerte)
+* Piloter l'alarme (choix des zones à activer ou arrêt total).
+* Récupérer les status de l'alarme  (intrusion, sabotage, état des piles, défaut de liaison avec un détecteur, signal gsm si présent, porte ouverte, présence camera)
+* Reseter es defauts de l'alarme
+
+image::../images/widget.png[] 
+
+== Les limites de la solution
+
+=== Versions d'alarme compatible
+
+Pour une même version de l'alarme (Protexiom 600), il existe différentes versions de materiel et de firmware. Somfy ne permet pas de faire des mises à jour de firmware.
+
+Somfy ne propose pas d'API, le device virtuel execute donc les pages webs comme on le ferait via un browser. Selon les versions de firmware, certaines pages sont différentes.
+
+La solution supporte actuellement 4 version différente, aussi bien dans la gamme *protexiom* que *protexial*. Si la votre n'est pas compatible, informez le link:view-source:https://forum.jeedom.fr/memberlist.php?mode=viewprofile&u=366[développeur] afin de voir s'il est possible de l'intégrer. C'est probable, les différences étants marginales.
+
+=== Session unique
+
+L'ouverture d'une session sur l'alarme est lente, et log une entrée dans son journal d’événement sur certaines versions. Afin de ne pas surcharger l'alarme, et d'avoir un plugin réactif, la session est maintenue ouverte par le plugin. L'alarme ne permet qu'une seule session active à la fois. Cela signifie que lorsque le device virtuel est connecté, vous ne pouvez pas vous connecter à l'alarme (par exemple pour consulter sont journal d’événement ou la paramétrer).
+
+Si vous souhaitez vous connecter sur l'alarme, il vous faudra donc désactiver temporairement le plugin.
+
+=== Timeout de session
+
+La session de l'alarme a une durée de vie limitée. Même avec des interrogation régulière, la session est interrompue au bout du timeout.
+
+L'interface d'amin de votre alarme permet de régler ce timeout. Je vous conseil de le régler au maximum (soit 99 minutes). Lors du timeout, le plugin gérera automatiquement la reconnexion.
+
+Ce fonctionnement sera donc totalement transparent, si ce n'est l’apparition des logs de connexion dans le journal d’événement de l'alarme.
+
+=== Stabilité du serveur web de l'alarme
+
+Le serveur web de l'alarme somfy n'est pas conçu pour être utilisé de cette façon. Il est donc parfois instable.
+Ces instabilité sont correctement gérées par le plugin, et gérée de manière adaptée (une déconnexion suivi d'une reconnexion règle le problème).
+
+Sur les plus anciennes versions, il arrive que le serveur web de l'alarme ne réponde plus. Dans ce cas la seule solution est de débrancher éléctriquement le module IP de l'alarme pour réinitialiser le serveur WEB. Cette action n'a pas de conséquence de sécurité car l'alarme fonctionne sur pile, et son fonctionnement n'est pas perturbé par cette action. Elle est toujours opérationnelle durant le reboot, seul la fonction « serveur web » utilise l'alimentation secteur.
+Le plugin implémente une méthode permettant de gérer ce reboot si votre alarme est impactée par ce problème. Cette méthode est décrite plus bas.
+
+Malgré ces quelques défaut, j'ai tester le plugin avec une interrogation de l'alarme toutes les 3 secondes pendant plusieurs jours, cela fonctionne parfaitement et à l'usage ces défaut restent imperceptibles.
+
+== Installation / Paramétrage
+
+=== Paramétrage de l'alarme (Timeout)
+
+Il est conseillé d'augmenter le timout de l'alarme a sa valeur maximum.
+
+Connecter vous à l'alarme en mode Administrateur puis dans les réglages de l'interface, régler le délais d'expiration de la session.
+ 
+image::../images/timeout_setup.png[]
+ 
+=== Installation / configuration
+
+Une fois le plugin installé via le market, l'ensemble du paramétrage se fait depuis l'administration, comme n'importe quel plugin.
+Les champs sont tous documentés sur la page de paramétrage, et la validité des paramêtres est vérifiée avant l'enregistrement.
+
+image::../images/plugin_setup.png[] 
+
+A noter que le dernier paramêtre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
+Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
+
+=== Redemarrage du serveur web en cas d'instabilité
+
+Comme évoqué précédement, les premiers modèles de centrales protexiom présente une instabilité du serveur web qui peut nécéssiter un reboot périodique.
+Sur les alarmes plus récentes, le serveur web est plus stable et ne nécessite pas de redémarrage. Dans ce cas, rien de plus à faire.
+
+Dans le cas ou votre alarme est impactée par ce problème, une commande de type *info* est disponible pour apporter une solution de contournement.
+Il s'agit de la commande *Redémarrage requis* (logicalId: _needs_reboot_).
+
+Par defaut, cette commande à la valeur *0*. Si le plugin detecte que le serveur web de la centrale protexiom nécéssite un redémarrage, cette commande aura alors la valeur *1*.
+Le plugin vérifie alors toutes les minutes si la centrale est à nouveau joignable. Quand c'est le cas, suite à un reboot, le plugin le detecte automatiquement, remet le commande *Redémarrage requis* à *0*, et reprends son fonctionnement nominal.
+
+Cette commande peut donc être utilisée pour activer un scénario qui va redémarrer le module IP de la centrale protexiom, via, par exemple, une prise zwave qui va couper puis remettre l'alimentation éléctrique du module.
+
+== FAQ
+include::faq.asciidoc[]
+
+== Roadmap
+include::roadmap.asciidoc[]
+
+== Changelog
+include::changelog.asciidoc[]
