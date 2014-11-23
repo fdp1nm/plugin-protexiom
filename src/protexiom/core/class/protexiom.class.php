@@ -431,6 +431,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
         
+        // TODO Move light and shutters to a subdevice, and remove this comment block
         /* $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Lumières On', __FILE__));
         $protexiomCmd->setLogicalId('light_on');
@@ -714,6 +715,7 @@ class protexiom extends eqLogic {
     			$protexiomCmd->setConfiguration('mobileTag', 'On C');
     		}elseif($cmd->getLogicalId() == 'abc_off'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Off A+B+ C');
+    		// TODO Move light and shutters to a subdevice, and remove this comment block
     		/* }elseif($cmd->getLogicalId() == 'light_on'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Lum. On');
     		}elseif($cmd->getLogicalId() == 'light_off'){
