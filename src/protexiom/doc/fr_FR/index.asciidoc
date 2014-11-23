@@ -66,7 +66,7 @@ Les champs sont tous documentés sur la page de paramétrage, et la validité de
 
 image::../images/plugin_setup.png[] 
 
-A noter que le dernier paramêtre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
+NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
 Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
 
 === Redemarrage du serveur web en cas d'instabilité
