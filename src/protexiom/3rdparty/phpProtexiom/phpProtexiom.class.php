@@ -93,7 +93,7 @@ class phpProtexiom {
 		$fullHwParam['3']['URL']['Error']="/m_error.htm";
 		$fullHwParam['3']['URL']['Status']="/status.xml";
 		$fullHwParam['3']['URL']['Pilotage']="/mu_pilotage.htm";
-		$fullHwParam['3']['URL']['EraseDefault']="/mu_listelmt.htm";
+		$fullHwParam['3']['URL']['EraseDefault']="/u_listelmt.htm";
 		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
 		$fullHwParam['3']['StatusTag']['ZONE_A']="zone0";// ON/OFF
 		$fullHwParam['3']['StatusTag']['ZONE_B']="zone1";// ON/OFF

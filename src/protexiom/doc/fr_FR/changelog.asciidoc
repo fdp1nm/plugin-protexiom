@@ -1,3 +1,7 @@
+==== 0.0.2 - 2014-11-24
+
+- Correction d'un bug sur les HWversion 3 (URL EraseDefault érronée)
+
 ==== 0.0.1 - 2014-11-23
 
 - Publication de la première beta

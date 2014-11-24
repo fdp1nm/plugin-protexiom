@@ -4,7 +4,7 @@ v1.0, 2014-11-22
 
 == description
 
-Ce module virtuel permet de contrôler une alarme Somfy Protexiom via son interface web.
+Ce plugin permet de contrôler une alarme Somfy Protexiom via son interface web.
 
 A ce jour la solution permet de :
 
