@@ -2,7 +2,7 @@
 <info>
     <id>protexiom</id>
     <name>Protexiom</name>
-    <description>Plugin pour contrôler les sytèmes d'alarme Somfy Protexiom</description>
+    <description>Plugin pour contrôler les sytèmes d'alarme Somfy Protexiom et Protexial</description>
     <icon>fa fa-bell</icon>
     <licence>AGPL</licence>
     <author>Fdp1</author>
