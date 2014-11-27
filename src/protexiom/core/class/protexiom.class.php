@@ -746,6 +746,7 @@ class protexiom extends eqLogic {
     public function preRemove(){
     	$this->unSchedulePull();
     	cache::deleteBySearch('somfyStatus::'.$this->getId());
+    	$this->unScheduleIsRebooted();
     }
     
     /**
