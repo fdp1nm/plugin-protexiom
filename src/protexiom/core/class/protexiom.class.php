@@ -143,6 +143,8 @@ class protexiom extends eqLogic {
     				}
     				return 1;
     			}else{//Login OK
+    				//TODO Only cache cookie if polling is on
+					// Otherwise, logoff
     				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     				$cachedCookie=$cache->getValue();
     				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
@@ -878,8 +880,19 @@ class protexiom extends eqLogic {
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    		
+    		// Starting Jeewawa debug
+    		log::add('protexiom', 'debug', 'Cached cookie found  while unscheduling '.$this->name.'. Trying to logoff', $this->name);
     		$this->initSpBrowser();
-    		$this->_spBrowser->doLogout();
+    		if(!$myError=$this->_spBrowser->doLogout()){
+    			log::add('protexiom', 'debug', 'Successfull logout while unscheduling '.$this->name.'.', $this->name);
+    		}else{
+    			log::add('protexiom', 'debug', 'Logout failed while unscheduling '.$this->name.'. Returned error: '.$myError, $this->name);
+    		}
+    		// Ending Jeewawa debug
+    		
+    		//$this->initSpBrowser();
+    		//$this->_spBrowser->doLogout();
     		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     		log::add('protexiom', 'info', 'Removing cached cookie while unscheduling '.$this->name.'.', $this->name);
     	}
