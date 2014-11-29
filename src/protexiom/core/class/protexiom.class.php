@@ -52,8 +52,8 @@ class protexiom extends eqLogic {
         	$protexiom->initSpBrowser();
         	if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
         		if($myError=$protexiom->_spBrowser->doLogin()){
-        			log::add('protexiom', 'error', 'Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted.', $protexiom->name);
-        			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted.');
+        			log::add('protexiom', 'error', 'Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError, $protexiom->name);
+        			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError);
         		}else{//Login OK
         			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
         			log::add('protexiom', 'debug', 'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
