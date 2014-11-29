@@ -143,15 +143,18 @@ class protexiom extends eqLogic {
     				}
     				return 1;
     			}else{//Login OK
-    				//TODO Only cache cookie if polling is on
-					// Otherwise, logoff
-    				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
-    				$cachedCookie=$cache->getValue();
-    				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    					$cache->setValue($this->_spBrowser->authCookie);
-    					$cache->save();
-    				}
     				$myError=$this->_spBrowser->pullStatus();
+    				if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
+    					//Polling is on. Let's cache session cookie
+    					$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
+    					$cachedCookie=$cache->getValue();
+    					if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    						$cache->setValue($this->_spBrowser->authCookie);
+    						$cache->save();
+    					}
+    				}else{//Polling is off
+    					$this->_spBrowser->doLogout();
+    				}
     			}
     		}
     	}
