@@ -27,7 +27,7 @@ class protexiom extends eqLogic {
     protected $_SomfyPort = '';
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
-    protected $_SomfySessionTimeout=5400;
+    protected $_SomfySessionTimeout=5940;
     protected $_SomfyStatusCacheLifetime=30;
     
     private static $_templateArray = array();
