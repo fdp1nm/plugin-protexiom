@@ -90,7 +90,7 @@ class phpProtexiom {
 		$fullHwParam['3']['URL']['login']="/m_login.htm";
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
-		$fullHwParam['3']['URL']['Error']="/m_error.htm";
+		$fullHwParam['3']['URL']['Error']="/error.htm";
 		$fullHwParam['3']['URL']['Status']="/status.xml";
 		$fullHwParam['3']['URL']['Pilotage']="/mu_pilotage.htm";
 		$fullHwParam['3']['URL']['EraseDefault']="/u_listelmt.htm";
