@@ -131,7 +131,16 @@ class protexiom extends eqLogic {
     			//Empty XML file detected
     			//Let's log off and on again to workaround this somfy bug
     			log::add('protexiom', 'info', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
-    			$this->_spBrowser->doLogout();
+    			
+    			// Starting Jeewawa debug
+    			if(!$myError=$this->_spBrowser->doLogout()){
+    				log::add('protexiom', 'debug', 'Successfull logout while trying to workaround Empty XML file '.$this->name.'.', $this->name);
+    			}else{
+    				log::add('protexiom', 'debug', 'Logout failed while trying to workaround Empty XML file '.$this->name.'. Returned error: '.$myError, $this->name);
+    			}
+    			// Ending Jeewawa debug
+    			
+    			//$this->_spBrowser->doLogout();
     			if($this->_spBrowser->doLogin()){
     				log::add('protexiom', 'error', 'Login failed while trying to workaround somfy empty XML bug on device '.$protexiom->name.'.', $protexiom->name);
     				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
@@ -153,7 +162,9 @@ class protexiom extends eqLogic {
     						$cache->save();
     					}
     				}else{//Polling is off
-    					$this->_spBrowser->doLogout();
+    					if($myError=$this->_spBrowser->doLogout()){
+    						log::add('protexiom', 'error', 'Logout failed after empty XML workaround, with polling off, on '.$this->name.'. Returned error: '.$myError, $this->name);
+    					}
     				}
     			}
     		}
@@ -1021,7 +1032,15 @@ class protexiom extends eqLogic {
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		//The session was cached, so the timeout issue is possible. Starting a new session
-    		$this->_spBrowser->doLogout();
+    		
+    		// Starting Jeewawa debug
+    		if(!$myError=$this->_spBrowser->doLogout()){
+    			log::add('protexiom', 'debug', 'Successfull logout for workaroundSomfySessionTimeoutBug '.$this->name.'.', $this->name);
+    		}else{
+    			log::add('protexiom', 'debug', 'Logout failed for workaroundSomfySessionTimeoutBug '.$this->name.'. Returned error: '.$myError, $this->name);
+    		}
+    		// Ending Jeewawa debug
+    		//$this->_spBrowser->doLogout();
     		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     		log::add('protexiom', 'debug', 'Logout to workaround somfy session timeout bug on device '.$this->name.'.', $this->name);
     		if($this->_spBrowser->doLogin()){
