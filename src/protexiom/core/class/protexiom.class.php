@@ -1119,9 +1119,10 @@ class protexiom extends eqLogic {
     		}
     	}
     	log::add('protexiom', 'debug', 'No (unexpired) cached protexiom status found. Let\'s pull status.', $this->name);
-    	if ($this->pullStatus()){
+    	if ($myError=$this->pullStatus()){
     		//An error occured while pulling status
-    		throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
+    		log::add('protexiom', 'debug', 'An error occured while pulling status: '.$myError, $this->name);
+    		throw new Exception(__("An error occured while pulling status: $myError",__FILE__));
     	}else{
     		cache::set('somfyStatus::'.$this->getId(), json_encode($this->_spBrowser->getStatus()), $this->_SomfyStatusCacheLifetime);
     		log::add('protexiom', 'debug', 'Somfy protexiom status successfully pulled and cache', $this->name);
