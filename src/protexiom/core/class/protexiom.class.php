@@ -670,6 +670,7 @@ class protexiom extends eqLogic {
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
     	$this->unSchedulePull();
+    	$this->unScheduleIsRebooted();
     	cache::deleteBySearch('somfyStatus::'.$this->getId());
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
