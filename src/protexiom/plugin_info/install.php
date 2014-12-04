@@ -36,7 +36,8 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function protexiom_remove(){
 	foreach (eqLogic::byType('protexiom') as $eqLogic) {
-		$eqLogic->unSchedule();
+		$eqLogic->unSchedulePull();
+		$eqLogic->unScheduleIsRebooted();
 	}
 }//End function protexiom_remove()
 
