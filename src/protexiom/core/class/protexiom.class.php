@@ -46,23 +46,23 @@ class protexiom extends eqLogic {
      * @return 
      */
     public static function pull($_options) {
-    	log::add('protexiom', 'debug', 'Running protexiom pull '.date("Y-m-d H:i:s"), $protexiom->name);
+    	log::add('protexiom', 'debug', '[*-'.$_options['protexiom_id'].'] '.'Running protexiom pull '.date("Y-m-d H:i:s"), $_options['protexiom_id']);
         $protexiom = protexiom::byId($_options['protexiom_id']);
         if (is_object($protexiom)) {
         	$protexiom->initSpBrowser();
         	if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
         		if($myError=$protexiom->_spBrowser->doLogin()){
-        			log::add('protexiom', 'error', 'Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError, $protexiom->name);
+        			log::add('protexiom', 'error', '['.$protexiom->name.'-'.$protexiom->getId().'] '.'Login failed during scheduled pull. Pull aborted. Returned error was: '.$myError, $protexiom->name);
         			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError);
         		}else{//Login OK
         			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
-        			log::add('protexiom', 'debug', 'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
+        			log::add('protexiom', 'debug', '['.$protexiom->name.'-'.$protexiom->getId().'] '.'Sucessfull login during scheduled pull. authCookie cached.', $protexiom->name);
         		}
         	}
         	$protexiom->pullStatus();
         } else {
             $protexiom->unSchedulePull();
-            log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $protexiom->name);
+            log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $_options['protexiom_id']);
             throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©');
         }
     	return;
@@ -76,14 +76,14 @@ class protexiom extends eqLogic {
      * @return
      */
     public static function isRebooted($_options) {
-    	log::add('protexiom', 'debug', 'Trying to login to check reboot '.date("Y-m-d H:i:s"), $protexiom->name);
+    	log::add('protexiom', 'debug', '[*-'.$_options['protexiom_id'].'] '.'Trying to login to check reboot', $_options['protexiom_id']);
     	$protexiom = protexiom::byId($_options['protexiom_id']);
     	if (is_object($protexiom)) {
     		$protexiom->initSpBrowser();
     		if(!($myError=$protexiom->_spBrowser->doLogin())){
     			//Login OK
     			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
-    			log::add('protexiom', 'debug', 'Sucessfull login during reboot check. authCookie cached.', $protexiom->name);
+    			log::add('protexiom', 'debug', '['.$protexiom->name.'-'.$protexiom->getId().'] '.'Sucessfull login during reboot check. authCookie cached.', $protexiom->name);
     			$protexiom->pullStatus();
     			$protexiom->unScheduleIsRebooted();
     			if(filter_var($protexiom->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
@@ -93,13 +93,13 @@ class protexiom extends eqLogic {
     			if(is_object($needsRebootCmd)){
     				$needsRebootCmd->event("0");
     			}else{
-    				log::add('protexiom', 'error', 'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd', $protexiom->name);
+    				log::add('protexiom', 'error', '['.$protexiom->name.'-'.$protexiom->getId().'] '.'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd', $protexiom->name);
     				throw new Exception('Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
     			}
     		}	
     	}else{
     		$protexiom->unScheduleIsRebooted();
-    		log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.', $protexiom->name);
+    		log::add('protexiom', 'error', 'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.', $_options['protexiom_id']);
     		throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.');
     	}
     	return;
@@ -130,19 +130,19 @@ class protexiom extends eqLogic {
     		if($status['ALARM']==""){
     			//Empty XML file detected
     			//Let's log off and on again to workaround this somfy bug
-    			log::add('protexiom', 'info', 'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
+    			log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Log off and on again to workaround somfy empty XML bug on device '.$this->name.'.', $this->name);
     			
     			// Starting Jeewawa debug
     			if(!$myError=$this->_spBrowser->doLogout()){
-    				log::add('protexiom', 'debug', 'Successfull logout while trying to workaround Empty XML file '.$this->name.'.', $this->name);
+    				log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Successfull logout while trying to workaround Empty XML file.', $this->name);
     			}else{
-    				log::add('protexiom', 'debug', 'Logout failed while trying to workaround Empty XML file '.$this->name.'. Returned error: '.$myError, $this->name);
+    				log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logout failed while trying to workaround Empty XML file. Returned error: '.$myError, $this->name);
     			}
     			// Ending Jeewawa debug
     			
     			//$this->_spBrowser->doLogout();
-    			if($this->_spBrowser->doLogin()){
-    				log::add('protexiom', 'error', 'Login failed while trying to workaround somfy empty XML bug on device '.$protexiom->name.'.', $protexiom->name);
+    			if($myError=$this->_spBrowser->doLogin()){
+    				log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Login failed while trying to workaround somfy empty XML bug. Returned error: '.$myError, $this->name);
     				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     				$cachedCookie=$cache->getValue();
     				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
@@ -163,7 +163,7 @@ class protexiom extends eqLogic {
     					}
     				}else{//Polling is off
     					if($myError=$this->_spBrowser->doLogout()){
-    						log::add('protexiom', 'error', 'Logout failed after empty XML workaround, with polling off, on '.$this->name.'. Returned error: '.$myError, $this->name);
+    						log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Logout failed after empty XML workaround, with polling off. Returned error: '.$myError, $this->name);
     					}
     				}
     			}
@@ -171,11 +171,11 @@ class protexiom extends eqLogic {
     	}
     	if($myError){
     		//An error occured.
-    		log::add('protexiom', 'error', "An error occured during $this->name status update: ".$myError, $this->name);
+    		log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '."An error occured during status update: ".$myError, $this->name);
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
-    		log::add('protexiom', 'info', 'Status refreshed', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Status refreshed', $this->name);
     		$this->setStatusFromSpBrowser();
     		return 0;
     	}
@@ -316,7 +316,8 @@ class protexiom extends eqLogic {
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    		log::add('protexiom', 'debug', 'Cached protexiom cookie found during initSpBrowser.', $this->name);
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Cached protexiom cookie found during initSpBrowser.', $this->name);
+    		// TODO '['.$this->name.'-'.$this->getId().'] '.
     		$this->_spBrowser->authCookie=$cachedCookie;
     		$cache->setLifetime($this->_SomfySessionTimeout);
     		$cache->save();
@@ -683,7 +684,7 @@ class protexiom extends eqLogic {
     		if($myError){//Hardware detection failed. it means protexiom was unreachable, or uncompatible
     			$myError.="Deactivating $this->name";
     			// Let's log the error in jeedom's log
-    			log::add('protexiom', 'error', $myError, $this->name);
+    			log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.$myError, $this->name);
     		
     			// then reset hardware version
     			$this->setConfiguration('HwVersion', '');
@@ -698,22 +699,24 @@ class protexiom extends eqLogic {
     			if($this->getConfiguration('HwVersion')!=$myProtexiom->getHwVersion()){
     				$this->setConfiguration('HwVersion', $myProtexiom->getHwVersion());
     				$this->save();
-    				log::add('protexiom', 'info', 'HwVersion set to '.$myProtexiom->getHwVersion(), $this->name);
+    				log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'HwVersion set to '.$myProtexiom->getHwVersion(), $this->name);
     			}
     			// Let's initialise the needs_reboot cmd to 0
     			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     			if(is_object($needsRebootCmd)){
     				$needsRebootCmd->event("0");
     			}else{
-    				log::add('protexiom', 'error', 'Unable to reset needs_reboot cmd while saving '.$this->name.' protexiom eqLogic', $this->name);
+    				log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Unable to reset needs_reboot cmd while saving protexiom eqLogic', $this->name);
     			}
-    			// Let's schedul pull if polling is on
+    			
+    			// Let's initialize status
+    			$this->pullStatus();
+    			
+    			//And finally, Let's schedule pull if polling is on
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
     				$this->schedulePull();
     			}//else{// Polling is off
     			
-    			// And finally, let's initialize status
-    			$this->pullStatus();
     		}
     	}//else{//eqLogic disabled
     	
@@ -881,7 +884,7 @@ class protexiom extends eqLogic {
     		$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
     		$cron->save();
-    		log::add('protexiom', 'info', 'Scheduling protexiom pull for equipement '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Scheduling protexiom pull.', $this->name);
     	}
     }//end schedulePull function
     
@@ -897,30 +900,30 @@ class protexiom extends eqLogic {
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		
     		// Starting Jeewawa debug
-    		log::add('protexiom', 'debug', 'Cached cookie found  while unscheduling '.$this->name.'. Trying to logoff', $this->name);
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Cached cookie found  while unscheduling. Trying to logoff', $this->name);
     		$this->initSpBrowser();
     		if(!$myError=$this->_spBrowser->doLogout()){
-    			log::add('protexiom', 'debug', 'Successfull logout while unscheduling '.$this->name.'.', $this->name);
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Successfull logout while unscheduling.', $this->name);
     		}else{
-    			log::add('protexiom', 'debug', 'Logout failed while unscheduling '.$this->name.'. Returned error: '.$myError, $this->name);
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logout failed while unscheduling. Returned error: '.$myError, $this->name);
     		}
     		// Ending Jeewawa debug
     		
     		//$this->initSpBrowser();
     		//$this->_spBrowser->doLogout();
     		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		log::add('protexiom', 'info', 'Removing cached cookie while unscheduling '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Removing cached cookie while unscheduling.', $this->name);
     	}
     	
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
     		$cron->remove();
-    		log::add('protexiom', 'info', 'Removing protexiom pull schedule for equipement '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Removing protexiom pull schedule.', $this->name);
     	}
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
 			echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
-    		log::add('protexiom', 'error', 'Unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it.', $this->name);
+    		log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Unable to remove protexiom pull daemon. You may have to manually remove it.', $this->name);
     	}
     }//end unSchedulePull function
 
@@ -941,7 +944,7 @@ class protexiom extends eqLogic {
     		//$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
     		$cron->save();
-    		log::add('protexiom', 'info', 'Scheduling protexiom isRebooted for equipement '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Scheduling protexiom isRebooted.', $this->name);
     	}
     }//end scheduleIsRebooted function
 
@@ -954,12 +957,12 @@ class protexiom extends eqLogic {
     	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
     		$cron->remove();
-    		log::add('protexiom', 'info', 'Removing protexiom isRebooted schedule for equipement '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'info', '['.$this->name.'-'.$this->getId().'] '.'Removing protexiom isRebooted schedule.', $this->name);
     	}
     	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
     		echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom isRebooted scheduled task for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
-    		log::add('protexiom', 'error', 'Unable to remove protexiom isRebooted scheduled task for device '.$this->name.'. You may have to manually remove it.', $this->name);
+    		log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Unable to remove protexiom isRebooted scheduled task. You may have to manually remove it.', $this->name);
     	}
     }//end unScheduleIsRebooted function
         
@@ -1036,14 +1039,14 @@ class protexiom extends eqLogic {
     		
     		// Starting Jeewawa debug
     		if(!$myError=$this->_spBrowser->doLogout()){
-    			log::add('protexiom', 'debug', 'Successfull logout for workaroundSomfySessionTimeoutBug '.$this->name.'.', $this->name);
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Successfull logout for workaroundSomfySessionTimeoutBug.', $this->name);
     		}else{
-    			log::add('protexiom', 'debug', 'Logout failed for workaroundSomfySessionTimeoutBug '.$this->name.'. Returned error: '.$myError, $this->name);
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logout failed for workaroundSomfySessionTimeoutBug. Returned error: '.$myError, $this->name);
     		}
     		// Ending Jeewawa debug
     		//$this->_spBrowser->doLogout();
     		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		log::add('protexiom', 'debug', 'Logout to workaround somfy session timeout bug on device '.$this->name.'.', $this->name);
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logout to workaround somfy session timeout bug.', $this->name);
     		if($this->_spBrowser->doLogin()){
     			//Login failed again. This may be due to the somfy needs_reboot bug
     			//Some hardware versions, freeze once or twice a day under heavy polling
@@ -1051,12 +1054,12 @@ class protexiom extends eqLogic {
     			//Let's set the needs_reboot cmd to 1 so that the reboot can be launched from an external scenario
     			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     			if (is_object($needsRebootCmd)){
-    				log::add('protexiom', 'debug', 'Login failed while trying to workaround somfy session timeout bug on device '.$this->name.'. The protexiom may need a reboot', $this->name);
+    				log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Login failed while trying to workaround somfy session timeout bug. The protexiom may need a reboot', $this->name);
     				$needsRebootCmd->event("1");
     				$this->unSchedulePull();
     				$this->scheduleIsRebooted();
     			}else{
-    				log::add('protexiom', 'error', 'It would appear that the protexiom may need a reboot, but I\'ve been unable to find needs_reboot cmd', $this->name);
+    				log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'It would appear that the protexiom may need a reboot, but I\'ve been unable to find needs_reboot cmd', $this->name);
     			}
     			return 1;
     	
@@ -1114,18 +1117,18 @@ class protexiom extends eqLogic {
     	$status=$cache->getValue();
     	if(!($status==='' || $status===null || $status=='false')){
     		if(!$cache->hasExpired()){
-    			log::add('protexiom', 'debug', 'Cached protexiom status found.', $this->name);
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Cached protexiom status found.', $this->name);
     			return json_decode($status, true); 
     		}
     	}
-    	log::add('protexiom', 'debug', 'No (unexpired) cached protexiom status found. Let\'s pull status.', $this->name);
+    	log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'No (unexpired) cached protexiom status found. Let\'s pull status.', $this->name);
     	if ($myError=$this->pullStatus()){
     		//An error occured while pulling status
-    		log::add('protexiom', 'debug', 'An error occured while pulling status: '.$myError, $this->name);
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'An error occured while pulling status: '.$myError, $this->name);
     		throw new Exception(__("An error occured while pulling status: $myError",__FILE__));
     	}else{
     		cache::set('somfyStatus::'.$this->getId(), json_encode($this->_spBrowser->getStatus()), $this->_SomfyStatusCacheLifetime);
-    		log::add('protexiom', 'debug', 'Somfy protexiom status successfully pulled and cache', $this->name);
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Somfy protexiom status successfully pulled and cache', $this->name);
     		return $this->_spBrowser->getStatus();
     	}
     }//End function getStatusFromCache
@@ -1165,7 +1168,7 @@ class protexiomCmd extends cmd {
     public function execute($_options = array()) {
     	$protexiom=$this->getEqLogic();
     	$myError="";
-    	log::add('protexiom', 'debug', "Running ".$this->name." CMD", $protexiom->getName());
+    	log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '."Running ".$this->name." CMD", $protexiom->getName());
   
     	if ($this->getType() == 'info') {
     		if($this->getLogicalId() == 'needs_reboot'){
@@ -1189,7 +1192,7 @@ class protexiomCmd extends cmd {
         		}
         	}
         	if($myError){
-    			log::add('protexiom', 'error', "An error occured while running $this->name action: $myError", $protexiom->getName());
+    			log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '."An error occured while running $this->name action: $myError", $protexiom->getName());
 				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
         	}else{
     			//Command successfull
@@ -1198,7 +1201,7 @@ class protexiomCmd extends cmd {
         	}
       	}else{
         	//unknown cmd type
-      		log::add('protexiom', 'error', "$this->getType(): Unknown command type for $this->name", $protexiom->getName());
+      		log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '."$this->getType(): Unknown command type for $this->name", $protexiom->getName());
         	throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
       	}
     		
