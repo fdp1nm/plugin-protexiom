@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <info>
     <id>protexiom</id>
-    <name>Protexiom</name>
+    <name>Somfy alarme</name>
     <description>Plugin pour contrôler les sytèmes d'alarme Somfy Protexiom et Protexial</description>
     <icon>fa fa-bell</icon>
-    <licence>AGPL</licence>
+    <licence>WFTPL</licence>
     <author>Fdp1</author>
     <installation>Aucune</installation>
     <require>1.10</require>
