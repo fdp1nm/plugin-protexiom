@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info>
+    <id>protexiomDevKit</id>
+    <name>DevKit plugin Protexiom</name>
+    <description>Plugin fournissant des outils facailitant le développement et le debug du plugin Somfy Alarme (protexiom)</description>
+    <icon>fa fa-code</icon>
+    <licence>WTFPL</licence>
+    <author>Fdp1</author>
+    <installation>Aucune</installation>
+    <require>1.10</require>
+    <version>0.0.1</version>
+    <category>programming</category>
+</info>
+
