@@ -441,9 +441,9 @@ class phpProtexiom {
 			//we got the expected rcode. If it's a 302, let's check the Location.
 			if($rcode=='302'){
 				//Let's strip the leading / (if exists) since somfy only put it "sometimes"
-				if(preg_replace('/^\//', " ", $response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $this->hwParam['URL']['Error'])){
+				if(preg_replace('/^\//', "", $response['responseHeaders']['Location'])==preg_replace('/^\//', "", $this->hwParam['URL']['Error'])){
 					$myError="Somfy protexiom returned : ".$this->getSomfyError();
-				}elseif(preg_replace('/^\//', " ", !$response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $location)){
+				}elseif(preg_replace('/^\//', "", !$response['responseHeaders']['Location'])==preg_replace('/^\//', "", $location)){
 					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
 				}//else we got the Location. $myError=""
 			}
@@ -453,7 +453,7 @@ class phpProtexiom {
 		}else{
 			if($response['returnCode']=='302'){
 				//Let's strip the leading / (if exists) since somfy only put it "sometimes"
-				if(preg_replace('/^\//', " ", $response['responseHeaders']['Location'])==preg_replace('/^\//', " ", $this->hwParam['URL']['Error'])){
+				if(preg_replace('/^\//', "", $response['responseHeaders']['Location'])==preg_replace('/^\//', "", $this->hwParam['URL']['Error'])){
 					$myError="Somfy protexiom returned : ".$this->getSomfyError();					
 				}else{
 					$myError="Unknow error (HTTP return code: 302 and Location: ".$response['responseHeaders']['Location'].")";
