@@ -317,7 +317,6 @@ class protexiom extends eqLogic {
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Cached protexiom cookie found during initSpBrowser.', $this->name);
-    		// TODO '['.$this->name.'-'.$this->getId().'] '.
     		$this->_spBrowser->authCookie=$cachedCookie;
     		$cache->setLifetime($this->_SomfySessionTimeout);
     		$cache->save();

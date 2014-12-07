@@ -18,20 +18,18 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 /*function protexiom_install() {
 }*/
 
-// TODO restart cron after an update?
-/*function protexiom_update() {
-    $cron = cron::byClassAndFunction('protexiom', 'pull');
-    if (!is_object($cron)) {
-        $cron = new cron();
-        $cron->setClass('protexiom');
-        $cron->setFunction('pull');
-        $cron->setEnable(1);
-        //$cron->setDeamon(1);
-        $cron->setSchedule('* * * * *');
-        $cron->save();
-    }
-    $cron->stop();
-}*/
+function protexiom_update() {
+	log::add('protexiom', 'info', 'Running protexiom post-update script', 'Protexiom');
+	//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
+	//Let's stop it, it will then automatically restart
+	foreach (eqLogic::byType('protexiom') as $eqLogic) {
+		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
+		if (is_object($cron)) {
+			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.'Stopping pull daemon', $eqLogic->getName());
+			$cron->stop();
+		}
+	}
+}
 
 
 function protexiom_remove(){
