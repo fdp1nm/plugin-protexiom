@@ -1,3 +1,7 @@
+==== 0.0.6 - 2014-12-07
+
+- Correction de bugs divers
+
 ==== 0.0.5 - 2014-12-05
 
 - Correction de bugs divers
