@@ -1,3 +1,7 @@
+==== 0.0.7 - 2014-12-08
+
+- Correction d'un bug faisant gonfler le cache jusqu'au remplissage complet de la carte mémoire (ticket 477)
+
 ==== 0.0.6 - 2014-12-07
 
 - Correction de bugs divers

@@ -143,24 +143,14 @@ class protexiom extends eqLogic {
     			//$this->_spBrowser->doLogout();
     			if($myError=$this->_spBrowser->doLogin()){
     				log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Login failed while trying to workaround somfy empty XML bug. Returned error: '.$myError, $this->name);
-    				$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
-    				$cachedCookie=$cache->getValue();
-    				if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    					//The session was cached. Let's empty the cached cookie as we just logged off
-    					$cache->setValue('');
-    					$cache->save();
-    				}
+    				//The session was cached. Let's delete the cached cookie as we just logged off
+    				cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     				return 1;
     			}else{//Login OK
     				$myError=$this->_spBrowser->pullStatus();
     				if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
     					//Polling is on. Let's cache session cookie
-    					$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
-    					$cachedCookie=$cache->getValue();
-    					if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    						$cache->setValue($this->_spBrowser->authCookie);
-    						$cache->save();
-    					}
+    					cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
     				}else{//Polling is off
     					if($myError=$this->_spBrowser->doLogout()){
     						log::add('protexiom', 'error', '['.$this->name.'-'.$this->getId().'] '.'Logout failed after empty XML workaround, with polling off. Returned error: '.$myError, $this->name);
@@ -318,8 +308,6 @@ class protexiom extends eqLogic {
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Cached protexiom cookie found during initSpBrowser.', $this->name);
     		$this->_spBrowser->authCookie=$cachedCookie;
-    		$cache->setLifetime($this->_SomfySessionTimeout);
-    		$cache->save();
     	}
     	return;
     }//End initSpBrowser func
@@ -1173,6 +1161,7 @@ class protexiomCmd extends cmd {
     		if($this->getLogicalId() == 'needs_reboot'){
     			//needs_reboot is only set in case of error, and does not need to be retrieved.
     			// Let's get it from the cache (if no cached, will return false anyway)
+    			// TODO shoudn't we exec instead of getting from cache?
     			$mc = cache::byKey('cmd' . $this->getId());
     			return $mc->getValue();
     		}else{
