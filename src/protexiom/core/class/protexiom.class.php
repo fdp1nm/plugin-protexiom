@@ -120,7 +120,8 @@ class protexiom extends eqLogic {
     	}
     	if($myError=$this->_spBrowser->pullStatus()){
     		//An error occured while pulling status. This may be a session timeout issue.
-    		if(!$this->workaroundSomfySessionTimeoutBug()){
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'The folowing error occured while pulling status: '.$myError.'. This may be a session timeout issue. Let\'s workaround it', $this->name);
+    		if(!$myError=$this->workaroundSomfySessionTimeoutBug()){
     			$myError=$this->_spBrowser->pullStatus();
     		}
     	}else{
@@ -1033,15 +1034,15 @@ class protexiom extends eqLogic {
     		// Ending Jeewawa debug
     		//$this->_spBrowser->doLogout();
     		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logout to workaround somfy session timeout bug.', $this->name);
-    		if($this->_spBrowser->doLogin()){
+    		log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Logged out to workaround somfy session timeout bug.', $this->name);
+    		if($myError=$this->_spBrowser->doLogin()){
     			//Login failed again. This may be due to the somfy needs_reboot bug
     			//Some hardware versions, freeze once or twice a day under heavy polling
     			//If this is the case, the somfy IP module needs et reboot (power off and on) before a new try
     			//Let's set the needs_reboot cmd to 1 so that the reboot can be launched from an external scenario
     			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     			if (is_object($needsRebootCmd)){
-    				log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Login failed while trying to workaround somfy session timeout bug. The protexiom may need a reboot', $this->name);
+    				log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Login failed while trying to workaround somfy session timeout bug with error '.$myError.'. The protexiom may need a reboot', $this->name);
     				$needsRebootCmd->event("1");
     				$this->unSchedulePull();
     				$this->scheduleIsRebooted();
@@ -1051,6 +1052,7 @@ class protexiom extends eqLogic {
     			return 1;
     	
     		}else{//Login OK
+    			log::add('protexiom', 'debug', '['.$this->name.'-'.$this->getId().'] '.'Login successfull for workaroundSomfySessionTimeoutBug. Caching session cookie.', $this->name);
     			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
     			return 0;
     		}
@@ -1175,6 +1177,7 @@ class protexiomCmd extends cmd {
       		$protexiom->initSpBrowser();
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured. May be the somfy session timeout bug
+        		log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '."The folowing error happened while running ".$this->name." CMD: ".$myError.". Let's workaroundSomfySessionTimeoutBug", $protexiom->getName());
         		if(!$protexiom->workaroundSomfySessionTimeoutBug()){
         			$myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'));
         		}
