@@ -1157,7 +1157,7 @@ class protexiomCmd extends cmd {
     public function execute($_options = array()) {
     	$protexiom=$this->getEqLogic();
     	$myError="";
-    	log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getpid()." Running ".$this->name." CMD", $protexiom->getName());
+    	log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getmypid()." Running ".$this->name." CMD", $protexiom->getName());
   
     	if ($this->getType() == 'info') {
     		if($this->getLogicalId() == 'needs_reboot'){
@@ -1177,13 +1177,13 @@ class protexiomCmd extends cmd {
       		$protexiom->initSpBrowser();
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured. May be the somfy session timeout bug
-        		log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getpid()." The folowing error happened while running ".$this->name." CMD: ".$myError.". Let's workaroundSomfySessionTimeoutBug", $protexiom->getName());
+        		log::add('protexiom', 'debug', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getmypid()." The folowing error happened while running ".$this->name." CMD: ".$myError.". Let's workaroundSomfySessionTimeoutBug", $protexiom->getName());
         		if(!$protexiom->workaroundSomfySessionTimeoutBug()){
         			$myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'));
         		}
         	}
         	if($myError){
-    			log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getpid()." An error occured while running $this->name action: $myError", $protexiom->getName());
+    			log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getmypid()." An error occured while running $this->name action: $myError", $protexiom->getName());
 				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
         	}else{
     			//Command successfull
@@ -1192,7 +1192,7 @@ class protexiomCmd extends cmd {
         	}
       	}else{
         	//unknown cmd type
-      		log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getpid()." $this->getType(): Unknown command type for $this->name", $protexiom->getName());
+      		log::add('protexiom', 'error', '['.$protexiom->getName().'-'.$protexiom->getId().'] '.getmypid()." $this->getType(): Unknown command type for $this->name", $protexiom->getName());
         	throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
       	}
     		
