@@ -716,7 +716,24 @@ class protexiom extends eqLogic {
     			//And finally, Let's schedule pull if polling is on
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
     				$this->schedulePull();
-    			}//else{// Polling is off
+    				// If polling is on, we can set every info CMD to setEventOnly
+    				// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
+    				foreach ($this->getCmd('info') as $cmd) {
+    						$cmd->setEventOnly(1);
+    						$cmd->save();
+    				}
+    			}else{// Polling is off
+    				// As no event will be thrown by polling, let's let jeedom refresh collect info CMD when cache is expired
+    				foreach ($this->getCmd('info') as $cmd) {
+    					if($cmd->getLogicalId() == 'needs_reboot'){
+    						//needs_reboot state is only changed by event wether polling is on or of
+    						$cmd->setEventOnly(1);
+    					}else{
+    						$cmd->setEventOnly(0);
+    					}
+    					$cmd->save();
+    				}
+    			}
     			
     		}
     	}//else{//eqLogic disabled
@@ -1102,6 +1119,10 @@ class protexiom extends eqLogic {
     			}
     			
     			if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
+    				//We just ran execCmd, wich set $_collectDate
+    				//Event() will check if $_collectDate is old, and reject the event if it's the case.
+    				//Let's clear it before throwing the event
+    				$cmd->setCollectDate('');
     				$cmd->event($newValue);
     			}// else, unchanged value. Let's keep the cached one
     		}
