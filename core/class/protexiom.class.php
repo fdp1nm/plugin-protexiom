@@ -115,7 +115,7 @@ class protexiom extends eqLogic {
      * @param string $type log type (error, info, event, debug).
      * @param string $message message to add in the log.
      */
-    protected function log($_type = 'INFO', $_message)
+    public function log($_type = 'INFO', $_message)
     {
     	log::add('protexiom', $_type, '['.$this->name.'-'.$this->getId().'] '.getmypid().' '.$_message, $this->name);
     }//End log func
