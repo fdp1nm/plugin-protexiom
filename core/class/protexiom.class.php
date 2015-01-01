@@ -80,6 +80,19 @@ class protexiom extends eqLogic {
     	$protexiom = protexiom::byId($_options['protexiom_id']);
     	if (is_object($protexiom)) {
     		$protexiom->initSpBrowser();
+    		//At some points, some failed connection could happen and lead to erronous isRebooted schedule.
+    		//In this case, a protexiom session could still be maintained elsewhere, and get our login test to fail.
+    		//To avoid this, let's check if a session cookie is cached.
+    		if($protexiom->_spBrowser->authCookie){
+    			//A Session cookie has been found during initSpBrowser
+    			//This is not supposed to happen, as cached cookie is removed during unSchedulePull before scheduleIsRebooted
+    			//Let's force logoff before going on, to avoid a failed login test
+    			$protexiom->log('error', 'Authcookie found during reboot check. This is not supposed to happen. Let\'s force logout to avoid false negative test.');
+    			if($myError=$protexiom->_spBrowser->doLogout()){
+    				$protexiom->log('error', 'Force logout failed during reboot check with error: '.$myError);
+    			}
+    		}
+    		
     		if(!($myError=$protexiom->_spBrowser->doLogin())){
     			//Login OK
     			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
@@ -958,8 +971,6 @@ class protexiom extends eqLogic {
     		$cron->setFunction('isRebooted');
     		$cron->setOption(array('protexiom_id' => intval($this->getId())));
     		$cron->setEnable(1);
-    		//$cron->setDeamon(1);(1);
-    		//$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
     		$cron->save();
     		$this->log('info', 'Scheduling protexiom isRebooted.');
@@ -971,10 +982,10 @@ class protexiom extends eqLogic {
      * @author Fdp1
      *
      */
-    public function unScheduleIsRebooted(){	 
+    public function unScheduleIsRebooted(){
     	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
-    		$cron->remove();
+    		$cron->remove(false);
     		$this->log('info', 'Removing protexiom isRebooted schedule.');
     	}
     	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
