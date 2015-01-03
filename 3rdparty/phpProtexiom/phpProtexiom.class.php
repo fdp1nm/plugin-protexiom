@@ -401,7 +401,7 @@ class phpProtexiom {
 
 				if( ! $response=curl_exec($browser))
 				{
-					$myError=curl_error($browser);
+					$myError="CURL Error: ".curl_error($browser);
 				}else{
 					$http_status = curl_getinfo($browser, CURLINFO_HTTP_CODE);
 					list($headers, $body) = explode("\r\n\r\n", $response, 2);

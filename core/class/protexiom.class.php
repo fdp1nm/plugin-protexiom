@@ -179,7 +179,7 @@ class protexiom extends eqLogic {
     					//Polling is on. Let's cache session cookie
     					cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
     				}else{//Polling is off
-    					if($myError=$this->_spBrowser->doLogout()){
+    					if($myError.=$this->_spBrowser->doLogout()){
     						$this->log('error', 'Logout failed after empty XML workaround, with polling off. Returned error: '.$myError);
     					}
     				}
