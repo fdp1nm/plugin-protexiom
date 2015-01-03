@@ -1,3 +1,8 @@
+==== 0.0.9 - 2015-01-03
+
+- Refonte du système de log. Ajout du PID dans les logs pour faciliter le debug
+- Correction de divers bugs pouvant nuire à la stabilité de certaines installations
+
 ==== 0.0.8 - 2014-12-09
 
 - Ajout de traces pour debug
