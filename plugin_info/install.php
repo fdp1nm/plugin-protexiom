@@ -20,9 +20,26 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function protexiom_update() {
 	log::add('protexiom', 'info', 'Running protexiom post-update script', 'Protexiom');
-	//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
-	//Let's stop it, it will then automatically restart
+	
 	foreach (eqLogic::byType('protexiom') as $eqLogic) {
+		/*
+		 * Upgrade to v0.0.9
+		*/
+		//Let's convert info CMD to eventOnly
+		if(filter_var($eqLogic->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
+			// If polling is on, we can set every info CMD to setEventOnly
+			// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
+			foreach ($eqLogic->getCmd('info') as $cmd) {
+				$cmd->setEventOnly(1);
+				$cmd->save();
+			}
+		}
+		
+		/*
+		 * End of version spécific upgrade actions. Let's run standard actions
+		 */
+		//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
+		//Let's stop it, it will then automatically restart
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
 		if (is_object($cron)) {
 			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.'Stopping pull daemon', $eqLogic->getName());
