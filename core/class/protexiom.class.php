@@ -810,8 +810,22 @@ class protexiom extends eqLogic {
      */
     public function toHtml($_version = 'dashboard') {
     	if ($_version == '') {
-    		throw new Exception(__('La version demandé ne peut être vide (mobile, dashboard ou scenario)', __FILE__));
+    		throw new Exception(__('La version demandée ne peut pas être vide (mobile, dashboard ou scénario)', __FILE__));
     	}
+    	if (!$this->hasRight('r')) {
+    		return '';
+    	}
+    	//TODO uncomment when template modification are done
+    	/* $hasOnlyEventOnly = $this->hasOnlyEventOnlyCmd();
+    	if($hasOnlyEventOnly){
+    		$sql = 'SELECT `value` FROM cache
+           WHERE `key`="widgetHtml' . $_version . $this->getId().'"';
+    		$result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
+    		if ($result['value'] != '') {
+    			return $result['value'];
+    		}
+    	} */
+    	
     	$cmdDisplayOrder=array(
     			"alarm",
     			"link",
@@ -835,7 +849,8 @@ class protexiom extends eqLogic {
     			"reset_link_err",
     			"needs_reboot",
     	);
-    	$info = '';
+    
+    	$cmd_html = '';
     	$version = jeedom::versionAlias($_version);
     	$vcolor = 'cmdColor';
     	if ($version == 'mobile') {
@@ -847,29 +862,30 @@ class protexiom extends eqLogic {
     		$cmdColor = jeedom::getConfiguration('eqLogic:category:' . $this->getPrimaryCategory() . ':' . $vcolor);
     	}
     	if ($this->getIsEnable()) {
+    		
     		foreach ($cmdDisplayOrder as $cmdLogicId) {
     			$cmd=$this->getCmd(null, $cmdLogicId, true);
     			if(is_object($cmd) && is_numeric($cmd->getId()) && $cmd->getIsVisible()){
-    					$info.=$cmd->toHtml($_version, '', $cmdColor);
-    			}	
+    				$cmd_html.=$cmd->toHtml($_version, '', $cmdColor);
+    			}
     		}
     		//Let's check if some CMDs are missing in $cmdDisplayOrder
     		foreach ($this->getCmd(null, null, true) as $cmd) {
     			if (!in_array($cmd->getLogicalId(), $cmdDisplayOrder)) {
-    				$info.=$cmd->toHtml($_version, '', $cmdColor);
+    				$cmd_html.=$cmd->toHtml($_version, '', $cmdColor);
     			}
     		}
-    		
-    		
     	}
     	$replace = array(
     			'#id#' => $this->getId(),
-    			'#name#' => ($this->getIsEnable()) ? $this->getName() : '<del>' . $this->getName() . '</del>',
+    			'#name#' => $this->getName(),
     			'#eqLink#' => $this->getLinkToConfiguration(),
     			'#category#' => $this->getPrimaryCategory(),
     			'#background_color#' => $this->getBackgroundColor($version),
-    			'#info#' => $info,
+    			'#cmd#' => $cmd_html,
     			'#style#' => '',
+    			'#max_width#' => '650px',
+    			'#logicalId#' => $this->getLogicalId()
     	);
     	if ($_version == 'dview' || $_version == 'mview') {
     		$object = $this->getObject();
@@ -879,11 +895,9 @@ class protexiom extends eqLogic {
     	}
     	if (($_version == 'dview' || $_version == 'mview') && $this->getDisplay('doNotShowNameOnView') == 1) {
     		$replace['#name#'] = '';
-    		$replace['#object_name#'] = (is_object($object)) ? $object->getName() : '';
     	}
     	if (($_version == 'mobile' || $_version == 'dashboard') && $this->getDisplay('doNotShowNameOnDashboard') == 1) {
-    		$replace['#name#'] = '<br/>';
-    		$replace['#object_name#'] = (is_object($object)) ? $object->getName() : '';
+    		$replace['#name#'] = '';
     	}
     	$parameters = $this->getDisplay('parameters');
     	if (is_array($parameters)) {
@@ -891,11 +905,15 @@ class protexiom extends eqLogic {
     			$replace['#' . $key . '#'] = $value;
     		}
     	}
-    
     	if (!isset(self::$_templateArray[$version])) {
-    		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic');
+    		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
     	}
-    	return template_replace($replace, self::$_templateArray[$version]);
+    	$html = template_replace($replace, self::$_templateArray[$version]);
+    	// TODO uncomment when template modification are done
+    	/* if($hasOnlyEventOnly){
+    		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
+    	} */
+    	return $html;
     }  
     
     /**
