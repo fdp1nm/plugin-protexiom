@@ -1,0 +1,19 @@
+<div style="width:90px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+    <center>
+        <span style="font-weight: bold;font-size : 12px;" class='cmdName'>#name#<br/></span>
+        <span class="fa-stack fa-2x">
+        	<i class="fa fa-camera fa-stack-1x"></i>
+        	<i id="iconCmd#id#"></i>
+        </span>
+    </center>
+
+    <script>
+        if ('#state#' == '1' || '#state#' == 1) {
+            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
+        }
+        if ('#state#' == '0' || '#state#' == 0) {
+            $('#iconCmd#id#').addClass('fa fa-ban fa-stack-2x text-danger');
+            $('#titleCmd#id#').attr('title', 'Camera absente  -  #collectDate#');
+        }
+    </script>
+</div>

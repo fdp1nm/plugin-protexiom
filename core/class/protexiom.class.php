@@ -550,6 +550,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
+        $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
          
         $protexiomCmd = new protexiomCmd();
@@ -560,6 +562,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
+        $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
          
         $protexiomCmd = new protexiomCmd();
@@ -570,6 +574,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
+        $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -580,6 +586,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
+        $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -590,6 +598,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomLink');
+        $protexiomCmd->setTemplate('mobile', 'protexiomLink');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -600,6 +610,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDoor');
+        $protexiomCmd->setTemplate('mobile', 'protexiomDoor');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -609,7 +621,9 @@ class protexiom extends eqLogic {
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setSubType('string');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomAlarm');
+        $protexiomCmd->setTemplate('mobile', 'protexiomAlarm');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -620,6 +634,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomTampered');
+        $protexiomCmd->setTemplate('mobile', 'protexiomTampered');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -640,6 +656,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('numeric');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomGsmSignal');
+        $protexiomCmd->setTemplate('mobile', 'protexiomGsmSignal');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -660,6 +678,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomCamera');
+        $protexiomCmd->setTemplate('mobile', 'protexiomCamera');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -825,32 +845,7 @@ class protexiom extends eqLogic {
     			return $result['value'];
     		}
     	} */
-    	
-    	$cmdDisplayOrder=array(
-    			"alarm",
-    			"link",
-    			"battery",
-    			"door",
-    			"tampered",
-    			"camera",
-    			"zone_a",
-    			"zone_b",
-    			"zone_c",
-    			"zoneabc_on",
-    			"zonea_on",
-    			"zoneb_on",
-    			"zonec_on",
-    			"abc_off",
-    			"gsm_link",
-    			"gsm_signal",
-    			"gsm_operator",
-    			"reset_alarm_err",
-    			"reset_battery_err",
-    			"reset_link_err",
-    			"needs_reboot",
-    	);
     
-    	$cmd_html = '';
     	$version = jeedom::versionAlias($_version);
     	$vcolor = 'cmdColor';
     	if ($version == 'mobile') {
@@ -861,32 +856,27 @@ class protexiom extends eqLogic {
     	} else {
     		$cmdColor = jeedom::getConfiguration('eqLogic:category:' . $this->getPrimaryCategory() . ':' . $vcolor);
     	}
-    	if ($this->getIsEnable()) {
-    		
-    		foreach ($cmdDisplayOrder as $cmdLogicId) {
-    			$cmd=$this->getCmd(null, $cmdLogicId, true);
-    			if(is_object($cmd) && is_numeric($cmd->getId()) && $cmd->getIsVisible()){
-    				$cmd_html.=$cmd->toHtml($_version, '', $cmdColor);
-    			}
-    		}
-    		//Let's check if some CMDs are missing in $cmdDisplayOrder
-    		foreach ($this->getCmd(null, null, true) as $cmd) {
-    			if (!in_array($cmd->getLogicalId(), $cmdDisplayOrder)) {
-    				$cmd_html.=$cmd->toHtml($_version, '', $cmdColor);
-    			}
-    		}
-    	}
     	$replace = array(
     			'#id#' => $this->getId(),
     			'#name#' => $this->getName(),
     			'#eqLink#' => $this->getLinkToConfiguration(),
     			'#category#' => $this->getPrimaryCategory(),
     			'#background_color#' => $this->getBackgroundColor($version),
-    			'#cmd#' => $cmd_html,
     			'#style#' => '',
     			'#max_width#' => '650px',
     			'#logicalId#' => $this->getLogicalId()
     	);
+    	
+    	if ($this->getIsEnable()) {
+    		foreach ($this->getCmd() as $cmd) {
+    			if($cmd->getIsVisible()){
+    				$replace['#'.$cmd->getLogicalId().'#'] = $cmd->toHtml($_version);
+    			}else{
+    				$replace['#'.$cmd->getLogicalId().'#'] = "";
+    			}
+    		}
+    	}
+    	
     	if ($_version == 'dview' || $_version == 'mview') {
     		$object = $this->getObject();
     		$replace['#object_name#'] = (is_object($object)) ? '(' . $object->getName() . ')' : '';
@@ -929,9 +919,10 @@ class protexiom extends eqLogic {
     		$cron->setFunction('pull');
     		$cron->setOption(array('protexiom_id' => intval($this->getId())));
     		$cron->setEnable(1);
-    		$cron->setDeamon(1);(1);
+    		$cron->setDeamon(1);
     		$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
+    		$cron->setTimeout(2);
     		$cron->save();
     		$this->log('info', 'Scheduling protexiom pull.');
     	}
@@ -1012,61 +1003,6 @@ class protexiom extends eqLogic {
     		$this->log('error', 'Unable to remove protexiom isRebooted scheduled task. You may have to manually remove it.');
     	}
     }//end unScheduleIsRebooted function
-        
-    /*public function toHtml($_version = 'dashboard') {
-        if ($this->getIsEnable() != 1) {
-            return '';
-        }
-        $_version = jeedom::versionAlias($_version);
-        $weather = $this->getWeatherFromYahooXml();
-        if (!is_array($weather)) {
-            $replace = array(
-                '#icone#' => '',
-                '#id#' => $this->getId(),
-                '#city#' => '',
-                '#condition#' => '{{Impossible de rÃ©cupÃ©rer la mÃ©tÃ©o.Pas d\'internet ?}}',
-                '#temperature#' => '',
-                '#windspeed#' => '',
-                '#humidity#' => '',
-                '#pressure#' => '',
-                '#sunrise#' => '',
-                '#sunset#' => '',
-                '#collectDate#' => '',
-                '#background_color#' => $this->getBackgroundColor($_version),
-                '#eqLink#' => $this->getLinkToConfiguration(),
-                '#forecast#' => '',
-            );
-            return template_replace($replace, getTemplate('core', $_version, 'current', 'weather'));
-        }
-        $html_forecast = '';
-        $forcast_template = getTemplate('core', $_version, 'forecast', 'weather');
-        foreach ($weather['forecast'] as $forecast) {
-            $replace = array(
-                '#day#' => $forecast['day'],
-                '#icone#' => $forecast['icone'],
-                '#low_temperature#' => $forecast['low_temperature'],
-                '#hight_temperature#' => $forecast['high_temperature'],
-            );
-            $html_forecast .= template_replace($replace, $forcast_template);
-        }
-        $replace = array(
-            '#id#' => $this->getId(),
-            '#icone#' => $weather['condition']['icone'],
-            '#city#' => $weather['location']['city'],
-            '#condition#' => $weather['condition']['text'],
-            '#temperature#' => $weather['condition']['temperature'],
-            '#windspeed#' => $weather['wind']['speed'],
-            '#humidity#' => $weather['atmosphere']['humidity'],
-            '#pressure#' => $weather['atmosphere']['pressure'],
-            '#sunrise#' => $weather['astronomy']['sunrise'],
-            '#sunset#' => $weather['astronomy']['sunset'],
-            '#collectDate#' => $this->getCollectDate(),
-            '#background_color#' => $this->getBackgroundColor($_version),
-            '#eqLink#' => $this->getLinkToConfiguration(),
-            '#forecast#' => $html_forecast,
-        );
-        return template_replace($replace, getTemplate('core', $_version, 'current', 'weather'));
-    }*/
 
     /**
      * Workaround somfy session timeout bug
@@ -1117,6 +1053,7 @@ class protexiom extends eqLogic {
     		}
     	}else{
     		// Session timeout bug is not likely as polling seems to be turned off
+		$this->log('error', 'Session timeout bug is not likely as polling seems to be turned off (at least, no cookie as been found).');
     		return 1; 
     	}
     }//End function workaroundSomfySessionTimeoutBug

@@ -1,0 +1,35 @@
+<div style="width:90px;min-height:93px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" title="#collectDate#">
+     <center style="margin: 3px;border-radius:4px;">
+        <div class='cmdName' style="font-weight: bold;font-size : 12px;width: 80px;height: 17px;overflow: hidden;" title="#name#">#name#</div>
+        <span style="font-size: 12px;font-weight: bold;" id="iconCmd#id#"></span>
+   </center>
+   <script>
+		var temp;
+     	/* calcul du pourcentage de charge par rapport Ã  la valeur max*/
+     	temp = ( #state# * 100 ) / #maxValue#; 
+     	temp = temp.toFixed(0); // On arrondit;
+     
+     	if (temp == 0) {
+          $('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-not-available-48.png">');
+			$('#iconCmd#id#').closest('.cmd').css('background-color','#ef0a0a');
+        }
+     	if (temp >0 && temp <= 10) {
+           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-0-48.png">');
+        }
+     	if (temp > 10 && temp <= 30) {
+           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-20-48.png">');
+        }
+     	if (temp > 30 && temp <= 50) {
+           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-40-48.png">');
+        }
+     	if (temp > 50 && temp <= 70) {
+           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-60-48.png">');
+        }
+     	if (temp > 70 && temp <= 90) {
+           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-80-48.png">');
+        }
+     	if (temp > 90 && temp <= 100) {
+           	$('#iconCmd#id#').append('<img style="display: block;;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-100-48.png">');58
+        }
+    </script>
+</div>

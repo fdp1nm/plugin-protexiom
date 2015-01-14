@@ -1,0 +1,20 @@
+<div style="width:90px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+    <center>
+        <span style="font-weight: bold;font-size : 12px;" class='cmdName'>#name#<br/></span>
+        <span class="fa-stack fa-2x">
+        	<i class="fa fa-wifi fa-stack-1x"></i>
+        	<i id="iconCmd#id#"></i>
+        </span>
+    </center>
+
+    <script>
+        if ('#state#' == '1' || '#state#' == 1) {
+            //$('#iconCmd#id#').addClass('fa fa-camera');
+        	$('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
+        }
+        if ('#state#' == '0' || '#state#' == 0) {
+            $('#iconCmd#id#').addClass('fa fa-exclamation fa-stack-1x text-danger');
+            $('#titleCmd#id#').attr('title', 'Erreur liaison  -  #collectDate#');
+        }
+    </script>
+</div>
