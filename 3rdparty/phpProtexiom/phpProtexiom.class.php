@@ -534,6 +534,11 @@ class phpProtexiom {
 								$this->authCookie=$response['responseHeaders']['Set-Cookie'];
 							}//else myError != '', will be returned
 						}//else myError != '', will be returned
+						/*
+						 * TODO if myerror, means login failed. Some hardware version needs to click OK to be able to login again after a session timeout.
+						 * See exemple in jeedom ticket 692
+						 * If we get the corresponding error code, let's "click" an try again
+						 */
 						
 					}else{
 						$myError="Invalid auth code ID. Login failed.";
