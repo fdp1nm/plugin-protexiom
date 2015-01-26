@@ -6,12 +6,12 @@
 
     <script>
         if ('#state#' == '1' || '#state#' == 1) {
-            $('#iconCmd#id#').addClass('fa fa-cube');
-            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
+            $('#iconCmd#id#').addClass('fa fa-exclamation text-danger');
+            $('#titleCmd#id#').attr('title', 'Reboot requis  -  #collectDate#');
         }
         if ('#state#' == '0' || '#state#' == 0) {
-            $('#iconCmd#id#').addClass('fa fa-dropbox text-danger');
-            $('#titleCmd#id#').attr('title', 'Alarme sabotage  -  #collectDate#');
+            $('#iconCmd#id#').addClass('fa fa-check');
+            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
         }
     </script>
 </div>

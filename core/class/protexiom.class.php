@@ -691,6 +691,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
         $protexiomCmd->setIsVisible(0);
+        $protexiomCmd->setTemplate('dashboard', 'protexiomNeedsReboot');
+        $protexiomCmd->setTemplate('mobile', 'protexiomNeedsReboot');
         $protexiomCmd->save();
   
     }
@@ -847,15 +849,7 @@ class protexiom extends eqLogic {
     	} */
     
     	$version = jeedom::versionAlias($_version);
-    	$vcolor = 'cmdColor';
-    	if ($version == 'mobile') {
-    		$vcolor = 'mcmdColor';
-    	}
-    	if ($this->getPrimaryCategory() == '') {
-    		$cmdColor = '';
-    	} else {
-    		$cmdColor = jeedom::getConfiguration('eqLogic:category:' . $this->getPrimaryCategory() . ':' . $vcolor);
-    	}
+
     	$replace = array(
     			'#id#' => $this->getId(),
     			'#name#' => $this->getName(),

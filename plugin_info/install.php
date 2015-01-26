@@ -19,12 +19,12 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 }*/
 
 function protexiom_update() {
-	log::add('protexiom', 'info', 'Running protexiom post-update script', 'Protexiom');
+	log::add('protexiom', 'info', '[*-*] '.getmypid().' Running protexiom post-update script', 'Protexiom');
 	
 	foreach (eqLogic::byType('protexiom') as $eqLogic) {
 		/*
 		 * Upgrade to v0.0.9
-		*/
+		 */
 		//Let's convert info CMD to eventOnly
 		if(filter_var($eqLogic->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
 			// If polling is on, we can set every info CMD to setEventOnly
@@ -36,16 +36,53 @@ function protexiom_update() {
 		}
 		
 		/*
+		 * Upgrade to v0.0.10
+		*/
+		
+		$cmd=$eqLogic->getCmd('info', 'alarm');
+		if($cmd->getSubType()=='binary'){
+			$cmd->setSubType('string');
+			message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été modifiée. Son type change, ainsi que sa valeur. Si cette commande est utilisée dans des scenarios, vous devez les modifier.', '', 'Protexiom');
+			$cmd->save();
+		}
+		
+		$templateList = [
+		'zone_a' => 'protexiomZone',
+		'zone_b' => 'protexiomZone',
+		'zone_c' => 'protexiomZone',
+		'battery' => 'protexiomBattery',
+		'link' => 'protexiomLink',
+		'door' => 'protexiomDoor',
+		'alarm' => 'protexiomAlarm',
+		'tampered' => 'protexiomTampered',
+		'gsm_signal' => 'protexiomGsmSignal',
+		'needs_reboot' => 'protexiomNeedsReboot',
+		'camera' => 'protexiomCamera'
+				];
+		
+		foreach ($templateList as $key => $value){
+			$cmd=$eqLogic->getCmd('info', $key);
+			if(!$cmd->getTemplate($version, '')){
+				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
+				$cmd->setTemplate('dashboard', $value);
+				$cmd->setTemplate('mobile', $value);
+				$cmd->save();
+			}
+		}
+		
+		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */
 		//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
 		//Let's stop it, it will then automatically restart
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
 		if (is_object($cron)) {
-			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.'Stopping pull daemon', $eqLogic->getName());
+			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.getmypid().' Stopping pull daemon', $eqLogic->getName());
 			$cron->stop();
 		}
 	}
+	
+	log::add('protexiom', 'info', '[*-*] '.getmypid().' End of protexiom post-update script', 'Protexiom');
 }
 
 
