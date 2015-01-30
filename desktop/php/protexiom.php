@@ -146,10 +146,11 @@ sendVarToJS('eqType', 'protexiom');
                 <tr>
                     <th style="width: 50px;">{{ID}}</th>
                     <th style="width: 200px;">{{Nom}}</th>
-                    <th style="width: 100px;">{{Type}}</th>
-                    <th style="width: 100px;">{{Commande}}</th>
-                    <th style="width: 100px;">{{Paramètres}}</th>
-                    <th style="width: 100px;"></th>
+                    <th style="width: 180px;">{{Légende widget mobile}}</th>
+                    <th style="width: 65px;">{{Type}}</th>
+                    <th style="width: 65px;">{{Commande}}</th>
+                    <th style="width: 65px;">{{Paramètres}}</th>
+                    <th style="width: 65px;"></th>
                 </tr>
             </thead>
             <tbody>

@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v0.0.11 - 2015-02-08
+
+- Relookage widget
+
 ==== v0.0.10 - 2015-01-06
 
 - Correction d'un bug d'affichage du widget sur Jeedom beta (>= 1.149.0)

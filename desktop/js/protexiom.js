@@ -27,6 +27,9 @@ function addCmdToTable(_cmd) {
     tr += '</td>';
     tr += '<td>';
     tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" >';
+    tr += '</td>';
+    tr += '<td>';
+    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="mobileLabel">';
     tr += '</td>'; 
     tr += '<td>';
     tr += '<span class="cmdAttr" data-l1key="type" ></span>';

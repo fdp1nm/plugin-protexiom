@@ -1,14 +1,19 @@
-<div class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" >
+<div style="display: inline-block;font-size: 0.8em;margin-right : 4px;" id="titleCmd#id#" title="#collectDate#">
     <center>
-        <span style="font-weight: bold;font-size : 12px;">#name#</span><br/>
-        <span style="font-size: 2.5em;margin-top: 5px;" id="iconCmd#id#"></span>
+        <span id="spanCmd#id#" class='fa-stack fa-1x'>
+        	<i style="font-size: 1.5em;margin-top: 5px;" id="iconCmd#id#"></i>
+        </span>
     </center>
-    <script>
+	
+	<script>
         if ('#state#' == '1' || '#state#' == 1) {
-            $('#iconCmd#id#').addClass('fa fa-check');
+            $('#titleCmd#id#').attr('title', 'Reboot requis  -  #collectDate#');
+            $('#iconCmd#id#').addClass('fa fa-exclamation fa-stack-1x')
+            $('#iconCmd#id#').css({ "color": "#a94444" });
         }
         if ('#state#' == '0' || '#state#' == 0) {
-            $('#iconCmd#id#').addClass('fa fa-times');
+        	$('#iconCmd#id#').addClass('fa fa-check fa-stack-1x');
+            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
         }
     </script>
 </div>

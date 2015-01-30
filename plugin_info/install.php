@@ -53,6 +53,8 @@ function protexiom_update() {
 		'battery' => 'protexiomBattery',
 		'link' => 'protexiomLink',
 		'door' => 'protexiomDoor',
+        'gsm_operator' => 'protexiomDefault',
+        'gsm_link' => 'protexiomDefault',
 		'alarm' => 'protexiomAlarm',
 		'tampered' => 'protexiomTampered',
 		'gsm_signal' => 'protexiomGsmSignal',
@@ -69,6 +71,36 @@ function protexiom_update() {
 				$cmd->save();
 			}
 		}
+        
+        $mobileTagList = [
+        'zoneabc_on' => 'On  A+B+C',
+        'zonea_on' => 'On A',
+        'zoneb_on' => 'On B',
+        'zonec_on' => 'On C',
+        'abc_off' => 'Off A+B+C',
+        'reset_alarm_err' => 'CLR alarm',
+        'reset_battery_err' => 'CLR bat',
+        'reset_link_err' => 'CLR link',
+		'zone_a' => 'Zone A',
+		'zone_b' => 'Zone B',
+		'zone_c' => 'Zone C',
+		'battery' => 'Piles',
+		'link' => 'Liaison',
+		'door' => 'Portes',
+        'alarm' => 'Alarme',
+        'tampered' => 'Sabotage',
+        'gsm_link' => 'Liaison GSM',
+        'gsm_signal' => 'Récéption GSM',
+        'gsm_operator' => 'Opérateur GSM',
+		'needs_reboot' => 'Reboot requis',
+		'camera' => 'Camera'
+				];
+        foreach ($eqLogic->getCmd() as $cmd) {
+            if(!$cmd->getConfiguration('mobileLabel')){
+                $cmd->setConfiguration('mobileLabel', $mobileTagList[$cmd->getLogicalId()]);
+			    $cmd->save();
+            }
+        }
 		
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
@@ -78,6 +110,9 @@ function protexiom_update() {
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
 		if (is_object($cron)) {
 			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.getmypid().' Stopping pull daemon', $eqLogic->getName());
+			// TODO The cron->stop allows a restrt of the task with an up to date script.
+			// However, stopping the task in the middle of the executioncan lead to authcookie lost
+			// Need to find a workaround
 			$cron->stop();
 		}
 	}

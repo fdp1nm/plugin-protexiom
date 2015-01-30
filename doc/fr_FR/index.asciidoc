@@ -15,7 +15,9 @@ A ce jour la solution permet de :
 * Récupérer les status de l'alarme  (intrusion, sabotage, état des piles, défaut de liaison avec un détecteur, signal gsm si présent, porte ouverte, présence camera)
 * Reseter es defauts de l'alarme
 
-image::../images/widget.png[] 
+
+image::../images/widget.png[Widget dashboard]
+image::../images/widget_mobile.png[Widget mobile]
 
 == Les limites de la solution
 

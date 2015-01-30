@@ -422,6 +422,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zoneabc_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEABC_ON');
+	$protexiomCmd->setConfiguration('mobileLabel', 'On  A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -431,6 +432,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zonea_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEA_ON');
+	$protexiomCmd->setConfiguration('mobileLabel', 'On A');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -440,6 +442,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zoneb_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEB_ON');
+	$protexiomCmd->setConfiguration('mobileLabel', 'On B');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -449,6 +452,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zonec_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEC_ON');
+	$protexiomCmd->setConfiguration('mobileLabel', 'On C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -458,6 +462,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('abc_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARME_OFF');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Off A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -518,6 +523,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_alarm_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_ALARM_ERR');
+	$protexiomCmd->setConfiguration('mobileLabel', 'CLR alarm');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -527,6 +533,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_battery_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_BATTERY_ERR');
+	$protexiomCmd->setConfiguration('mobileLabel', 'CLR bat');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -536,6 +543,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_link_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_LINK_ERR');
+	$protexiomCmd->setConfiguration('mobileLabel', 'CLR link');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->save();
@@ -547,6 +555,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_a');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_A');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Zone A');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -559,6 +568,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_b');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_B');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Zone B');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -571,6 +581,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_c');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_C');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Zone C');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -583,6 +594,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('battery');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Piles');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -595,6 +607,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LINK');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Liaison');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -607,6 +620,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('door');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'DOOR');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Portes');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -619,6 +633,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('alarm');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Alarme');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
@@ -631,6 +646,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('tampered');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'TAMPERED');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Sabotage');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -643,9 +659,12 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_LINK');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Liaison GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -653,6 +672,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_signal');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_SIGNAL');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Récéption GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('numeric');
@@ -665,9 +685,12 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_operator');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_OPERATOR');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Opérateur GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -675,6 +698,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('camera');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'CAMERA');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Camera');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -687,6 +711,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('needs_reboot');
         $protexiomCmd->setEqLogic_id($this->id);
         //$protexiomCmd->setConfiguration('somfyCmd', 'needs_reboot');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Redémarrage requis');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -778,16 +803,7 @@ class protexiom extends eqLogic {
     		if($cmd->getLogicalId() == 'gsm_signal'){
     			$cmd->setConfiguration('maxValue', 5);
     			$cmd->save();
-    		}elseif($cmd->getLogicalId() == 'zoneabc_on'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'On A+B+C');
-    		}elseif($cmd->getLogicalId() == 'zonea_on'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'On A');
-    		}elseif($cmd->getLogicalId() == 'zoneb_on'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'On B');
-    		}elseif($cmd->getLogicalId() == 'zonec_on'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'On C');
-    		}elseif($cmd->getLogicalId() == 'abc_off'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Off A+B+ C');
+    		}
     		// TODO Move light and shutters to a subdevice, and remove this comment block
     		/* }elseif($cmd->getLogicalId() == 'light_on'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Lum. On');
@@ -798,14 +814,8 @@ class protexiom extends eqLogic {
     		}elseif($cmd->getLogicalId() == 'shutter_down'){
     			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ferm');
     		}elseif($cmd->getLogicalId() == 'shutter_stop'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop'); */
-    		}elseif($cmd->getLogicalId() == 'reset_alarm_err'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. alarm');
-    		}elseif($cmd->getLogicalId() == 'reset_battery_err'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. piles');
-    		}elseif($cmd->getLogicalId() == 'reset_link_err'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Eff. comm');
-    		}
+    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop');
+    		}*/
     		
     	}
     }
@@ -837,8 +847,7 @@ class protexiom extends eqLogic {
     	if (!$this->hasRight('r')) {
     		return '';
     	}
-    	//TODO uncomment when template modification are done
-    	/* $hasOnlyEventOnly = $this->hasOnlyEventOnlyCmd();
+    	$hasOnlyEventOnly = $this->hasOnlyEventOnlyCmd();
     	if($hasOnlyEventOnly){
     		$sql = 'SELECT `value` FROM cache
            WHERE `key`="widgetHtml' . $_version . $this->getId().'"';
@@ -846,7 +855,7 @@ class protexiom extends eqLogic {
     		if ($result['value'] != '') {
     			return $result['value'];
     		}
-    	} */
+    	}
     
     	$version = jeedom::versionAlias($_version);
 
@@ -893,10 +902,9 @@ class protexiom extends eqLogic {
     		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
     	}
     	$html = template_replace($replace, self::$_templateArray[$version]);
-    	// TODO uncomment when template modification are done
-    	/* if($hasOnlyEventOnly){
+    	if($hasOnlyEventOnly){
     		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
-    	} */
+    	}
     	return $html;
     }  
     
@@ -1120,7 +1128,7 @@ class protexiom extends eqLogic {
 
 class protexiomCmd extends cmd {
     /*     * *************************Attributs****************************** */
-
+	private static $_templateArray = array();
 
     /*     * ***********************Static methods*************************** */
     /*     * ****accessible without needing an instantiation of the class**** */
@@ -1190,6 +1198,168 @@ class protexiomCmd extends cmd {
         	throw new Exception(__("$this->getType(): Unknown command type for $this->name",__FILE__));
       	}
     		
+    }
+
+    /**
+     * Return tile HTML code for widget
+     * Based on the standard jeedom toHtml function (revsion efa15cb).
+     * Only modified to get a spcific device nome on mobile widget
+     * @param array $_options
+     * @author Fdp1
+     */
+    public function toHtml($_version = 'dashboard', $options = '', $_cmdColor = null, $_cache = 2) {
+    	$version = jeedom::versionAlias($_version);
+    	$html = '';
+    	$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.' . $this->getTemplate($version, 'default');
+    	$template = '';
+    	if (!isset(self::$_templateArray[$version . '::' . $template_name])) {
+    		if ($this->getTemplate($version, 'default') != 'default') {
+    			if (config::byKey('active', 'widget') == 1) {
+    				$template = getTemplate('core', $version, $template_name, 'widget');
+    			}
+    			if ($template == '') {
+    				foreach (plugin::listPlugin(true) as $plugin) {
+    					$template = getTemplate('core', $version, $template_name, $plugin->getId());
+    					if ($template != '') {
+    						break;
+    					}
+    				}
+    			}
+    			if ($template == '' && config::byKey('active', 'widget') == 1 && config::byKey('market::autoInstallMissingWidget') == 1) {
+    				try {
+    					$market = market::byLogicalId(str_replace('cmd.', '', $version . '.' . $template_name));
+    					if (is_object($market)) {
+    						$market->install();
+    						$template = getTemplate('core', $version, $template_name, 'widget');
+    					}
+    				} catch (Exception $e) {
+    					$this->setTemplate($version, 'default');
+    					$this->save();
+    				}
+    			}
+    			if ($template == '') {
+    				$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.default';
+    				$template = getTemplate('core', $version, $template_name);
+    			}
+    		} else {
+    			$template = getTemplate('core', $version, $template_name);
+    		}
+    		self::$_templateArray[$version . '::' . $template_name] = $template;
+    	} else {
+    		$template = self::$_templateArray[$version . '::' . $template_name];
+    	}
+    	$replace = array(
+    			'#id#' => $this->getId(),
+    			//'#name#' => ($this->getDisplay('icon') != '') ? $this->getDisplay('icon') : $this->getName(),
+    			'#name#' => ($this->getDisplay('icon') != '') ? $this->getDisplay('icon') : ($_version == 'mobile') ? $this->getConfiguration('mobileLabel') : $this->getName(), //modified by fdp1
+    			'#history#' => '',
+    			'#displayHistory#' => 'display : none;',
+    			'#unite#' => $this->getUnite(),
+    			'#minValue#' => $this->getConfiguration('minValue', 0),
+    			'#maxValue#' => $this->getConfiguration('maxValue', 100),
+    			'#logicalId#' => $this->getLogicalId(),
+    	);
+    	if ($_cmdColor == null && $version != 'scenario') {
+    		$eqLogic = $this->getEqLogic();
+    		$vcolor = ($version == 'mobile') ? 'mcmdColor' : 'cmdColor';
+    		if ($eqLogic->getPrimaryCategory() == '') {
+    			$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:default:' . $vcolor);
+    		} else {
+    			$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:' . $eqLogic->getPrimaryCategory() . ':' . $vcolor);
+    		}
+    	} else {
+    		$replace['#cmdColor#'] = $_cmdColor;
+    	}
+    	if ($this->getDisplay('doNotShowNameOnView') == 1 && ($_version == 'dview' || $_version == 'mview')) {
+    		$replace['#name#'] = '';
+    	}else if ($this->getDisplay('doNotShowNameOnDashboard') == 1 && ($_version == 'mobile' || $_version == 'dashboard')) {
+    		$replace['#name#'] = '';
+    	}
+    	if ($this->getType() == 'info') {
+    		$replace['#state#'] = '';
+    		$replace['#tendance#'] = '';
+    		$replace['#state#'] = $this->execCmd(null, $_cache);
+    		if ($this->getSubType() == 'binary' && $this->getDisplay('invertBinary') == 1) {
+    			$replace['#state#'] = ($replace['#state#'] == 1) ? 0 : 1;
+    		}
+    		$replace['#collectDate#'] = $this->getCollectDate();
+    		if ($this->getIsHistorized() == 1) {
+    			$replace['#history#'] = 'history cursor';
+    
+    
+    
+    			if (config::byKey('displayStatsWidget') == 1 && strpos($template, '#displayHistory#') !== false) {
+    				$showStat  = true;
+    				if ($this->getDisplay('doNotShowStatOnDashboard') == 1 && $_version == 'dashboard') {
+    					$showStat = false;
+    				}
+    				if ($this->getDisplay('doNotShowStatOnView') == 1 && ($_version == 'dview' || $_version == 'mview')) {
+    					$showStat = false;
+    				}
+    				if ($this->getDisplay('doNotShowStatOnMobile') == 1 && $_version == 'mobile') {
+    					$showStat = false;
+    				}
+    				if($showStat){
+    					$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculPeriod') . ' hour'));
+    					$replace['#displayHistory#'] = '';
+    					$historyStatistique = $this->getStatistique($startHist, date('Y-m-d H:i:s'));
+    					$replace['#averageHistoryValue#'] = round($historyStatistique['avg'], 1);
+    					$replace['#minHistoryValue#'] = round($historyStatistique['min'], 1);
+    					$replace['#maxHistoryValue#'] = round($historyStatistique['max'], 1);
+    					$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculTendance') . ' hour'));
+    					$tendance = $this->getTendance($startHist, date('Y-m-d H:i:s'));
+    					if ($tendance > config::byKey('historyCalculTendanceThresholddMax')) {
+    						$replace['#tendance#'] = 'fa fa-arrow-up';
+    					} else if ($tendance < config::byKey('historyCalculTendanceThresholddMin')) {
+    						$replace['#tendance#'] = 'fa fa-arrow-down';
+    					} else {
+    						$replace['#tendance#'] = 'fa fa-minus';
+    					}
+    				}
+    			}
+    		}
+    		$parameters = $this->getDisplay('parameters');
+    		if (is_array($parameters)) {
+    			foreach ($parameters as $key => $value) {
+    				$replace['#' . $key . '#'] = $value;
+    			}
+    		}
+    		return template_replace($replace, $template);
+    	} else {
+    		$cmdValue = $this->getCmdValue();
+    		if (is_object($cmdValue) && $cmdValue->getType() == 'info') {
+    			$replace['#state#'] = $cmdValue->execCmd(null, 2);
+    			$replace['#valueName#'] = $cmdValue->getName();
+    			$replace['#unite#'] = $cmdValue->getUnite();
+    		} else {
+    			$replace['#state#'] = ($this->getLastValue() != null) ? $this->getLastValue() : '';
+    			$replace['#valueName#'] = $this->getName();
+    			$replace['#unite#'] = $this->getUnite();
+    		}
+    		$parameters = $this->getDisplay('parameters');
+    		if (is_array($parameters)) {
+    			foreach ($parameters as $key => $value) {
+    				$replace['#' . $key . '#'] = $value;
+    			}
+    		}
+    		$html .= template_replace($replace, $template);
+    		if (trim($html) == '') {
+    			return $html;
+    		}
+    		if ($options != '') {
+    			$options = self::cmdToHumanReadable($options);
+    			if (is_json($options)) {
+    				$options = json_decode($options, true);
+    			}
+    			if (is_array($options)) {
+    				foreach ($options as $key => $value) {
+    					$replace['#' . $key . '#'] = $value;
+    				}
+    				$html = template_replace($replace, $html);
+    			}
+    		}
+    		return $html;
+    	}
     }
 
     /*     * **********************Getteur Setteur*************************** */
