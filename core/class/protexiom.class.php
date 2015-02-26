@@ -1168,6 +1168,18 @@ class protexiomCmd extends cmd {
         			$myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'));
         		}
         	}
+            
+            //Somfy protexiom reset session TTL while running action
+            //This would be a feature, but is not very consistent with the sessionTimeoutBug...
+            //Anyway, let's reset cookie timeout to prevent it's expiration during the session
+            $cache=cache::byKey('somfyAuthCookie::'.$protexiom->getId());
+    	    $cachedCookie=$cache->getValue();
+    	    if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
+    		    $protexiom->log('debug', 'Cached protexiom cookie found while runnin action. Let\'s reset the cookie TTL.');
+    		    $cache->setLifetime($protexiom->__SomfySessionCookieTTL);
+                $cache->save();
+    	    }
+            
         	if($myError){
     			$protexiom->log('error', "An error occured while running $this->name action: $myError");
 				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
