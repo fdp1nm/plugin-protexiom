@@ -27,7 +27,7 @@ class protexiom extends eqLogic {
     protected $_SomfyPort = '';
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
-    protected $_SomfySessionCookieTTL=86400;//24 heures
+    public $_SomfySessionCookieTTL=86400;//24 heures
     protected $_SomfyStatusCacheLifetime=30;
     
     private static $_templateArray = array();
@@ -1176,7 +1176,7 @@ class protexiomCmd extends cmd {
     	    $cachedCookie=$cache->getValue();
     	    if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		    $protexiom->log('debug', 'Cached protexiom cookie found while runnin action. Let\'s reset the cookie TTL.');
-    		    $cache->setLifetime($protexiom->__SomfySessionCookieTTL);
+    		    $cache->setLifetime($protexiom->_SomfySessionCookieTTL);
                 $cache->save();
     	    }
             

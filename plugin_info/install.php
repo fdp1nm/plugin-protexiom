@@ -64,9 +64,13 @@ function protexiom_update() {
 		
 		foreach ($templateList as $key => $value){
 			$cmd=$eqLogic->getCmd('info', $key);
-			if(!$cmd->getTemplate($version, '')){
+			if(!$cmd->getTemplate('dashboard', '')){
 				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('dashboard', $value);
+				$cmd->save();
+			}
+            if(!$cmd->getTemplate('mobile', '')){
+				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('mobile', $value);
 				$cmd->save();
 			}
