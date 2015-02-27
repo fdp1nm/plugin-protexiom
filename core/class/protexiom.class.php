@@ -1034,7 +1034,7 @@ class protexiom extends eqLogic {
     	
     		}else{//Login OK
     			$this->log('debug', 'Login successfull for workaroundSomfySessionTimeoutBug. Caching session cookie.');
-    			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
+    			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
     			return 0;
     		}
     	}else{
