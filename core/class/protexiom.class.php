@@ -27,7 +27,7 @@ class protexiom extends eqLogic {
     protected $_SomfyPort = '';
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
-    public $_SomfySessionCookieTTL=86400;//24 heures
+    public $_SomfySessionCookieTTL=0;//0 means never expires
     protected $_SomfyStatusCacheLifetime=30;
     
     private static $_templateArray = array();
@@ -1171,18 +1171,6 @@ class protexiomCmd extends cmd {
         			$myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'));
         		}
         	}
-            
-            //Somfy protexiom reset session TTL while running action
-            //This would be a feature, but is not very consistent with the sessionTimeoutBug...
-            //Anyway, let's reset cookie timeout to prevent it's expiration during the session
-            $cache=cache::byKey('somfyAuthCookie::'.$protexiom->getId());
-    	    $cachedCookie=$cache->getValue();
-    	    if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    		    $protexiom->log('debug', 'Cached protexiom cookie found while runnin action. Let\'s reset the cookie TTL.');
-    		    $cache->setLifetime($protexiom->_SomfySessionCookieTTL);
-                $cache->save();
-    	    }
-            
         	if($myError){
     			$protexiom->log('error', "An error occured while running $this->name action: $myError");
 				throw new Exception(__("An error occured while running $this->name action: $myError",__FILE__));
