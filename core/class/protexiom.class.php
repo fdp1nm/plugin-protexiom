@@ -104,6 +104,7 @@ class protexiom extends eqLogic {
     			}
     			$needsRebootCmd=$protexiom->getCmd(null, 'needs_reboot');
     			if(is_object($needsRebootCmd)){
+                    $needsRebootCmd->setCollectDate('');
     				$needsRebootCmd->event("0");
     			}else{
     				$protexiom->log('error', 'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
@@ -760,6 +761,7 @@ class protexiom extends eqLogic {
     			// Let's initialise the needs_reboot cmd to 0
     			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     			if(is_object($needsRebootCmd)){
+                    $needsRebootCmd->setCollectDate('');
     				$needsRebootCmd->event("0");
     			}else{
     				$this->log('error', 'Unable to reset needs_reboot cmd while saving protexiom eqLogic');
@@ -1024,6 +1026,7 @@ class protexiom extends eqLogic {
     			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
     			if (is_object($needsRebootCmd)){
     				$this->log('debug', 'Login failed while trying to workaround somfy session timeout bug with error '.$myError.'. The protexiom may need a reboot');
+                    $needsRebootCmd->setCollectDate('');
     				$needsRebootCmd->event("1");
     				$this->unSchedulePull();
     				$this->scheduleIsRebooted();
