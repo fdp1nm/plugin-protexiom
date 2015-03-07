@@ -105,7 +105,18 @@ function protexiom_update() {
 			    $cmd->save();
             }
         }
+
+		/*
+		 * Upgrade to v0.0.11
+		*/
 		
+        //Let's remove battery cmd, as this is now handled with Jeedom standard
+		$cmd=$eqLogic->getCmd('info', 'battery');
+        if (is_object($cmd)) {
+            message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
+			$cmd->remove();
+        }
+
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */

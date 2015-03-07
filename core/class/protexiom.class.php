@@ -587,19 +587,6 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Piles', __FILE__));
-        $protexiomCmd->setLogicalId('battery');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Piles');
-        $protexiomCmd->setUnite('');
-        $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('binary');
-        $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
-        $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Liaison', __FILE__));
         $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
@@ -863,7 +850,9 @@ class protexiom extends eqLogic {
     			'#background_color#' => $this->getBackgroundColor($version),
     			'#style#' => '',
     			'#max_width#' => '650px',
-    			'#logicalId#' => $this->getLogicalId()
+    			'#logicalId#' => $this->getLogicalId(),
+                '#battery#' => $this->getConfiguration('batteryStatus', -2),
+                '#batteryDatetime#' => $this->getConfiguration('batteryStatusDatetime', __('inconnue', __FILE__)),
     	);
     	
     	if ($this->getIsEnable()) {
@@ -1082,8 +1071,7 @@ class protexiom extends eqLogic {
     			}// else, unchanged value. Let's keep the cached one
     		}
     	}
-        // TODO Battery level is a specific info handle by Jeedom in a specific way.
-        //If needed, update it with $this->batteryStatus($_pourcent, $_datetime = '')
+        // Battery level is a specific info handle by Jeedom in a specific way.
         if($status['BATTERY']=="ok"){
             $newValue='100';
         }else{

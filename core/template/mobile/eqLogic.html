@@ -1,4 +1,5 @@
 <div class="eqLogic eqLogic-widget noResize" style="width:340px;background-color: #background_color#" data-eqLogic_id="#id#" data-version="mobile" data-category="#category#">
+    <span class="statusBattery" style="position : absolute;right : 5px; width : 30px;"></span>
     <center>
         <span class="widget-name">
             <span style="font-weight: bold;">#name#</span><br/>
@@ -8,7 +9,6 @@
     <div>
 	<center>
 		#link#
-            	#battery#
             	#door#
             	#tampered#
             	#camera#
@@ -46,3 +46,16 @@
 	</center>
     </div>
 </div>
+<script>
+    if(!isNaN('#battery#') && parseInt('#battery#') >= 0){
+        if(parseInt('#battery#') >= 75){
+            $('.eqLogic[data-eqLogic_id=#id#] .statusBattery').append('<i class="icon jeedom-batterie3 tooltips" title="#battery# % (#batteryDatetime#)" style="font-size : 2em;"></i>');
+        }else if(parseInt('#battery#') >= 50){
+            $('.eqLogic[data-eqLogic_id=#id#] .statusBattery').append('<i class="icon jeedom-batterie2 tooltips" title="#battery# % (#batteryDatetime#)" style="font-size : 2em;"></i>');
+        }else if(parseInt('#battery#') >= 25){
+            $('.eqLogic[data-eqLogic_id=#id#] .statusBattery').append('<i class="icon jeedom-batterie1 tooltips" title="#battery# % (#batteryDatetime#)" style="font-size : 2em;"></i>');
+        }else{
+            $('.eqLogic[data-eqLogic_id=#id#] .statusBattery').append('<i class="icon jeedom-batterie0 tooltips" title="#battery# % (#batteryDatetime#)" style="font-size : 2em;"></i>');
+        }
+    }
+</script>
