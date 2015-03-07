@@ -1082,6 +1082,18 @@ class protexiom extends eqLogic {
     			}// else, unchanged value. Let's keep the cached one
     		}
     	}
+        // TODO Battery level is a specific info handle by Jeedom in a specific way.
+        //If needed, update it with $this->batteryStatus($_pourcent, $_datetime = '')
+        if($status['BATTERY']=="ok"){
+            $newValue='100';
+        }else{
+            $newValue='10';
+        }
+        if(!($this->getConfiguration('batteryStatus')==$newValue)){//Changed value
+    		$this->log('debug', 'Setting new battery value to '.$newValue);
+            $this->batteryStatus($newValue);
+        }
+        
     	return;
     }//End function setStatusFromSpBrowser
     
