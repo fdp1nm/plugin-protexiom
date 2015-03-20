@@ -47,10 +47,17 @@ function protexiom_update() {
 		}
 		
 		$templateList = [
+		'abc_off' => 'protexiomOff',
+		'zonea_on' => 'protexiomOn',
+		'zoneb_on' => 'protexiomOn',
+		'zonec_on' => 'protexiomOn',
+		'zoneabc_on' => 'protexiomOn',
+		'reset_alarm_err' => 'protexiomClr',
+		'reset_link_err' => 'protexiomClr',
+		'reset_battery_err' => 'protexiomClr',
 		'zone_a' => 'protexiomZone',
 		'zone_b' => 'protexiomZone',
 		'zone_c' => 'protexiomZone',
-		'battery' => 'protexiomBattery',
 		'link' => 'protexiomLink',
 		'door' => 'protexiomDoor',
         'gsm_operator' => 'protexiomDefault',
@@ -63,7 +70,7 @@ function protexiom_update() {
 				];
 		
 		foreach ($templateList as $key => $value){
-			$cmd=$eqLogic->getCmd('info', $key);
+			$cmd=$eqLogic->getCmd(null, $key);
 			if(!$cmd->getTemplate('dashboard', '')){
 				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('dashboard', $value);
