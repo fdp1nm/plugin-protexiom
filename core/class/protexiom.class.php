@@ -1147,6 +1147,7 @@ class protexiomCmd extends cmd {
     	$protexiom=$this->getEqLogic();
     	$myError="";
     	$protexiom->log('debug', "Running ".$this->name." CMD");
+    	$infoValue="";
   
     	if ($this->getType() == 'info') {
     		if($this->getLogicalId() == 'needs_reboot'){
@@ -1154,14 +1155,25 @@ class protexiomCmd extends cmd {
     			// Let's get it from the cache (if no cached, will return false anyway)
     			// TODO shoudn't we exec instead of getting from cache?
     			$mc = cache::byKey('cmd' . $this->getId());
-    			return $mc->getValue();
+    			$infoValue=$mc->getValue();
     		}else{
     			if($this->getSubType()=='binary'){
-    				return (string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
+    				$infoValue=(string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
+    			}elseif($this->getSubType()=='numeric'){
+    				if(filter_var($protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')], FILTER_VALIDATE_FLOAT)){
+    					$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
+    				}else{
+    					// Returning a non numeric value for a numeric cmd may create bugs
+    					// This happens, for exemple, on the gsm_ignal cmd, when no GSM module is enabled on the protexiom
+    					// Somfy returns "" instead of 0. This is a major problem for javascript in the widget
+    					// Forcing the value to 0 in case of a non numeric value seems pretty safe, and will fix the problem
+    					$infoValue="0";
+    				}
     			}else{
-    				return $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
+    				$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
     			}
     		}
+    		return $infoValue;
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
