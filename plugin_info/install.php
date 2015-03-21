@@ -114,7 +114,7 @@ function protexiom_update() {
         }
 
 		/*
-		 * Upgrade to v0.0.11
+		 * Upgrade to v0.0.12
 		*/
 		
         //Let's remove battery cmd, as this is now handled with Jeedom standard

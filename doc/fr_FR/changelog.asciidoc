@@ -1,5 +1,12 @@
 :numbered!:
 
+==== v0.0.12 - 2015-03-22
+
+- Correction de divers bug
+- Amélioration de la stabilité
+- Correction de problèmes d'affichage sur les widgets
+- Gestion de la battery au standard Jeedom
+
 ==== v0.0.11 - 2015-02-08
 
 - Relookage widget
