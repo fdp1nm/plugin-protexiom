@@ -1,24 +1,21 @@
-<div style="display: inline-block;font-size: 0.8em;margin-right : 4px;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+<div style="width:40px;display: inline-block;font-size: 0.8em;margin-right : 4px;vertical-align:middle;line-height:normal;text-align:center;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
     <center>
-    	<span style="vertical-align:middle;display:inline-block;width:40px;line-height:normal;text-align:center;" >
-        <span id="spanCmd#id#">
+        <span style="width:40px;text-align:center;" id="spanCmd#id#">
                 <i id="backIconCmd#id#"></i>
                 <i id="frontIconCmd#id#"></i>
-        </span>
         </span>
     </center>
 
     <script>
         if ('#state#' == '1' || '#state#' == 1) {
             $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
-            $('#spanCmd#id#').css({ "font-size" : "1.3em" });
-            $('#frontIconCmd#id#').addClass('fa fa-wifi fa-1x');
-            $('#frontIconCmd#id#').css({ "font-size" : "1.2em" });
+            $('#frontIconCmd#id#').addClass('fa fa-rss fa-1x');
+            $('#frontIconCmd#id#').css({ "font-size" : "1.6em" });
         }
         if ('#state#' == '0' || '#state#' == 0) {
         	$('#spanCmd#id#').addClass('fa-stack');
     		$('#spanCmd#id#').css({ "font-size" : "1.6em" });
-        	$('#backIconCmd#id#').addClass('fa fa-wifi fa-stack-1x');
+        	$('#backIconCmd#id#').addClass('fa fa-rss fa-stack-1x');
         	$('#frontIconCmd#id#').addClass('fa fa-exclamation fa-stack-1x');
         	$('#frontIconCmd#id#').css({ "color": "#a94444" });
             $('#titleCmd#id#').attr('title', 'Erreur liaison  -  #collectDate#');
