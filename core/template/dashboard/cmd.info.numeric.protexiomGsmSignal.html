@@ -5,9 +5,12 @@
    </center>
    <script>
 		var temp;
-     	/* calcul du pourcentage de charge par rapport Ã  la valeur max*/
-     	temp = ( #state# * 100 ) / #maxValue#; 
-     	temp = temp.toFixed(0); // On arrondit;
+     	/* calcul du pourcentage du signal par rapport Ã  la valeur max*/
+     	if(isNaN('#state#')){
+     		temp = 0;
+     	}else{
+     		temp = ( parseInt('#state#') * 100 ) / #maxValue#; 
+     	}
      
      	if (temp == 0) {
           $('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-not-available-32.png">');
