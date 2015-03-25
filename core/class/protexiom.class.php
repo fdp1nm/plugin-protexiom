@@ -884,9 +884,9 @@ class protexiom extends eqLogic {
     			$replace['#' . $key . '#'] = $value;
     		}
     	}
-    	if (!isset(self::$_templateArray[$version])) {
-    		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
-    	}
+    	
+        self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
+    	
     	$html = template_replace($replace, self::$_templateArray[$version]);
     	if($hasOnlyEventOnly){
     		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
