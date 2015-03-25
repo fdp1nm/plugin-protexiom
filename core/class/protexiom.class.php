@@ -803,6 +803,7 @@ class protexiom extends eqLogic {
     		
     	}
     }
+    // TODO update widget to be compliant with new best practice as described in https://forum.jeedom.fr/viewtopic.php?f=29&t=6046
     
     /**
      * Called before removing a protexiom eqLogic
