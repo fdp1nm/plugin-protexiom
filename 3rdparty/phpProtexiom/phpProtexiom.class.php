@@ -379,6 +379,7 @@ class phpProtexiom {
 						CURLOPT_HEADER => 1,
 						CURLOPT_RETURNTRANSFER => 1,
 						CURLOPT_FORBID_REUSE => 1,
+                        CURLOPT_TIMEOUT => 30,
 						//CURLOPT_SSL_VERIFYPEER => 1
 				);
 				if($this->authCookie){
