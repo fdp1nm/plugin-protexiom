@@ -189,8 +189,9 @@ class protexiom extends eqLogic {
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
-    		$this->log('info', 'Status refreshed');
+    		$this->log('debug', 'Status refreshed');
     		$this->setStatusFromSpBrowser();
+    		$this->log('debug', 'Pull status... Done');
     		return 0;
     	}
     }//End function pullStatus()
@@ -1047,12 +1048,15 @@ class protexiom extends eqLogic {
     public function setStatusFromSpBrowser() {
     
     	$myError="";
-    
+    	//$this->log('debug', 'setting StatusFromSpBrowser...');
     	if (!is_object($this->_spBrowser)) {
     		throw new Exception(__('Fatal error: setStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
     	}
+    	//$this->log('debug', 'SpBrowser initialised. Let\'s get status');
     	$status=$this->_spBrowser->getStatus();
+    	//$this->log('debug', 'SpBrowser status... GOT');
     	foreach ($this->getCmd('info') as $cmd) {
+    		//$this->log('debug', 'setStatusFromSpBrowser: '.$cmd->getLogicalId());
     		if($cmd->getLogicalId() == 'needs_reboot'){
     			//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
     			continue;
@@ -1072,6 +1076,7 @@ class protexiom extends eqLogic {
     			}// else, unchanged value. Let's keep the cached one
     		}
     	}
+    	//$this->log('debug', 'setStatusFromSpBrowser: All cmd done');
         // Battery level is a specific info handle by Jeedom in a specific way.
         if($status['BATTERY']=="ok"){
             $newValue='100';
@@ -1174,9 +1179,11 @@ class protexiomCmd extends cmd {
     				$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
     			}
     		}
+		$protexiom->log('debug', $this->name." CMD run OK");
     		return $infoValue;
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();
+		$protexiom->log('debug', "Sending web request for ".$this->name." CMD");
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured. May be the somfy session timeout bug
         		$protexiom->log('debug', "The folowing error happened while running ".$this->name." CMD: ".$myError.". Let's workaroundSomfySessionTimeoutBug");
@@ -1190,6 +1197,7 @@ class protexiomCmd extends cmd {
         	}else{
     			//Command successfull
         		$protexiom->setStatusFromSpBrowser();
+			$protexiom->log('debug', $this->name." CMD run OK");
         		return;
         	}
       	}else{
