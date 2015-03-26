@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v0.0.14 - 2015-03-26
+
+- Ajout d'un timeout sur requète web vers somfy
+
 ==== v0.0.13 - 2015-03-25
 
 - Correction d'un bug d'affichage du widget sur les design
