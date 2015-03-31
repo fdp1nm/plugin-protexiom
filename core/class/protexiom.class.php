@@ -590,19 +590,6 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Piles', __FILE__));
-        $protexiomCmd->setLogicalId('battery');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Piles');
-        $protexiomCmd->setUnite('');
-        $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('binary');
-        $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
-        $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Liaison', __FILE__));
         $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
@@ -867,7 +854,9 @@ class protexiom extends eqLogic {
     			'#background_color#' => $this->getBackgroundColor($version),
     			'#style#' => '',
     			'#max_width#' => '650px',
-    			'#logicalId#' => $this->getLogicalId()
+    			'#logicalId#' => $this->getLogicalId(),
+                '#battery#' => $this->getConfiguration('batteryStatus', -2),
+                '#batteryDatetime#' => $this->getConfiguration('batteryStatusDatetime', __('inconnue', __FILE__)),
     	);
     	
     	if ($this->getIsEnable()) {
@@ -898,9 +887,9 @@ class protexiom extends eqLogic {
     			$replace['#' . $key . '#'] = $value;
     		}
     	}
-    	if (!isset(self::$_templateArray[$version])) {
-    		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
-    	}
+    	
+        self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
+    	
     	$html = template_replace($replace, self::$_templateArray[$version]);
     	if($hasOnlyEventOnly){
     		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
@@ -1095,6 +1084,17 @@ class protexiom extends eqLogic {
     			}// else, unchanged value. Let's keep the cached one
     		}
     	}
+        // Battery level is a specific info handle by Jeedom in a specific way.
+        if($status['BATTERY']=="ok"){
+            $newValue='100';
+        }else{
+            $newValue='10';
+        }
+        if(!($this->getConfiguration('batteryStatus')==$newValue)){//Changed value
+    		$this->log('debug', 'Setting new battery value to '.$newValue);
+            $this->batteryStatus($newValue);
+        }
+        
     	return;
     }//End function setStatusFromSpBrowser
     

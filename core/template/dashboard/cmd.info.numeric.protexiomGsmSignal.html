@@ -1,13 +1,16 @@
-<div style="width:90px;min-height:93px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" title="#collectDate#">
+<div style="width:90px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" title="#collectDate#">
      <center style="margin: 3px;border-radius:4px;">
         <div class='cmdName' style="font-weight: bold;font-size : 12px;width: 80px;height: 17px;overflow: hidden;" title="#name#">#name#</div>
         <span style="font-size: 12px;font-weight: bold;" id="iconCmd#id#"></span>
    </center>
    <script>
 		var temp;
-     	/* calcul du pourcentage de charge par rapport Ã  la valeur max*/
-     	temp = ( #state# * 100 ) / #maxValue#; 
-     	temp = temp.toFixed(0); // On arrondit;
+     	/* calcul du pourcentage du signal par rapport Ã  la valeur max*/
+     	if(isNaN('#state#')){
+     		temp = 0;
+     	}else{
+     		temp = ( parseInt('#state#') * 100 ) / #maxValue#; 
+     	}
      
      	if (temp == 0) {
           $('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-not-available-32.png">');

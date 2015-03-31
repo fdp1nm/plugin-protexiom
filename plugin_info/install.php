@@ -47,10 +47,17 @@ function protexiom_update() {
 		}
 		
 		$templateList = [
+		'abc_off' => 'protexiomOff',
+		'zonea_on' => 'protexiomOn',
+		'zoneb_on' => 'protexiomOn',
+		'zonec_on' => 'protexiomOn',
+		'zoneabc_on' => 'protexiomOn',
+		'reset_alarm_err' => 'protexiomClr',
+		'reset_link_err' => 'protexiomClr',
+		'reset_battery_err' => 'protexiomClr',
 		'zone_a' => 'protexiomZone',
 		'zone_b' => 'protexiomZone',
 		'zone_c' => 'protexiomZone',
-		'battery' => 'protexiomBattery',
 		'link' => 'protexiomLink',
 		'door' => 'protexiomDoor',
         'gsm_operator' => 'protexiomDefault',
@@ -63,10 +70,14 @@ function protexiom_update() {
 				];
 		
 		foreach ($templateList as $key => $value){
-			$cmd=$eqLogic->getCmd('info', $key);
-			if(!$cmd->getTemplate($version, '')){
+			$cmd=$eqLogic->getCmd(null, $key);
+			if(!$cmd->getTemplate('dashboard', '')){
 				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('dashboard', $value);
+				$cmd->save();
+			}
+            if(!$cmd->getTemplate('mobile', '')){
+				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('mobile', $value);
 				$cmd->save();
 			}
@@ -101,7 +112,18 @@ function protexiom_update() {
 			    $cmd->save();
             }
         }
+
+		/*
+		 * Upgrade to v0.0.12
+		*/
 		
+        //Let's remove battery cmd, as this is now handled with Jeedom standard
+		$cmd=$eqLogic->getCmd('info', 'battery');
+        if (is_object($cmd)) {
+            message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
+			$cmd->remove();
+        }
+
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */
