@@ -948,8 +948,14 @@ class protexiom extends eqLogic {
     	
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
-    		$cron->remove();
-    		$this->log('info', 'Removing protexiom pull schedule.');
+    		$cron->remove(false);
+    		//$this->log('info', 'Protexiom pull schedule removed.');
+    		//Todo set back to info when debug is done
+    		$this->log('debug', 'Protexiom pull schedule removed.');
+    	}else{
+    		//$this->log('error', 'Unable to find protexiom pull daemon. Removal FAILED.');
+    		//TODO set back to error when debug is done
+    		$this->log('debug', 'Unable to find protexiom pull daemon. Removal FAILED.');
     	}
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
@@ -973,7 +979,13 @@ class protexiom extends eqLogic {
     		$cron->setEnable(1);
     		$cron->setSchedule('* * * * *');
     		$cron->save();
-    		$this->log('info', 'Scheduling protexiom isRebooted.');
+    		//$this->log('info', 'Scheduling protexiom isRebooted.');
+    		//TODO  set back to info
+    		$this->log('debug', 'Scheduling protexiom isRebooted.');
+        }else{
+    		//$this->log('error', 'Unable to schedule protexiom isRebooted as it\'s already running.');
+    		//TODO  set back to error
+    		$this->log('debug', 'Unable to schedule protexiom isRebooted as it\'s already running.');
     	}
     }//end scheduleIsRebooted function
 
