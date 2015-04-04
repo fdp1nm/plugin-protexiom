@@ -27,7 +27,7 @@ class protexiom extends eqLogic {
     protected $_SomfyPort = '';
     protected $_WebProxyHost = '';
     protected $_WebProxyPort = '';
-    protected $_SomfySessionTimeout=5940;
+    public $_SomfySessionCookieTTL=0;//0 means never expires
     protected $_SomfyStatusCacheLifetime=30;
     
     private static $_templateArray = array();
@@ -55,7 +55,7 @@ class protexiom extends eqLogic {
         			$protexiom->log('error', 'Login failed during scheduled pull. Pull aborted. Returned error was: '.$myError);
         			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError);
         		}else{//Login OK
-        			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
+        			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionCookieTTL);
         			$protexiom->log('debug', 'Sucessfull login during scheduled pull. authCookie cached.');
         		}
         	}
@@ -95,7 +95,7 @@ class protexiom extends eqLogic {
     		
     		if(!($myError=$protexiom->_spBrowser->doLogin())){
     			//Login OK
-    			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionTimeout);
+    			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionCookieTTL);
     			$protexiom->log('debug', 'Sucessfull login during reboot check. authCookie cached.');
     			$protexiom->pullStatus();
     			$protexiom->unScheduleIsRebooted();
@@ -178,7 +178,7 @@ class protexiom extends eqLogic {
     				$myError=$this->_spBrowser->pullStatus();
     				if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
     					//Polling is on. Let's cache session cookie
-    					cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
+    					cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
     				}else{//Polling is off
     					if($myError.=$this->_spBrowser->doLogout()){
     						$this->log('error', 'Logout failed after empty XML workaround, with polling off. Returned error: '.$myError);
@@ -1054,7 +1054,7 @@ class protexiom extends eqLogic {
     	
     		}else{//Login OK
     			$this->log('debug', 'Login successfull for workaroundSomfySessionTimeoutBug. Caching session cookie.');
-    			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionTimeout);
+    			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
     			return 0;
     		}
     	}else{
