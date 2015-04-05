@@ -160,19 +160,15 @@ class protexiom extends eqLogic {
     			//Let's log off and on again to workaround this somfy bug
     			$this->log('info', 'Log off and on again to workaround somfy empty XML bug');
     			
-    			// Starting Jeewawa debug
     			if(!$myError=$this->_spBrowser->doLogout()){
-    				$this->log('debug', 'Successfull logout while trying to workaround Empty XML file.');
+    				$this->log('debug', 'Successfull logout while trying to workaround Empty XML file. Deleting session cookie');
+    				cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     			}else{
     				$this->log('debug', 'Logout failed while trying to workaround Empty XML file. Returned error: '.$myError);
     			}
-    			// Ending Jeewawa debug
-    			
-    			//$this->_spBrowser->doLogout();
+
     			if($myError=$this->_spBrowser->doLogin()){
     				$this->log('error', 'Login failed while trying to workaround somfy empty XML bug. Returned error: '.$myError);
-    				//The session was cached. Let's delete the cached cookie as we just logged off
-    				cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     				return 1;
     			}else{//Login OK
     				$myError=$this->_spBrowser->pullStatus();
@@ -932,20 +928,14 @@ class protexiom extends eqLogic {
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		
-    		// Starting Jeewawa debug
     		$this->log('debug', 'Cached cookie found  while unscheduling. Trying to logoff');
     		$this->initSpBrowser();
     		if(!$myError=$this->_spBrowser->doLogout()){
-    			$this->log('debug', 'Successfull logout while unscheduling.');
+    			$this->log('debug', 'Successfull logout while unscheduling. Deleting session cookie');
+                cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     		}else{
     			$this->log('debug', 'Logout failed while unscheduling. Returned error: '.$myError);
     		}
-    		// Ending Jeewawa debug
-    		
-    		//$this->initSpBrowser();
-    		//$this->_spBrowser->doLogout();
-    		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		$this->log('info', 'Removing cached cookie while unscheduling.');
     	}
     	
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
@@ -1025,16 +1015,12 @@ class protexiom extends eqLogic {
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
     		//The session was cached, so the timeout issue is possible. Starting a new session
     		
-    		// Starting Jeewawa debug
     		if(!$myError=$this->_spBrowser->doLogout()){
-    			$this->log('debug', 'Successfull logout for workaroundSomfySessionTimeoutBug.');
+    			$this->log('debug', 'Successfull logout for workaroundSomfySessionTimeoutBug. Deleting session cookie');
+                cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
     		}else{
     			$this->log('debug', 'Logout failed for workaroundSomfySessionTimeoutBug. Returned error: '.$myError);
     		}
-    		// Ending Jeewawa debug
-    		//$this->_spBrowser->doLogout();
-    		cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		$this->log('debug', 'Logged out to workaround somfy session timeout bug.');
     		if($myError=$this->_spBrowser->doLogin()){
     			//Login failed again. This may be due to the somfy needs_reboot bug
     			//Some hardware versions, freeze once or twice a day under heavy polling
