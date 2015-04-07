@@ -189,8 +189,9 @@ class protexiom extends eqLogic {
     		return 1;
     	}else{
     		//Status pulled. Let's now refreh CMD
-    		$this->log('info', 'Status refreshed');
+    		$this->log('debug', 'Status refreshed');
     		$this->setStatusFromSpBrowser();
+    		$this->log('debug', 'Pull status... Done');
     		return 0;
     	}
     }//End function pullStatus()
@@ -804,6 +805,7 @@ class protexiom extends eqLogic {
     		
     	}
     }
+    // TODO update widget to be compliant with new best practice as described in https://forum.jeedom.fr/viewtopic.php?f=29&t=6046
     
     /**
      * Called before removing a protexiom eqLogic
@@ -974,7 +976,7 @@ class protexiom extends eqLogic {
     		//$this->log('info', 'Scheduling protexiom isRebooted.');
     		//TODO  set back to info
     		$this->log('debug', 'Scheduling protexiom isRebooted.');
-        }else{
+    	}else{
     		//$this->log('error', 'Unable to schedule protexiom isRebooted as it\'s already running.');
     		//TODO  set back to error
     		$this->log('debug', 'Unable to schedule protexiom isRebooted as it\'s already running.');
@@ -1161,6 +1163,7 @@ class protexiomCmd extends cmd {
     	$protexiom=$this->getEqLogic();
     	$myError="";
     	$protexiom->log('debug', "Running ".$this->name." CMD");
+    	$infoValue="";
   
     	if ($this->getType() == 'info') {
     		if($this->getLogicalId() == 'needs_reboot'){
@@ -1168,16 +1171,29 @@ class protexiomCmd extends cmd {
     			// Let's get it from the cache (if no cached, will return false anyway)
     			// TODO shoudn't we exec instead of getting from cache?
     			$mc = cache::byKey('cmd' . $this->getId());
-    			return $mc->getValue();
+    			$infoValue=$mc->getValue();
     		}else{
     			if($this->getSubType()=='binary'){
-    				return (string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
+    				$infoValue=(string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
+    			}elseif($this->getSubType()=='numeric'){
+    				if(filter_var($protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')], FILTER_VALIDATE_FLOAT)){
+    					$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
+    				}else{
+    					// Returning a non numeric value for a numeric cmd may create bugs
+    					// This happens, for exemple, on the gsm_ignal cmd, when no GSM module is enabled on the protexiom
+    					// Somfy returns "" instead of 0. This is a major problem for javascript in the widget
+    					// Forcing the value to 0 in case of a non numeric value seems pretty safe, and will fix the problem
+    					$infoValue="0";
+    				}
     			}else{
-    				return $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
+    				$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
     			}
     		}
+		$protexiom->log('debug', $this->name." CMD run OK");
+    		return $infoValue;
       	}elseif ($this->getType() == 'action') {
       		$protexiom->initSpBrowser();
+		$protexiom->log('debug', "Sending web request for ".$this->name." CMD");
         	if($myError=$protexiom->_spBrowser->doAction($this->getConfiguration('somfyCmd'))){
     			//an error occured. May be the somfy session timeout bug
         		$protexiom->log('debug', "The folowing error happened while running ".$this->name." CMD: ".$myError.". Let's workaroundSomfySessionTimeoutBug");
@@ -1191,6 +1207,7 @@ class protexiomCmd extends cmd {
         	}else{
     			//Command successfull
         		$protexiom->setStatusFromSpBrowser();
+			$protexiom->log('debug', $this->name." CMD run OK");
         		return;
         	}
       	}else{
