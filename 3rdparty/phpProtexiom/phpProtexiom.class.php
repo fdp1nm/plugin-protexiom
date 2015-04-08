@@ -95,6 +95,7 @@ class phpProtexiom {
 		$fullHwParam['3']['URL']['Pilotage']="/mu_pilotage.htm";
 		$fullHwParam['3']['URL']['EraseDefault']="/u_listelmt.htm";
 		$fullHwParam['3']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion&img.x=51&img.y=14";
+        $fullHwParam['3']['ReqBody']['ErrorAck']=array('action' => 'OK');
 		$fullHwParam['3']['StatusTag']['ZONE_A']="zone0";// ON/OFF
 		$fullHwParam['3']['StatusTag']['ZONE_B']="zone1";// ON/OFF
 		$fullHwParam['3']['StatusTag']['ZONE_C']="zone2";// ON/OFF
@@ -133,6 +134,7 @@ class phpProtexiom {
 		$fullHwParam['1']['URL']['Pilotage']="/u_pilotage.htm";
 		$fullHwParam['1']['URL']['EraseDefault']="/u_listelmt.htm";
 		$fullHwParam['1']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&action=Connexion";
+        $fullHwParam['1']['ReqBody']['ErrorAck']=array('action' => 'OK');
 		$fullHwParam['1']['StatusTag']['ZONE_A']="zone0";// ON/OFF
 		$fullHwParam['1']['StatusTag']['ZONE_B']="zone1";// ON/OFF
 		$fullHwParam['1']['StatusTag']['ZONE_C']="zone2";// ON/OFF
@@ -171,6 +173,7 @@ class phpProtexiom {
 		$fullHwParam['2']['URL']['Pilotage']="/fr/mu_pilotage.htm";
 		$fullHwParam['2']['URL']['EraseDefault']="/fr/u_listelmt.htm";
 		$fullHwParam['2']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
+        $fullHwParam['2']['ReqBody']['ErrorAck']=array('btn_ok' => 'OK');
 		$fullHwParam['2']['StatusTag']['ZONE_A']="zone0";// ON/OFF
 		$fullHwParam['2']['StatusTag']['ZONE_B']="zone1";// ON/OFF
 		$fullHwParam['2']['StatusTag']['ZONE_C']="zone2";// ON/OFF
@@ -211,6 +214,7 @@ class phpProtexiom {
 		$fullHwParam['4']['URL']['Pilotage']="/fr/u_pilotage.htm";
 		$fullHwParam['4']['URL']['EraseDefault']="/fr/u_listelmt.htm";
 		$fullHwParam['4']['ReqBody']['login']="login=u&password=#UserPwd#&key=#AuthKey#&btn_login=Connexion";
+        $fullHwParam['4']['ReqBody']['ErrorAck']=array('btn_ok' => 'OK');
 		$fullHwParam['4']['StatusTag']['ZONE_A']="zone0";// ON/OFF
 		$fullHwParam['4']['StatusTag']['ZONE_B']="zone1";// ON/OFF
 		$fullHwParam['4']['StatusTag']['ZONE_C']="zone2";// ON/OFF
@@ -375,6 +379,7 @@ class phpProtexiom {
 						CURLOPT_HEADER => 1,
 						CURLOPT_RETURNTRANSFER => 1,
 						CURLOPT_FORBID_REUSE => 1,
+                        CURLOPT_TIMEOUT => 30,
 						//CURLOPT_SSL_VERIFYPEER => 1
 				);
 				if($this->authCookie){
