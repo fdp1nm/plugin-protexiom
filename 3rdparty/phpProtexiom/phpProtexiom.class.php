@@ -603,7 +603,13 @@ class phpProtexiom {
 			if(!$myError=$this->isWgetError($response, '200')){
 				$xmlStatus=simplexml_load_string($response['responseBody']);
 				foreach($this->hwParam['StatusTag'] as $key => $val){
-					$this->status[$key]=(string)$xmlStatus->$val;
+					if($key=="GSM_OPERATOR"){
+						//For some odd reason, Somfy add a " in front of the operator name
+						//Let's remove it*/
+						$this->status[$key]=preg_replace('/^"/', "", (string)$xmlStatus->$val);
+					}else{
+						$this->status[$key]=(string)$xmlStatus->$val;
+					}
 				}
 				$this->status['LastRefresh']=date("Y-m-d H:i:s");
 			}//else: $myerror should be returned
