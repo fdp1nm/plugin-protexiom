@@ -63,7 +63,7 @@ class protexiom extends eqLogic {
         } else {
             log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $_options['protexiom_id']);
             throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©');
-            $protexiom->unSchedulePull(true);
+            $protexiom->unSchedulePull();
         }
     	return;
     } //end pull function 
@@ -716,7 +716,7 @@ class protexiom extends eqLogic {
     public function postSave() {
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
-    	$this->unSchedulePull(true);
+    	$this->unSchedulePull();
     	$this->unScheduleIsRebooted();
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
@@ -813,7 +813,7 @@ class protexiom extends eqLogic {
      *
      */
     public function preRemove(){
-    	$this->unSchedulePull(true);
+    	$this->unSchedulePull();
     	$this->unScheduleIsRebooted();
     }
     
@@ -922,7 +922,7 @@ class protexiom extends eqLogic {
      * @author Fdp1
      *
      */
-    public function unSchedulePull($halt_before = true){
+    public function unSchedulePull(){
     	//Before stopping polling, let's logoff en clear authCookie
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
@@ -940,10 +940,10 @@ class protexiom extends eqLogic {
     	
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
-    		$cron->remove($halt_before);
+    		$cron->remove(true);
     		$this->log('info', 'Protexiom pull schedule removed.');
     	}else{
-    		$this->log('error', 'Unable to find protexiom pull daemon. Removal FAILED.');
+    		$this->log('debug', 'Unable to find protexiom pull daemon. Removal FAILED.');
     	}
 		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
     	if (is_object($cron)) {
@@ -1027,8 +1027,8 @@ class protexiom extends eqLogic {
     				$this->log('debug', 'Login failed while trying to workaround somfy session timeout bug with error '.$myError.'. The protexiom may need a reboot');
                     $needsRebootCmd->setCollectDate('');
     				$needsRebootCmd->event("1");
-    				$this->unSchedulePull(false);
     				$this->scheduleIsRebooted();
+    				$this->unSchedulePull();
     			}else{
     				$this->log('error', 'It would appear that the protexiom may need a reboot, but I\'ve been unable to find needs_reboot cmd');
     			}
