@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v0.0.15 - 2015-04-21
+
+- Bugfix: ConnectionTimeout sur les HwVersion 3 depuis la version 0.0.12
+
 ==== v0.0.14 - 2015-03-26
 
 - Ajout d'un timeout sur requète web vers somfy
