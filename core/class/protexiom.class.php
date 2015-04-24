@@ -911,7 +911,7 @@ class protexiom extends eqLogic {
     		$cron->setDeamon(1);
     		$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
     		$cron->setSchedule('* * * * *');
-    		$cron->setTimeout(2);
+    		$cron->setTimeout(70);//60 is the default. It's not a good odea to restart every daemons at once.
     		$cron->save();
     		$this->log('info', 'Scheduling protexiom pull.');
     	}
