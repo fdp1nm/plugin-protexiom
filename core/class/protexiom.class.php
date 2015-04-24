@@ -967,13 +967,9 @@ class protexiom extends eqLogic {
     		$cron->setEnable(1);
     		$cron->setSchedule('* * * * *');
     		$cron->save();
-    		//$this->log('info', 'Scheduling protexiom isRebooted.');
-    		//TODO  set back to info
-    		$this->log('debug', 'Scheduling protexiom isRebooted.');
+    		$this->log('info', 'Scheduling protexiom isRebooted.');
     	}else{
-    		//$this->log('error', 'Unable to schedule protexiom isRebooted as it\'s already running.');
-    		//TODO  set back to error
-    		$this->log('debug', 'Unable to schedule protexiom isRebooted as it\'s already running.');
+    		$this->log('error', 'Unable to schedule protexiom isRebooted as it\'s already running.');
     	}
     }//end scheduleIsRebooted function
 
