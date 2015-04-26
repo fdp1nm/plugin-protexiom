@@ -53,7 +53,7 @@ $eqLogics = eqLogic::byType('protexiom')
     <div class="col-md-10 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
         <form class="form-horizontal">
             <fieldset>
-                <legend>{{Général}}</legend>
+                <legend><i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i> {{Général}}<i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i></legend>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{Nom de la centrale Somfy Protexiom}}</label>
                     <div class="col-md-3">
