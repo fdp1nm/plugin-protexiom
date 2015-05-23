@@ -60,8 +60,8 @@ function protexiom_update() {
 		'zone_c' => 'protexiomZone',
 		'link' => 'protexiomLink',
 		'door' => 'protexiomDoor',
-        'gsm_operator' => 'protexiomDefault',
-        'gsm_link' => 'protexiomDefault',
+		'gsm_operator' => 'protexiomDefault',
+		'gsm_link' => 'protexiomDefault',
 		'alarm' => 'protexiomAlarm',
 		'tampered' => 'protexiomTampered',
 		'gsm_signal' => 'protexiomGsmSignal',
@@ -76,43 +76,42 @@ function protexiom_update() {
 				$cmd->setTemplate('dashboard', $value);
 				$cmd->save();
 			}
-            if(!$cmd->getTemplate('mobile', '')){
+		if(!$cmd->getTemplate('mobile', '')){
 				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('mobile', $value);
 				$cmd->save();
 			}
 		}
         
-        $mobileTagList = [
-        'zoneabc_on' => 'On  A+B+C',
-        'zonea_on' => 'On A',
-        'zoneb_on' => 'On B',
-        'zonec_on' => 'On C',
-        'abc_off' => 'Off A+B+C',
-        'reset_alarm_err' => 'CLR alarm',
-        'reset_battery_err' => 'CLR bat',
-        'reset_link_err' => 'CLR link',
+		$mobileTagList = [
+		'zoneabc_on' => 'On  A+B+C',
+		'zonea_on' => 'On A',
+		'zoneb_on' => 'On B',
+		'zonec_on' => 'On C',
+		'abc_off' => 'Off A+B+C',
+		'reset_alarm_err' => 'CLR alarm',
+		'reset_battery_err' => 'CLR bat',
+		'reset_link_err' => 'CLR link',
 		'zone_a' => 'Zone A',
 		'zone_b' => 'Zone B',
 		'zone_c' => 'Zone C',
 		'battery' => 'Piles',
 		'link' => 'Liaison',
 		'door' => 'Portes',
-        'alarm' => 'Alarme',
-        'tampered' => 'Sabotage',
-        'gsm_link' => 'Liaison GSM',
-        'gsm_signal' => 'Récéption GSM',
-        'gsm_operator' => 'Opérateur GSM',
+		'alarm' => 'Alarme',
+		'tampered' => 'Sabotage',
+		'gsm_link' => 'Liaison GSM',
+		'gsm_signal' => 'Récéption GSM',
+		'gsm_operator' => 'Opérateur GSM',
 		'needs_reboot' => 'Reboot requis',
 		'camera' => 'Camera'
 				];
-        foreach ($eqLogic->getCmd() as $cmd) {
-            if(!$cmd->getConfiguration('mobileLabel')){
-                $cmd->setConfiguration('mobileLabel', $mobileTagList[$cmd->getLogicalId()]);
+		foreach ($eqLogic->getCmd() as $cmd) {
+		    if(!$cmd->getConfiguration('mobileLabel')){
+			    $cmd->setConfiguration('mobileLabel', $mobileTagList[$cmd->getLogicalId()]);
 			    $cmd->save();
-            }
-        }
-
+		    }
+		}
 		/*
 		 * Upgrade to v0.0.12
 		*/
@@ -120,9 +119,30 @@ function protexiom_update() {
         //Let's remove battery cmd, as this is now handled with Jeedom standard
 		$cmd=$eqLogic->getCmd('info', 'battery');
         if (is_object($cmd)) {
-            message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
+            message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a �t� supprim�e. Le niveau de batterie est maintenant g�r� au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
 			$cmd->remove();
         }
+		/*
+		 * Upgrade to v0.0.16
+		*/
+		
+		//Let's add back battery cmd which was removed in v0.0.12, but with a changed logicalId
+		$cmd=$eqLogic->getCmd('info', 'battery_status');
+		if (!is_object($cmd)) {
+			$cmd = new protexiomCmd();
+			$cmd->setName(__('Piles', __FILE__));
+			$cmd->setLogicalId('battery_status');
+			$cmd->setEqLogic_id($eqLogic->getId());
+			$cmd->setConfiguration('somfyCmd', 'BATTERY');
+			$cmd->setConfiguration('mobileLabel', 'Piles');
+			$cmd->setUnite('');
+			$cmd->setType('info');
+			$cmd->setSubType('binary');
+			$cmd->setIsVisible(0);
+			$cmd->setTemplate('dashboard', 'protexiomBattery');
+			$cmd->setTemplate('mobile', 'protexiomBattery');
+			$cmd->save();
+		}
 
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions

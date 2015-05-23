@@ -588,6 +588,20 @@ class protexiom extends eqLogic {
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
+        $protexiomCmd->setName(__('Piles', __FILE__));
+        $protexiomCmd->setLogicalId('battery_status');
+        $protexiomCmd->setEqLogic_id($this->id);
+        $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
+	$protexiomCmd->setConfiguration('mobileLabel', 'Piles');
+        $protexiomCmd->setUnite('');
+        $protexiomCmd->setType('info');
+        $protexiomCmd->setSubType('binary');
+	$protexiomCmd->setIsVisible(0);
+        $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
+        $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
+        $protexiomCmd->save();
+        
+        $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Liaison', __FILE__));
         $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
