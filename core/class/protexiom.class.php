@@ -1013,21 +1013,8 @@ class protexiom extends eqLogic {
     		}else{
     			$this->log('debug', 'Logout failed for workaroundSomfySessionTimeoutBug. Returned error: '.$myError);
     		}
-    		if($myError=$this->_spBrowser->doLogin()){
-    			//Login failed again. This may be due to the somfy needs_reboot bug
-    			//Some hardware versions, freeze once or twice a day under heavy polling
-    			//If this is the case, the somfy IP module needs et reboot (power off and on) before a new try
-    			//Let's set the needs_reboot cmd to 1 so that the reboot can be launched from an external scenario
-    			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
-    			if (is_object($needsRebootCmd)){
-    				$this->log('debug', 'Login failed while trying to workaround somfy session timeout bug with error '.$myError.'. The protexiom may need a reboot');
-                    $needsRebootCmd->setCollectDate('');
-    				$needsRebootCmd->event("1");
-    				$this->scheduleIsRebooted();
-    				$this->unSchedulePull();
-    			}else{
-    				$this->log('error', 'It would appear that the protexiom may need a reboot, but I\'ve been unable to find needs_reboot cmd');
-    			}
+    		if($myError=$this->_spBrowser->doLogin()){//Login failed
+                $this->log('error', 'Login failed while trying to workaround somfy session timeout bug with error '.$myError.'.');
     			return 1;
     	
     		}else{//Login OK
