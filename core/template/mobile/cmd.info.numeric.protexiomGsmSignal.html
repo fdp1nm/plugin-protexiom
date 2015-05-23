@@ -1,37 +1,41 @@
 <div style="display: inline-block;font-size: 0.8em;margin-right : 4px;" class="cmd" data-type="info" data-subtype="numeric" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
-   <center style="margin: 3px;border-radius:4px;">
-        <span style="font-size: 1.6em;vertical-align:middle;display:inline-block;width:40px;line-height:normal;text-align:center;" id="iconCmd#id#"></span>
-   </center>
+    <center>
+        <span id="spanCmd#id#">
+        	<i style="font-size: 1.6em;vertical-align:middle;display:inline-block;width:40px;line-height:normal;text-align:center;" id="iconCmd#id#"></i>
+        </span>
+    </center>
    <script>
-		var temp;
+		var sigStrength;
      	/* calcul du pourcentage du signal par rapport Ã  la valeur max*/
      	if(isNaN('#state#')){
-     		temp = 0;
+     		sigStrength = 0;
      	}else{
-     		temp = ( parseInt('#state#') * 100 ) / #maxValue#; 
+     		sigStrength = ( parseInt('#state#') * 100 ) / #maxValue#; 
      	}
      
-     	if (temp == 0) {
-          $('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-not-available-32.png">');
-			$('#iconCmd#id#').closest('.cmd').css('background-color','#ef0a0a');
+     	if (sigStrength >=0 && sigStrength <= 10) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal0"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp >0 && temp <= 10) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-0-32.png">');
+     	if (sigStrength > 10 && sigStrength <= 30) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal1"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 10 && temp <= 30) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/mobile/cmd.info.numeric.protexiomGsmSignal/wifi-20-26.png">');
+     	if (sigStrength > 30 && sigStrength <= 50) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal02"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 30 && temp <= 50) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/mobile/cmd.info.numeric.protexiomGsmSignal/wifi-40-26.png">');
+     	if (sigStrength > 50 && sigStrength <= 70) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal3"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 50 && temp <= 70) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/mobile/cmd.info.numeric.protexiomGsmSignal/wifi-60-26.png">');
+     	if (sigStrength > 70 && sigStrength <= 90) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal4"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 70 && temp <= 90) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/mobile/cmd.info.numeric.protexiomGsmSignal/wifi-80-26.png">');
-        }
-     	if (temp > 90 && temp <= 100) {
-           	$('#iconCmd#id#').append('<img style="display: block;;" src="plugins/protexiom/core/template/mobile/cmd.info.numeric.protexiomGsmSignal/wifi-100-26.png">');
+     	if (sigStrength > 90 && sigStrength <= 100) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal5"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
     </script>
 </div>

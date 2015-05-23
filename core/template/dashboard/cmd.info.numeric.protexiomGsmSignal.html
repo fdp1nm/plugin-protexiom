@@ -1,38 +1,41 @@
-<div style="width:90px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" title="#collectDate#">
-     <center style="margin: 3px;border-radius:4px;">
-        <div class='cmdName' style="font-weight: bold;font-size : 12px;width: 80px;height: 17px;overflow: hidden;" title="#name#">#name#</div>
-        <span style="font-size: 12px;font-weight: bold;" id="iconCmd#id#"></span>
-   </center>
+<div style="width:62px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+    <center>
+        <span style="font-weight: bold;font-size : 12px;" class='cmdName'>#name#<br/></span>
+        <span style="font-size: 2em;" id="iconCmd#id#"></span>
+    </center>
+    
    <script>
-		var temp;
+		var sigStrength;
      	/* calcul du pourcentage du signal par rapport Ã  la valeur max*/
      	if(isNaN('#state#')){
-     		temp = 0;
+     		sigStrength = 0;
      	}else{
-     		temp = ( parseInt('#state#') * 100 ) / #maxValue#; 
+     		sigStrength = ( parseInt('#state#') * 100 ) / #maxValue#; 
      	}
      
-     	if (temp == 0) {
-          $('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-not-available-32.png">');
-			$('#iconCmd#id#').closest('.cmd').css('background-color','#ef0a0a');
+     	if (sigStrength >=0 && sigStrength <= 10) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal0"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp >0 && temp <= 10) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-0-32.png">');
+     	if (sigStrength > 10 && sigStrength <= 30) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal1"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 10 && temp <= 30) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-20-32.png">');
+     	if (sigStrength > 30 && sigStrength <= 50) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal02"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 30 && temp <= 50) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-40-32.png">');
+     	if (sigStrength > 50 && sigStrength <= 70) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal3"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 50 && temp <= 70) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-60-32.png">');
+     	if (sigStrength > 70 && sigStrength <= 90) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal4"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
-     	if (temp > 70 && temp <= 90) {
-           	$('#iconCmd#id#').append('<img style="display: block;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-80-32.png">');
-        }
-     	if (temp > 90 && temp <= 100) {
-           	$('#iconCmd#id#').append('<img style="display: block;;" src="plugins/protexiom/core/template/dashboard/cmd.info.numeric.protexiomGsmSignal/wifi-100-32.png">');
+     	if (sigStrength > 90 && sigStrength <= 100) {
+          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal5"></i>');
+          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
         }
     </script>
 </div>
