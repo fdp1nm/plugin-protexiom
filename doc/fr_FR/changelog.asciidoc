@@ -1,5 +1,10 @@
 :numbered!:
 
+==== v0.0.16 - 2015-05-24
+
+- Diverses améliorations d'interface
+- Remise en place d'une commande info pour l'état de la batterie
+
 ==== v0.0.15 - 2015-04-21
 
 - Bugfix: ConnectionTimeout sur les HwVersion 3 depuis la version 0.0.12
