@@ -1225,42 +1225,38 @@ class protexiomCmd extends cmd {
     	$html = '';
     	$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.' . $this->getTemplate($version, 'default');
     	$template = '';
-    	if (!isset(self::$_templateArray[$version . '::' . $template_name])) {
-    		if ($this->getTemplate($version, 'default') != 'default') {
-    			if (config::byKey('active', 'widget') == 1) {
-    				$template = getTemplate('core', $version, $template_name, 'widget');
-    			}
-    			if ($template == '') {
-    				foreach (plugin::listPlugin(true) as $plugin) {
-    					$template = getTemplate('core', $version, $template_name, $plugin->getId());
-    					if ($template != '') {
-    						break;
-    					}
+    	if ($this->getTemplate($version, 'default') != 'default') {
+    		if (config::byKey('active', 'widget') == 1) {
+    			$template = getTemplate('core', $version, $template_name, 'widget');
+    		}
+    		if ($template == '') {
+    			foreach (plugin::listPlugin(true) as $plugin) {
+    				$template = getTemplate('core', $version, $template_name, $plugin->getId());
+    				if ($template != '') {
+    					break;
     				}
     			}
-    			if ($template == '' && config::byKey('active', 'widget') == 1 && config::byKey('market::autoInstallMissingWidget') == 1) {
-    				try {
-    					$market = market::byLogicalId(str_replace('cmd.', '', $version . '.' . $template_name));
-    					if (is_object($market)) {
-    						$market->install();
-    						$template = getTemplate('core', $version, $template_name, 'widget');
-    					}
-    				} catch (Exception $e) {
-    					$this->setTemplate($version, 'default');
-    					$this->save();
+    		}
+    		if ($template == '' && config::byKey('active', 'widget') == 1 && config::byKey('market::autoInstallMissingWidget') == 1) {
+    			try {
+    				$market = market::byLogicalId(str_replace('cmd.', '', $version . '.' . $template_name));
+    				if (is_object($market)) {
+    					$market->install();
+    					$template = getTemplate('core', $version, $template_name, 'widget');
     				}
+    			} catch (Exception $e) {
+    				$this->setTemplate($version, 'default');
+    				$this->save();
     			}
-    			if ($template == '') {
-    				$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.default';
-    				$template = getTemplate('core', $version, $template_name);
-    			}
-    		} else {
+    		}
+    		if ($template == '') {
+    			$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.default';
     			$template = getTemplate('core', $version, $template_name);
     		}
-    		self::$_templateArray[$version . '::' . $template_name] = $template;
     	} else {
-    		$template = self::$_templateArray[$version . '::' . $template_name];
+    		$template = getTemplate('core', $version, $template_name);
     	}
+    	self::$_templateArray[$version . '::' . $template_name] = $template;
     	$replace = array(
     			'#id#' => $this->getId(),
     			//'#name#' => ($this->getDisplay('icon') != '') ? $this->getDisplay('icon') : $this->getName(),
