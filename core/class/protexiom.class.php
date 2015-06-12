@@ -63,7 +63,7 @@ class protexiom extends eqLogic {
         } else {
             log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $_options['protexiom_id']);
             throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©');
-            $protexiom->unSchedulePull();
+            $protexiom->unSchedulePull(false);
         }
     	return;
     } //end pull function 
@@ -728,6 +728,7 @@ class protexiom extends eqLogic {
      *
      */
     public function postSave() {
+    	$this->log('debug', "Running postsave method...");
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
     	$this->unSchedulePull();
@@ -936,8 +937,21 @@ class protexiom extends eqLogic {
      * @author Fdp1
      *
      */
-    public function unSchedulePull(){
-    	//Before stopping polling, let's logoff en clear authCookie
+    public function unSchedulePull($halt_before = true){
+    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
+    	if (is_object($cron)) {
+    		$cron->remove($halt_before);
+    		$this->log('info', 'Protexiom pull schedule removed.');
+    	}else{
+    		$this->log('debug', 'Unable to find protexiom pull daemon. Removal FAILED.');
+    	}
+    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
+    	if (is_object($cron)) {
+    		echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
+    		$this->log('error', 'Unable to remove protexiom pull daemon. You may have to manually remove it.');
+    	}
+    	
+    	//Polling is stopped. Let's logoff en clear authCookie
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
@@ -950,19 +964,6 @@ class protexiom extends eqLogic {
     		}else{
     			$this->log('debug', 'Logout failed while unscheduling. Returned error: '.$myError);
     		}
-    	}
-    	
-		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-    		$cron->remove(true);
-    		$this->log('info', 'Protexiom pull schedule removed.');
-    	}else{
-    		$this->log('debug', 'Unable to find protexiom pull daemon. Removal FAILED.');
-    	}
-		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-			echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
-    		$this->log('error', 'Unable to remove protexiom pull daemon. You may have to manually remove it.');
     	}
     }//end unSchedulePull function
 
