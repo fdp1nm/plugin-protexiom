@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v0.0.17 - 2015-06-14
+
+- Correction de bugs mineurs
+
 ==== v0.0.16 - 2015-05-24
 
 - Diverses améliorations d'interface
