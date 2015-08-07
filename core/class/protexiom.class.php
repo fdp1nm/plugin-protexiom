@@ -76,6 +76,7 @@ class protexiom extends eqLogic {
      * @return
      */
     public static function isRebooted($_options) {
+	// TODO remove needsReboot widget from repo
     	log::add('protexiom', 'debug', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Trying to login to check reboot', $_options['protexiom_id']);
     	$protexiom = protexiom::byId($_options['protexiom_id']);
     	if (is_object($protexiom)) {
@@ -819,7 +820,6 @@ class protexiom extends eqLogic {
     		
     	}
     }
-    // TODO update widget to be compliant with new best practice as described in https://forum.jeedom.fr/viewtopic.php?f=29&t=6046
     
     /**
      * Called before removing a protexiom eqLogic
@@ -1217,7 +1217,7 @@ class protexiomCmd extends cmd {
     /**
      * Return tile HTML code for widget
      * Based on the standard jeedom toHtml function (revsion efa15cb).
-     * Only modified to get a spcific device nome on mobile widget
+     * Only modified to get a spcific device name on mobile widget
      * @param array $_options
      * @author Fdp1
      */
@@ -1293,6 +1293,7 @@ class protexiomCmd extends cmd {
     			$replace['#state#'] = ($replace['#state#'] == 1) ? 0 : 1;
     		}
     		$replace['#collectDate#'] = $this->getCollectDate();
+		//$replace['#valueDate#'] = $this->valueDate();
     		if ($this->getIsHistorized() == 1) {
     			$replace['#history#'] = 'history cursor';
     

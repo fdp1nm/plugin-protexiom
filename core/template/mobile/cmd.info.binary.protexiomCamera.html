@@ -1,22 +1,22 @@
-<div style="width:40px;display: inline-block;font-size: 0.8em;margin-right : 4px;vertical-align:middle;line-height:normal;text-align:center;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
-	<span style="width:40px;text-align:center;" id="spanCmd#id#">
-		<i id="backIconCmd#id#"></i>
-		<i id="frontIconCmd#id#"></i>
+<div style="width:40px;display: inline-block;font-size: 0.8em;margin-right : 4px;vertical-align:middle;line-height:normal;text-align:center;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" title="#collectDate#">
+	<span style="width:40px;text-align:center;" class="spanCmd#id#">
+		<i class="backIconCmd#id#"></i>
+		<i class="frontIconCmd#id#"></i>
 	</span>
 
     <script>
         if ('#state#' == '1' || '#state#' == 1) {
-            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
-            $('#frontIconCmd#id#').addClass('fa fa-camera fa-1x');
-            $('#frontIconCmd#id#').css({ "font-size" : "1.6em" });
+            $('.cmd[data-cmd_id=#id#]').attr('title', 'OK  -  #collectDate#');
+            $('.frontIconCmd#id#').addClass('fa fa-camera fa-1x');
+            $('.frontIconCmd#id#').css({ "font-size" : "1.6em" });
         }
        if ('#state#' == '0' || '#state#' == 0) {
-           $('#spanCmd#id#').addClass('fa-stack');
-           $('#spanCmd#id#').css({ "font-size" : "1.2em" });
-           $('#backIconCmd#id#').addClass('fa fa-camera fa-stack-1x');
-           $('#frontIconCmd#id#').addClass('fa fa-ban fa-stack-2x');
-           $('#frontIconCmd#id#').css({ "color": "#a94444" });
-           $('#titleCmd#id#').attr('title', 'Camera absente  -  #collectDate#');
+           $('.spanCmd#id#').addClass('fa-stack');
+           $('.spanCmd#id#').css({ "font-size" : "1.2em" });
+           $('.backIconCmd#id#').addClass('fa fa-camera fa-stack-1x');
+           $('.frontIconCmd#id#').addClass('fa fa-ban fa-stack-2x');
+           $('.frontIconCmd#id#').css({ "color": "#a94444" });
+           $('.cmd[data-cmd_id=#id#]').attr('title', 'Camera absente  -  #collectDate#');
         }
     </script>
 </div>

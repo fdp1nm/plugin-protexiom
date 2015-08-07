@@ -1,18 +1,18 @@
-<div style="display: inline-block;font-size: 0.8em;margin-right : 4px;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+<div style="display: inline-block;font-size: 0.8em;margin-right : 4px;" class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" title="#collectDate#">
     <center>
-        <span id="spanCmd#id#">
-        	<i style="font-size: 1.6em;vertical-align:middle;display:inline-block;width:40px;line-height:normal;text-align:center;" id="iconCmd#id#"></i>
+        <span class="spanCmd#id#">
+        	<i style="font-size: 1.6em;vertical-align:middle;display:inline-block;width:40px;line-height:normal;text-align:center;" class="iconCmd#id#"></i>
         </span>
     </center>
 	
 	<script>
         if ('#state#' == '1' || '#state#' == 1) {
-            $('#titleCmd#id#').attr('title', 'Porte(s) fermée(s)  -  #collectDate#');
-            $('#iconCmd#id#').addClass('fa jeedom-porte-ferme')
+            $('.cmd[data-cmd_id=#id#]').attr('title', 'Porte(s) fermée(s)  -  #collectDate#');
+            $('.iconCmd#id#').addClass('fa jeedom-porte-ferme')
         }
         if ('#state#' == '0' || '#state#' == 0) {
-            $('#titleCmd#id#').attr('title', 'Porte(s) ouverte(s)  -  #collectDate#');
-        	$('#iconCmd#id#').addClass('fa jeedom-porte-ouverte');
+            $('.cmd[data-cmd_id=#id#]').attr('title', 'Porte(s) ouverte(s)  -  #collectDate#');
+            $('.iconCmd#id#').addClass('fa jeedom-porte-ouverte');
         }
     </script>
 </div>

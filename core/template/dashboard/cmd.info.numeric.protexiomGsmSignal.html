@@ -1,7 +1,7 @@
-<div style="width:62px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+<div style="width:62px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#id#" title="#collectDate#">
     <center>
         <span style="font-weight: bold;font-size : 12px;" class='cmdName'>#name#<br/></span>
-        <span style="font-size: 2em;" id="iconCmd#id#"></span>
+        <span style="font-size: 2em;" class="iconCmd#id#"></span>
     </center>
     
    <script>
@@ -14,28 +14,28 @@
      	}
      
      	if (sigStrength >=0 && sigStrength <= 10) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal0"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal0"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
      	if (sigStrength > 10 && sigStrength <= 30) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal1"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal1"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
      	if (sigStrength > 30 && sigStrength <= 50) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal02"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal02"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
      	if (sigStrength > 50 && sigStrength <= 70) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal3"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal3"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
      	if (sigStrength > 70 && sigStrength <= 90) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal4"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal4"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
      	if (sigStrength > 90 && sigStrength <= 100) {
-          $('#iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal5"></i>');
-          $('#titleCmd#id#').attr('title', 'Signal: #state# -  #collectDate#');
+          $('.iconCmd#id#').append('<i class="icon jeedom2-fdp1-signal5"></i>');
+          $('.cmd[data-cmd_id=#id#]').attr('title', 'Signal: #state# -  #collectDate#');
         }
     </script>
 </div>

@@ -1,23 +1,22 @@
-<div style="width:62px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#id#" id="titleCmd#id#" title="#collectDate#">
+<div style="width:62px;min-height:62px;" class="cmd #history# tooltips cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#id#" title="#collectDate#">
     <center>
         <span style="font-weight: bold;font-size : 12px;" class='cmdName'>#name#<br/></span>
-        <span id="spanCmd#id#">
-        	<i style="margin-top: 5px;" id="backIconCmd#id#"></i>
-        	<i style="font-size: 2em;margin-top: 5px;" id="frontIconCmd#id#"></i>
+        <span class="spanCmd#id#">
+        	<i style="margin-top: 5px;" class="backIconCmd#id#"></i>
+        	<i style="font-size: 2em;margin-top: 5px;" class="frontIconCmd#id#"></i>
         </span>
     </center>
 
     <script>
         if ('#state#' == '1' || '#state#' == 1) {
-            $('#titleCmd#id#').attr('title', 'OK  -  #collectDate#');
-            $('#backIconCmd#id#').addClass('fa fa-camera fa-stack-2x');
-            //$('#backIconCmd#id#').css({ "font-size" : "1.5em" }); 
+            $('.cmd[data-cmd_id=#id#]').attr('title', 'OK  -  #collectDate#');
+            $('.backIconCmd#id#').addClass('fa fa-camera fa-stack-2x'); 
         }
         if ('#state#' == '0' || '#state#' == 0) {
-        	$('#spanCmd#id#').addClass('fa-stack fa-1x');
-        	$('#backIconCmd#id#').addClass('fa fa-camera fa-stack-1x');
-        	$('#frontIconCmd#id#').addClass('fa fa-ban fa-stack-2x text-danger');
-            $('#titleCmd#id#').attr('title', 'Camera absente  -  #collectDate#');
+            $('.spanCmd#id#').addClass('fa-stack fa-1x');
+            $('.backIconCmd#id#').addClass('fa fa-camera fa-stack-1x');
+            $('.frontIconCmd#id#').addClass('fa fa-ban fa-stack-2x text-danger');
+            $('.cmd[data-cmd_id=#id#]').attr('title', 'Camera absente  -  #collectDate#');
         }
     </script>
 </div>
