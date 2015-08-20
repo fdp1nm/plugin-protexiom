@@ -75,14 +75,11 @@ $eqLogics = eqLogic::byType('protexiom')
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 control-label" >{{Activer}}</label>
-                    <div class="col-md-1">
-                        <input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" size="16" checked/>
-                    </div>
-                    <label class="col-md-2 control-label" >{{Visible}}</label>
-                    <div class="col-md-1">
-                        <input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>
-                    </div>
+			<label class="col-md-2 control-label">{{Activer}}</label>
+			<div class="col-md-3">
+				<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="isEnable" checked/>
+				<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="Visible" data-l1key="isVisible" checked/>
+			</div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{Adresse IP ou Hostname:port}}</label>
