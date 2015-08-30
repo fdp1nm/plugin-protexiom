@@ -12,46 +12,94 @@
  * http://www.wtfpl.net/ for more details.
  */
 
-function temPaddCmdToTable() {
-}
-
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
 function addCmdToTable(_cmd) {
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
     }
-    var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
-    tr += '<td>';
-    tr += '<span class="cmdAttr" data-l1key="id" ></span>';
-    tr += '</td>';
-    tr += '<td>';
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" >';
-    tr += '</td>';
-    tr += '<td>';
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="mobileLabel">';
-    tr += '</td>'; 
-    tr += '<td>';
-    tr += '<span class="cmdAttr" data-l1key="type" ></span>';
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="subType" value="other" style="display : none;">';
-    tr += '</td>'; 
-    tr += '<td>';
-    tr += '<span class="cmdAttr" data-l1key="logicalId" ></span>';
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
-    tr += '</td>'; 
-    tr += '<td>';
-    tr += '<span><input type="checkbox" class="cmdAttr" data-l1key="isVisible" checked/> {{Visible}}<br/></span>';
-    tr += '</td>';
-    tr += '<td>';
-    if (is_numeric(_cmd.id)) {
-        tr += '<a class="btn btn-default btn-xs cmdAction expertModeVisible" data-action="configure"><i class="fa fa-cogs"></i></a>';
-	tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+    if (!isset(_cmd.configuration)) {
+        _cmd.configuration = {};
     }
-    /* The command list is static. Lets not offer the possibility to remove them
-    tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';*/
-    tr += '</td>';
-    tr += '</tr>';
-    $('#table_cmd tbody').append(tr);
-    $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+    if (init(_cmd.type) == 'info') {
+	    var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="id" ></span>';
+	    tr += '</td>';
+	    tr += '<td>';
+	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" style="width : 140px;" placeholder="{{Nom}}"><br>';
+	    tr += '</td>';
+	    tr += '<td>'
+	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="mobileLabel" style="width : 140px;" placeholder="{{Légende widget mobile}}">';
+	    tr += '</td>'; 
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="type" ></span><br>';
+	    tr += '<span class="cmdAttr" data-l1key="subType" value="other"></span>';
+	    tr += '</td>'; 
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="logicalId" ></span>';
+	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
+	    tr += '</td>'; 
+	    tr += '<td>';
+	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
+	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+	    tr += '</td>';
+	    tr += '<td>';
+	    if (is_numeric(_cmd.id)) {
+		tr += '<a class="btn btn-default btn-xs cmdAction expertModeVisible" data-action="configure"><i class="fa fa-cogs"></i></a>';
+		tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+	    }
+	    /* The command list is static. Lets not offer the possibility to remove them
+	    tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';*/
+	    tr += '</td>';
+	    tr += '</tr>';
+	    $('#table_cmd tbody').append(tr);
+	    $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+    }
+
+    if (init(_cmd.type) == 'action') {
+	    var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="id" ></span>';
+	    tr += '</td>';
+	    tr += '<td>';
+	    tr += '<div class="row">';
+	    tr += '<div class="col-sm-4">';
+	    tr += '<a class="cmdAction btn btn-default btn-sm" data-l1key="chooseIcon"><i class="fa fa-flag"></i> Icône</a>';
+	    tr += '<span class="cmdAttr" data-l1key="display" data-l2key="icon" style="margin-left : 10px;"></span>';
+	    tr += '</div>';
+	    tr += '<div class="col-sm-8">';
+	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" placeholder="{{Nom}}">';
+	    tr += '</div>';
+	    tr += '</div>';
+	    tr += '</td>';
+	    tr += '<td>'
+	    tr +='<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="mobileLabel" style="width : 140px;" placeholder="{{Légende widget mobile}}">';
+	    tr += '</td>';
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="type" ></span><br>';
+	    tr += '<span class="cmdAttr" data-l1key="subType" value="other"></span>';
+	    tr += '</td>'; 
+	    tr += '<td>';
+	    tr += '<span class="cmdAttr" data-l1key="logicalId" ></span>';
+	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
+	    tr += '</td>'; 
+	    tr += '<td>';
+	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
+	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+	    tr += '</td>';
+	    tr += '<td>';
+	    if (is_numeric(_cmd.id)) {
+		tr += '<a class="btn btn-default btn-xs cmdAction expertModeVisible" data-action="configure"><i class="fa fa-cogs"></i></a>';
+		tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+	    }
+	    /* The command list is static. Lets not offer the possibility to remove them
+	    tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';*/
+	    tr += '</td>';
+	    tr += '</tr>';
+	    $('#table_cmd tbody').append(tr);
+	    $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+    }
+    
 }
 
