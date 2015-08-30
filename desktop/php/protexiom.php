@@ -159,6 +159,15 @@ $eqLogics = eqLogic::byType('protexiom')
                 </div>
            </fieldset> 
         </form>
+	
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-actions">
+                    <a class="btn btn-danger eqLogicAction" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+                    <a class="btn btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
+                </div>
+            </fieldset>
+        </form>
 
 <?php
 /* Command list
@@ -173,12 +182,12 @@ $eqLogics = eqLogic::byType('protexiom')
             <thead>
                 <tr>
                     <th style="width: 50px;">{{ID}}</th>
-                    <th style="width: 200px;">{{Nom}}</th>
-                    <th style="width: 180px;">{{Légende widget mobile}}</th>
-                    <th style="width: 65px;">{{Type}}</th>
-                    <th style="width: 65px;">{{Commande}}</th>
-                    <th style="width: 65px;">{{Paramètres}}</th>
-                    <th style="width: 65px;"></th>
+                    <th style="width: 230px;">{{Nom}}</th>
+                    <th>{{Légende widget mobile}}</th>
+                    <th style="width: 110px;">{{Type}}</th>
+                    <th style="width: 100px;">{{Commande}}</th>
+                    <th style="width: 200px;">{{Paramètres}}</th>
+                    <th style="width: 100px;"></th>
                 </tr>
             </thead>
             <tbody>
