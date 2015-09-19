@@ -424,6 +424,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'On  A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
         $protexiomCmd->save();
 
         $protexiomCmd = new protexiomCmd();
@@ -434,6 +435,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'On A');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
         $protexiomCmd->save();
 
         $protexiomCmd = new protexiomCmd();
@@ -444,6 +446,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'On B');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
         $protexiomCmd->save();
 
         $protexiomCmd = new protexiomCmd();
@@ -454,16 +457,18 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'On C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
         $protexiomCmd->save();
 
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Arret A+B+C', __FILE__));
-        $protexiomCmd->setLogicalId('abc_off');
+        $protexiomCmd->setLogicalId('zoneabc_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARME_OFF');
 	$protexiomCmd->setConfiguration('mobileLabel', 'Off A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
         $protexiomCmd->save();
         
         // TODO Move light and shutters to a subdevice, and remove this comment block
@@ -525,6 +530,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'CLR alarm');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -535,6 +541,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'CLR bat');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
         $protexiomCmd->save();
         
         $protexiomCmd = new protexiomCmd();
@@ -545,6 +552,7 @@ class protexiom extends eqLogic {
 	$protexiomCmd->setConfiguration('mobileLabel', 'CLR link');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
+        $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
         $protexiomCmd->save();
         
         // Info CMD

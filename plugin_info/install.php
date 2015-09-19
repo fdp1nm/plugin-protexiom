@@ -143,7 +143,40 @@ function protexiom_update() {
 			$cmd->setTemplate('mobile', 'protexiomBattery');
 			$cmd->save();
 		}
-
+        /*
+		 * Upgrade to v0.0.18
+		*/
+	    foreach ($eqLogic->getCmd('action') as $cmd) {
+            switch($cmd->getLogicalId())
+            {
+                case 'abc_off';
+                    $cmd->setLogicalId('zoneabc_off');
+                    if($cmd->getDisplay('icon')==''){
+                        $cmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
+                    }
+                    $cmd->save();
+                break;
+                case 'zoneabc_on';
+                case 'zonea_on';
+                case 'zoneb_on';
+                case 'zonec_on';
+                    if($cmd->getDisplay('icon')==''){
+                        $cmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+                        $cmd->save();
+                    }
+                break;
+                case 'reset_alarm_err';
+                case 'reset_battery_err';
+                case 'reset_link_err';
+                    if($cmd->getDisplay('icon')==''){
+                        $cmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
+                        $cmd->save();
+                    }
+                break;
+            }
+    	}
+	
+        
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */
