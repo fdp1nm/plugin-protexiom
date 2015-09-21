@@ -71,16 +71,18 @@ function protexiom_update() {
 		
 		foreach ($templateList as $key => $value){
 			$cmd=$eqLogic->getCmd(null, $key);
-			if(!$cmd->getTemplate('dashboard', '')){
-				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
-				$cmd->setTemplate('dashboard', $value);
-				$cmd->save();
-			}
-			if(!$cmd->getTemplate('mobile', '')){
-				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
-				$cmd->setTemplate('mobile', $value);
-				$cmd->save();
-			}
+            if (is_object($cmd)) {
+			    if(!$cmd->getTemplate('dashboard', '')){
+				    log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
+				    $cmd->setTemplate('dashboard', $value);
+				    $cmd->save();
+			    }
+			    if(!$cmd->getTemplate('mobile', '')){
+				    log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
+				    $cmd->setTemplate('mobile', $value);
+				    $cmd->save();
+			    }
+            }
 		}
         
 		$mobileTagList = [
@@ -177,7 +179,7 @@ function protexiom_update() {
 					}
 					if($cmd->getTemplate('mobile', '')=='protexiomOn'){
 						$cmd->setTemplate('mobile', 'protexiomDefault');
-						$i++
+						$i++;
 					}
 					if($i){
 						$cmd->save();
@@ -197,7 +199,7 @@ function protexiom_update() {
 					}
 					if($cmd->getTemplate('mobile', '')=='protexiomClr'){
 						$cmd->setTemplate('mobile', 'protexiomDefault');
-						$i++
+						$i++;
 					}
 					if($i){
 						$cmd->save();

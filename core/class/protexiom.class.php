@@ -416,16 +416,16 @@ class protexiom extends eqLogic {
     	
     	//Action CMD
     	
-    	$protexiomCmd = new protexiomCmd();
+        $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Marche A+B+C', __FILE__));
         $protexiomCmd->setLogicalId('zoneabc_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEABC_ON');
-	$protexiomCmd->setConfiguration('mobileLabel', 'On  A+B+C');
+        $protexiomCmd->setConfiguration('mobileLabel', 'On  A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
 
@@ -434,11 +434,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zonea_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEA_ON');
-	$protexiomCmd->setConfiguration('mobileLabel', 'On A');
+        $protexiomCmd->setConfiguration('mobileLabel', 'On A');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
 
@@ -447,11 +447,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zoneb_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEB_ON');
-	$protexiomCmd->setConfiguration('mobileLabel', 'On B');
+        $protexiomCmd->setConfiguration('mobileLabel', 'On B');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
 
@@ -460,11 +460,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zonec_on');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONEC_ON');
-	$protexiomCmd->setConfiguration('mobileLabel', 'On C');
+        $protexiomCmd->setConfiguration('mobileLabel', 'On C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
 
@@ -473,11 +473,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zoneabc_off');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARME_OFF');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Off A+B+C');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Off A+B+C');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
@@ -537,11 +537,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_alarm_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_ALARM_ERR');
-	$protexiomCmd->setConfiguration('mobileLabel', 'CLR alarm');
+        $protexiomCmd->setConfiguration('mobileLabel', 'CLR alarm');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
@@ -550,11 +550,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_battery_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_BATTERY_ERR');
-	$protexiomCmd->setConfiguration('mobileLabel', 'CLR bat');
+        $protexiomCmd->setConfiguration('mobileLabel', 'CLR bat');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
@@ -563,11 +563,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('reset_link_err');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'RESET_LINK_ERR');
-	$protexiomCmd->setConfiguration('mobileLabel', 'CLR link');
+        $protexiomCmd->setConfiguration('mobileLabel', 'CLR link');
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
-	$protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
+        $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
         
@@ -578,7 +578,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_a');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_A');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Zone A');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Zone A');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -591,7 +591,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_b');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_B');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Zone B');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Zone B');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -604,7 +604,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('zone_c');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ZONE_C');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Zone C');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Zone C');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -617,11 +617,11 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('battery_status');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'BATTERY');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Piles');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Piles');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
-	$protexiomCmd->setIsVisible(0);
+        $protexiomCmd->setIsVisible(0);
         $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
         $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
         $protexiomCmd->save();
@@ -631,7 +631,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'LINK');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Liaison');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Liaison');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -644,7 +644,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('door');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'DOOR');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Portes');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Portes');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -657,7 +657,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('alarm');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'ALARM');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Alarme');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Alarme');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
@@ -670,7 +670,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('tampered');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'TAMPERED');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Sabotage');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Sabotage');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -683,7 +683,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_link');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_LINK');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Liaison GSM');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Liaison GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
@@ -696,7 +696,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_signal');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_SIGNAL');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Récéption GSM');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Récéption GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('numeric');
@@ -709,7 +709,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('gsm_operator');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_OPERATOR');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Opérateur GSM');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Opérateur GSM');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
@@ -722,7 +722,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('camera');
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'CAMERA');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Camera');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Camera');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
@@ -735,7 +735,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setLogicalId('needs_reboot');
         $protexiomCmd->setEqLogic_id($this->id);
         //$protexiomCmd->setConfiguration('somfyCmd', 'needs_reboot');
-	$protexiomCmd->setConfiguration('mobileLabel', 'Redémarrage requis');
+        $protexiomCmd->setConfiguration('mobileLabel', 'Redémarrage requis');
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');

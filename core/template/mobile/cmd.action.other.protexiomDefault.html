@@ -1,8 +1,5 @@
 <span class="cmd" data-type="action" data-subtype="other" data-cmd_id="#id#" >
-    <a class="action ui-btn ui-mini ui-btn-inline ui-btn-b" style="margin-top : 5px;margin-bottom: 5px;">
-    	<i style="display:inline-block;width:25px;text-align:left;" class="fa fa-lock"></i>#name#
-    </a>
-    
+    <a class="action ui-btn ui-mini ui-btn-inline ui-btn-raised" style="background-color:#cmdColor# !important;">#icon# #name#</a>
     <script>
         $('.cmd[data-cmd_id=#id#] .action').click(function() {
             jeedom.cmd.execute({id: '#id#'});
