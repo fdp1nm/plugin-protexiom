@@ -67,58 +67,7 @@ class protexiom extends eqLogic {
         }
     	return;
     } //end pull function 
-    
-    /**
-     * Instanciate protexiom eqLogic and tries to login. If login OK, set needs_reboot cmd to 0
-     *
-     * @author Fdp1
-     * @param array $_options['protexiom_id']
-     * @return
-     */
-    public static function isRebooted($_options) {
-	// TODO remove needsReboot widget from repo
-    	log::add('protexiom', 'debug', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Trying to login to check reboot', $_options['protexiom_id']);
-    	$protexiom = protexiom::byId($_options['protexiom_id']);
-    	if (is_object($protexiom)) {
-    		$protexiom->initSpBrowser();
-    		//At some points, some failed connection could happen and lead to erronous isRebooted schedule.
-    		//In this case, a protexiom session could still be maintained elsewhere, and get our login test to fail.
-    		//To avoid this, let's check if a session cookie is cached.
-    		if($protexiom->_spBrowser->authCookie){
-    			//A Session cookie has been found during initSpBrowser
-    			//This is not supposed to happen, as cached cookie is removed during unSchedulePull before scheduleIsRebooted
-    			//Let's force logoff before going on, to avoid a failed login test
-    			$protexiom->log('error', 'Authcookie found during reboot check. This is not supposed to happen. Let\'s force logout to avoid false negative test.');
-    			if($myError=$protexiom->_spBrowser->doLogout()){
-    				$protexiom->log('error', 'Force logout failed during reboot check with error: '.$myError);
-    			}
-    		}
-    		
-    		if(!($myError=$protexiom->_spBrowser->doLogin())){
-    			//Login OK
-    			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionCookieTTL);
-    			$protexiom->log('debug', 'Sucessfull login during reboot check. authCookie cached.');
-    			$protexiom->pullStatus();
-    			$protexiom->unScheduleIsRebooted();
-    			if(filter_var($protexiom->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
-    				$protexiom->schedulePull();
-    			}
-    			$needsRebootCmd=$protexiom->getCmd(null, 'needs_reboot');
-    			if(is_object($needsRebootCmd)){
-                    $needsRebootCmd->setCollectDate('');
-    				$needsRebootCmd->event("0");
-    			}else{
-    				$protexiom->log('error', 'Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
-    				throw new Exception('Protexiom reboot went OK, but I\'ve been unable to reset needs_reboot cmd');
-    			}
-    		}	
-    	}else{
-    		$protexiom->unScheduleIsRebooted();
-    		log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().'Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.', $_options['protexiom_id']);
-    		throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache isRebooted supprimÃ©.');
-    	}
-    	return;
-    } //end isRebooted function
+
 
     /*     * **********************Instance methods************************** */
 
@@ -729,20 +678,6 @@ class protexiom extends eqLogic {
         $protexiomCmd->setTemplate('dashboard', 'protexiomCamera');
         $protexiomCmd->setTemplate('mobile', 'protexiomCamera');
         $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Redémarrage requis', __FILE__));
-        $protexiomCmd->setLogicalId('needs_reboot');
-        $protexiomCmd->setEqLogic_id($this->id);
-        //$protexiomCmd->setConfiguration('somfyCmd', 'needs_reboot');
-        $protexiomCmd->setConfiguration('mobileLabel', 'Redémarrage requis');
-        $protexiomCmd->setUnite('');
-        $protexiomCmd->setType('info');
-        $protexiomCmd->setSubType('binary');
-        $protexiomCmd->setIsVisible(0);
-        $protexiomCmd->setTemplate('dashboard', 'protexiomNeedsReboot');
-        $protexiomCmd->setTemplate('mobile', 'protexiomNeedsReboot');
-        $protexiomCmd->save();
   
     }
 
@@ -757,7 +692,6 @@ class protexiom extends eqLogic {
     	//Let's unschedule protexiom pull
     	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
     	$this->unSchedulePull();
-    	$this->unScheduleIsRebooted();
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
     		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
@@ -786,14 +720,6 @@ class protexiom extends eqLogic {
     				$this->save();
     				$this->log('info', 'HwVersion set to '.$myProtexiom->getHwVersion());
     			}
-    			// Let's initialise the needs_reboot cmd to 0
-    			$needsRebootCmd=$this->getCmd(null, 'needs_reboot');
-    			if(is_object($needsRebootCmd)){
-                    $needsRebootCmd->setCollectDate('');
-    				$needsRebootCmd->event("0");
-    			}else{
-    				$this->log('error', 'Unable to reset needs_reboot cmd while saving protexiom eqLogic');
-    			}
     			
     			// Let's initialize status
     			$this->pullStatus();
@@ -810,12 +736,7 @@ class protexiom extends eqLogic {
     			}else{// Polling is off
     				// As no event will be thrown by polling, let's let jeedom refresh collect info CMD when cache is expired
     				foreach ($this->getCmd('info') as $cmd) {
-    					if($cmd->getLogicalId() == 'needs_reboot'){
-    						//needs_reboot state is only changed by event wether polling is on or of
-    						$cmd->setEventOnly(1);
-    					}else{
-    						$cmd->setEventOnly(0);
-    					}
+                        $cmd->setEventOnly(0);
     					$cmd->save();
     				}
     			}
@@ -853,7 +774,6 @@ class protexiom extends eqLogic {
      */
     public function preRemove(){
     	$this->unSchedulePull();
-    	$this->unScheduleIsRebooted();
     }
     
     /**
@@ -992,45 +912,6 @@ class protexiom extends eqLogic {
     }//end unSchedulePull function
 
     /**
-     * Schedule login test to check connection to the device
-     * @author Fdp1
-     *
-     */
-    public function scheduleIsRebooted(){
-    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
-    	if (!is_object($cron)) {
-    		$cron=new cron();
-    		$cron->setClass('protexiom');
-    		$cron->setFunction('isRebooted');
-    		$cron->setOption(array('protexiom_id' => intval($this->getId())));
-    		$cron->setEnable(1);
-    		$cron->setSchedule('* * * * *');
-    		$cron->save();
-    		$this->log('info', 'Scheduling protexiom isRebooted.');
-    	}else{
-    		$this->log('error', 'Unable to schedule protexiom isRebooted as it\'s already running.');
-    	}
-    }//end scheduleIsRebooted function
-
-    /**
-     * Unchedule login test
-     * @author Fdp1
-     *
-     */
-    public function unScheduleIsRebooted(){
-    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-    		$cron->remove(false);
-    		$this->log('info', 'Removing protexiom isRebooted schedule.');
-    	}
-    	$cron = cron::byClassAndFunction('protexiom', 'isRebooted', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-    		echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom isRebooted scheduled task for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
-    		$this->log('error', 'Unable to remove protexiom isRebooted scheduled task. You may have to manually remove it.');
-    	}
-    }//end unScheduleIsRebooted function
-
-    /**
      * Workaround somfy session timeout bug
      * In case of unexpected error during web request, try to log off and on again, as somfy session timeout is not reset
      * at each request but is an absolute max session duration. They may call it a feature, I would call it a bug...
@@ -1078,35 +959,25 @@ class protexiom extends eqLogic {
     public function setStatusFromSpBrowser() {
     
     	$myError="";
-    	//$this->log('debug', 'setting StatusFromSpBrowser...');
     	if (!is_object($this->_spBrowser)) {
     		throw new Exception(__('Fatal error: setStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
     	}
-    	//$this->log('debug', 'SpBrowser initialised. Let\'s get status');
     	$status=$this->_spBrowser->getStatus();
-    	//$this->log('debug', 'SpBrowser status... GOT');
     	foreach ($this->getCmd('info') as $cmd) {
-    		//$this->log('debug', 'setStatusFromSpBrowser: '.$cmd->getLogicalId());
-    		if($cmd->getLogicalId() == 'needs_reboot'){
-    			//Go to the next cmd, as needs_reboot is not retrieved from spBrowser
-    			continue;
+    		if($cmd->getSubType()=='binary'){
+    			$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
     		}else{
-    			if($cmd->getSubType()=='binary'){
-    				$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
-    			}else{
-    				$newValue=$status[$cmd->getConfiguration('somfyCmd')];
-    			}
-    			
-    			if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
-    				//We just ran execCmd, wich set $_collectDate
-    				//Event() will check if $_collectDate is old, and reject the event if it's the case.
-    				//Let's clear it before throwing the event
-    				$cmd->setCollectDate('');
-    				$cmd->event($newValue);
-    			}// else, unchanged value. Let's keep the cached one
+    			$newValue=$status[$cmd->getConfiguration('somfyCmd')];
     		}
+    		
+    		if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
+    			//We just ran execCmd, wich set $_collectDate
+    			//Event() will check if $_collectDate is old, and reject the event if it's the case.
+    			//Let's clear it before throwing the event
+    			$cmd->setCollectDate('');
+    			$cmd->event($newValue);
+    		}// else, unchanged value. Let's keep the cached one
     	}
-    	//$this->log('debug', 'setStatusFromSpBrowser: All cmd done');
         // Battery level is a specific info handle by Jeedom in a specific way.
         if($status['BATTERY']=="ok"){
             $newValue='100';
@@ -1186,28 +1057,20 @@ class protexiomCmd extends cmd {
     	$infoValue="";
   
     	if ($this->getType() == 'info') {
-    		if($this->getLogicalId() == 'needs_reboot'){
-    			//needs_reboot is only set in case of error, and does not need to be retrieved.
-    			// Let's get it from the cache (if no cached, will return false anyway)
-    			// TODO shoudn't we exec instead of getting from cache?
-    			$mc = cache::byKey('cmd' . $this->getId());
-    			$infoValue=$mc->getValue();
-    		}else{
-    			if($this->getSubType()=='binary'){
-    				$infoValue=(string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
-    			}elseif($this->getSubType()=='numeric'){
-    				if(filter_var($protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')], FILTER_VALIDATE_FLOAT)){
-    					$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
-    				}else{
-    					// Returning a non numeric value for a numeric cmd may create bugs
-    					// This happens, for exemple, on the gsm_ignal cmd, when no GSM module is enabled on the protexiom
-    					// Somfy returns "" instead of 0. This is a major problem for javascript in the widget
-    					// Forcing the value to 0 in case of a non numeric value seems pretty safe, and will fix the problem
-    					$infoValue="0";
-    				}
-    			}else{
+            if($this->getSubType()=='binary'){
+    			$infoValue=(string)preg_match("/^o[k n]$/i", $protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')]);
+    		}elseif($this->getSubType()=='numeric'){
+    			if(filter_var($protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')], FILTER_VALIDATE_FLOAT)){
     				$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
+    			}else{
+    				// Returning a non numeric value for a numeric cmd may create bugs
+    				// This happens, for exemple, on the gsm_ignal cmd, when no GSM module is enabled on the protexiom
+    				// Somfy returns "" instead of 0. This is a major problem for javascript in the widget
+    				// Forcing the value to 0 in case of a non numeric value seems pretty safe, and will fix the problem
+    				$infoValue="0";
     			}
+    		}else{
+    			$infoValue=$protexiom->getStatusFromCache()[$this->getConfiguration('somfyCmd')];
     		}
 		$protexiom->log('debug', $this->name." CMD run OK");
     		return $infoValue;

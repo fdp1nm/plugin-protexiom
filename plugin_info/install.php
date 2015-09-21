@@ -207,7 +207,13 @@ function protexiom_update() {
 				break;
 			}
 		}
-	
+        //We reach enough stability. the needs_reboot is nolonger needed
+        $cmd=$eqLogic->getCmd('info', 'needs_reboot');
+	    if (is_object($cmd)) {
+            log::add('protexiom', 'info', '[*-*] '.getmypid().' removing needs_reboot cmd for '.$cmd->getName(), 'Protexiom');
+            $cmd->remove();
+            message::add('protexiom', 'Somfy alarme '.$eqLogic->getName().': La commande d\'info "'.$cmd->getName().'" a Ã©tÃ© supprimÃ©e. La stabilité du plugin est maintenant optimale, et cette commande devenue inutile avait été inhibée depuis plusieurs mois. Si cette commande est utilisÃ©e dans des scenarios, vous devez les supprimer.', '', 'Protexiom');
+        }
         
 		/*
 		 * End of version spÃ©cific upgrade actions. Let's run standard actions
