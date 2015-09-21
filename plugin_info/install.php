@@ -76,7 +76,7 @@ function protexiom_update() {
 				$cmd->setTemplate('dashboard', $value);
 				$cmd->save();
 			}
-		if(!$cmd->getTemplate('mobile', '')){
+			if(!$cmd->getTemplate('mobile', '')){
 				log::add('protexiom', 'info', '[*-*] '.getmypid().' Setting template for '.$cmd->getName(), 'Protexiom');
 				$cmd->setTemplate('mobile', $value);
 				$cmd->save();
@@ -116,12 +116,12 @@ function protexiom_update() {
 		 * Upgrade to v0.0.12
 		*/
 		
-        //Let's remove battery cmd, as this is now handled with Jeedom standard
+		//Let's remove battery cmd, as this is now handled with Jeedom standard
 		$cmd=$eqLogic->getCmd('info', 'battery');
-        if (is_object($cmd)) {
-            message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
+		if (is_object($cmd)) {
+			message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
 			$cmd->remove();
-        }
+		}
 		/*
 		 * Upgrade to v0.0.16
 		*/
@@ -143,38 +143,68 @@ function protexiom_update() {
 			$cmd->setTemplate('mobile', 'protexiomBattery');
 			$cmd->save();
 		}
-        /*
+		/*
 		 * Upgrade to v0.0.18
 		*/
-	    foreach ($eqLogic->getCmd('action') as $cmd) {
-            switch($cmd->getLogicalId())
-            {
-                case 'abc_off';
-                    $cmd->setLogicalId('zoneabc_off');
-                    if($cmd->getDisplay('icon')==''){
-                        $cmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
-                    }
-                    $cmd->save();
-                break;
-                case 'zoneabc_on';
-                case 'zonea_on';
-                case 'zoneb_on';
-                case 'zonec_on';
-                    if($cmd->getDisplay('icon')==''){
-                        $cmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
-                        $cmd->save();
-                    }
-                break;
-                case 'reset_alarm_err';
-                case 'reset_battery_err';
-                case 'reset_link_err';
-                    if($cmd->getDisplay('icon')==''){
-                        $cmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
-                        $cmd->save();
-                    }
-                break;
-            }
-    	}
+		foreach ($eqLogic->getCmd('action') as $cmd) {
+			switch($cmd->getLogicalId())
+			{
+				case 'abc_off';
+					$cmd->setLogicalId('zoneabc_off');
+					if($cmd->getDisplay('icon')==''){
+						$cmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
+					}
+					if($cmd->getTemplate('dashboard', '')=='protexiomOff'){
+						$cmd->setTemplate('dashboard', 'protexiomDefault');
+					}
+					if($cmd->getTemplate('mobile', '')=='protexiomOff'){
+						$cmd->setTemplate('mobile', 'protexiomDefault');
+					}
+					$cmd->save();
+				break;
+				case 'zoneabc_on';
+				case 'zonea_on';
+				case 'zoneb_on';
+				case 'zonec_on';
+					$i=0;
+					if($cmd->getDisplay('icon')==''){
+						$cmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+						$i++;
+					}
+					if($cmd->getTemplate('dashboard', '')=='protexiomOn'){
+						$cmd->setTemplate('dashboard', 'protexiomDefault');
+						$i++;
+					}
+					if($cmd->getTemplate('mobile', '')=='protexiomOn'){
+						$cmd->setTemplate('mobile', 'protexiomDefault');
+						$i++
+					}
+					if($i){
+						$cmd->save();
+					}
+				break;
+				case 'reset_alarm_err';
+				case 'reset_battery_err';
+				case 'reset_link_err';
+					$i=0;
+					if($cmd->getDisplay('icon')==''){
+						$cmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
+						$i++;
+					}
+					if($cmd->getTemplate('dashboard', '')=='protexiomClr'){
+						$cmd->setTemplate('dashboard', 'protexiomDefault');
+						$i++;
+					}
+					if($cmd->getTemplate('mobile', '')=='protexiomClr'){
+						$cmd->setTemplate('mobile', 'protexiomDefault');
+						$i++
+					}
+					if($i){
+						$cmd->save();
+					}
+				break;
+			}
+		}
 	
         
 		/*
