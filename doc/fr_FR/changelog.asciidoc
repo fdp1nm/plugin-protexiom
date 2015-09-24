@@ -1,5 +1,12 @@
 :numbered!:
 
+==== v1.0.0 - 2015-09-24
+
+*Première version stable*
+
+- Divers amélioration d'interface
+- Suppression du workaround needs_reboot
+
 ==== v0.0.17 - 2015-06-14
 
 - Correction de bugs mineurs

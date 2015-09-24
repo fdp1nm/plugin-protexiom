@@ -146,7 +146,7 @@ function protexiom_update() {
 			$cmd->save();
 		}
 		/*
-		 * Upgrade to v0.0.18
+		 * Upgrade to v1.0.0
 		*/
 		foreach ($eqLogic->getCmd('action') as $cmd) {
 			switch($cmd->getLogicalId())

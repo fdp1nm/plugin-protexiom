@@ -43,16 +43,6 @@ L'interface d'amin de votre alarme permet de régler ce timeout. Je vous conseil
 
 Ce fonctionnement sera donc totalement transparent, si ce n'est l’apparition des logs de connexion dans le journal d’événement de l'alarme.
 
-=== Stabilité du serveur web de l'alarme
-
-Le serveur web de l'alarme somfy n'est pas conçu pour être utilisé de cette façon. Il est donc parfois instable.
-Ces instabilité sont correctement gérées par le plugin, et gérée de manière adaptée (une déconnexion suivi d'une reconnexion règle le problème).
-
-Sur les plus anciennes versions, il arrive que le serveur web de l'alarme ne réponde plus. Dans ce cas la seule solution est de débrancher éléctriquement le module IP de l'alarme pour réinitialiser le serveur WEB. Cette action n'a pas de conséquence de sécurité car l'alarme fonctionne sur pile, et son fonctionnement n'est pas perturbé par cette action. Elle est toujours opérationnelle durant le reboot, seul la fonction « serveur web » utilise l'alimentation secteur.
-Le plugin implémente une méthode permettant de gérer ce reboot si votre alarme est impactée par ce problème. Cette méthode est décrite plus bas.
-
-Malgré ces quelques défaut, j'ai tester le plugin avec une interrogation de l'alarme toutes les 3 secondes pendant plusieurs jours, cela fonctionne parfaitement et à l'usage ces défaut restent imperceptibles.
-
 == Installation / Paramétrage
 
 === Paramétrage de l'alarme (Timeout)
@@ -72,19 +62,6 @@ image::../images/plugin_setup.png[]
 
 NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
 Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
-
-=== Redemarrage du serveur web en cas d'instabilité
-
-Comme évoqué précédement, les premiers modèles de centrales protexiom présente une instabilité du serveur web qui peut nécéssiter un reboot périodique.
-Sur les alarmes plus récentes, le serveur web est plus stable et ne nécessite pas de redémarrage. Dans ce cas, rien de plus à faire.
-
-Dans le cas ou votre alarme est impactée par ce problème, une commande de type *info* est disponible pour apporter une solution de contournement.
-Il s'agit de la commande *Redémarrage requis* (logicalId: _needs_reboot_).
-
-Par defaut, cette commande à la valeur *0*. Si le plugin detecte que le serveur web de la centrale protexiom nécéssite un redémarrage, cette commande aura alors la valeur *1*.
-Le plugin vérifie alors toutes les minutes si la centrale est à nouveau joignable. Quand c'est le cas, suite à un reboot, le plugin le detecte automatiquement, remet le commande *Redémarrage requis* à *0*, et reprends son fonctionnement nominal.
-
-Cette commande peut donc être utilisée pour activer un scénario qui va redémarrer le module IP de la centrale protexiom, via, par exemple, une prise zwave qui va couper puis remettre l'alimentation éléctrique du module.
 
 == FAQ
 include::faq.asciidoc[]
