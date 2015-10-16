@@ -7,15 +7,42 @@ $eqLogics = eqLogic::byType('protexiom')
 ?>
 
 <div class="row row-overflow">
-    <div class="col-md-2">
+    <div class="col-lg-2 col-md-3 col-sm-4">
         <div class="bs-sidebar">
             <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
                 <a class="btn btn-default eqLogicAction" style="width : 100%;margin-top : 5px;margin-bottom: 5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter une Protexiom}}</a>
-                <li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
-                <?php
+                <li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>   
+              <?php
                 foreach ($eqLogics as $eqLogic) {
-                    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
-                }
+                       echo '<li>';
+						echo '<i class="fa jeedom-alerte cursor eqLogicAction" data-action="hide" data-eqLogic_id="' . $eqLogic->getId() . '"></i>';
+						echo '<a class="cursor li_eqLogic" style="display: inline;" data-eqLogic_id="' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">' . $eqLogic->getName() . '</a>';
+						echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="' . $eqLogic->getId() . '" style="display: none;">';
+							echo '<li>';
+								echo '<i class="fa jeedom2-bulb19 cursor eqLogicAction" data-action="hide" data-eqLogic_id="ctrl_' . $eqLogic->getId() . '"></i>';
+								echo '<a class="cursor eqLogicAction" data-action="hide" style="display: inline;" data-eqLogic_id="ctrl_' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">{{Centralisations}}</a>';
+								echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="ctrl_' . $eqLogic->getId() . '" style="display: none;">';
+									foreach (eqLogic::byType('protexiom_ctrl') as $SubeqLogic) {
+										if ( substr ($SubeqLogic->getLogicalId(), 0, strpos($SubeqLogic->getLogicalId(),"_")) == $eqLogic->getId() ) {
+											echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $SubeqLogic->getId() . '" data-eqLogic_type="protexiom_ctrl"><a>' . $SubeqLogic->getName() . '</a></li>';
+										}
+									}
+								echo '</ul>';
+							echo '</li>';
+							/*echo '<li>';
+								echo '<i class="fa jeedom-mouvement cursor eqLogicAction" data-action="hide" data-eqLogic_id="sensor_' . $eqLogic->getId() . '"></i>';
+								echo '<a class="cursor eqLogicAction" data-action="hide" style="display: inline;" data-eqLogic_id="sensor_' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">{{Détécteur}}</a>';
+								echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="sensor_' . $eqLogic->getId() . '" style="display: none;">';
+									foreach (eqLogic::byType('protexiom_sensor') as $SubeqLogic) {
+										if ( substr ($SubeqLogic->getLogicalId(), 0, strpos($SubeqLogic->getLogicalId(),"_")) == $eqLogic->getId() ) {
+											echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $SubeqLogic->getId() . '" data-eqLogic_type="protexiom_sensor"><a>' . $SubeqLogic->getName() . '</a></li>';
+										}
+									}
+								echo '</ul>';
+							echo '</li>';*/
+						echo '</ul>';
+					echo '</li>';
+				}
                 ?>
             </ul>
         </div>
@@ -50,7 +77,7 @@ $eqLogics = eqLogic::byType('protexiom')
         <?php } ?>
     </div>
     
-    <div class="col-md-10 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
+    <div class="col-lg-10 col-md-9 col-sm-8 protexiom eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
         <form class="form-horizontal">
             <fieldset>
                 <legend><i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i> {{Général}}<i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i></legend>
@@ -72,6 +99,19 @@ $eqLogics = eqLogic::byType('protexiom')
                             }
                             ?>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">{{Catégorie}}</label>
+                    <div class="col-lg-8">
+                        <?php
+                        foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
+                            echo '<label class="checkbox-inline">';
+                            echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" />' . $value['name'];
+                            echo '</label>';
+                        }
+                        ?>
+
                     </div>
                 </div>
                 <div class="form-group">
@@ -210,7 +250,14 @@ $eqLogics = eqLogic::byType('protexiom')
         </form>
 
     </div>
+    <?php include_file('desktop', 'protexiom_ctrl', 'php', 'protexiom'); ?>
 </div>
 
 <?php include_file('desktop', 'protexiom', 'js', 'protexiom'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
+
+<script type="text/javascript">
+if (getUrlVars('saveSuccessFull') == 1) {
+    $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}<br>{{Utilisez l\icône suivante pour voir le détail de l\'élément <i class="fa jeedom-alerte"></i>}}', level: 'success'});
+}
+</script>

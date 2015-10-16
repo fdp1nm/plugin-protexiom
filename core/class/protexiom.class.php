@@ -17,6 +17,8 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 require_once dirname(__FILE__) . '/../../3rdparty/phpProtexiom/phpProtexiom.class.php';
 
+include_file('core', 'protexiom_ctrl', 'class', 'protexiom');
+
 class protexiom extends eqLogic {
     /*     * *************************Attributs****************************** */
 
@@ -343,7 +345,7 @@ class protexiom extends eqLogic {
         	throw new Exception(__('SSL pas encore supporté. Veuillez désactiver l\'option', __FILE__));
         }
     	
-    }
+    }//End preUpdate func
     
     /**
      * Called before inserting a plugin device when creating it, before the first configuration
@@ -353,7 +355,7 @@ class protexiom extends eqLogic {
      */
     public function preInsert() {
     	$this->setCategory('security', 1);
-    }
+    }//End preInsert func //End postInsert func
 
     /**
      * Called after inserting a plugin device when creating it, before the first configuration
@@ -429,57 +431,6 @@ class protexiom extends eqLogic {
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
-        
-        // TODO Move light and shutters to a subdevice, and remove this comment block
-        /* $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Lumières On', __FILE__));
-        $protexiomCmd->setLogicalId('light_on');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_ON');
-        $protexiomCmd->setType('action');
-        $protexiomCmd->setSubType('other');
-        //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Lumières Off', __FILE__));
-        $protexiomCmd->setLogicalId('light_off');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'LIGHT_OFF');
-        $protexiomCmd->setType('action');
-        $protexiomCmd->setSubType('other');
-        //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Volets montée', __FILE__));
-        $protexiomCmd->setLogicalId('shutter_up');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_UP');
-        $protexiomCmd->setType('action');
-        $protexiomCmd->setSubType('other');
-        //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Volets descente', __FILE__));
-        $protexiomCmd->setLogicalId('shutter_down');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_DOWN');
-        $protexiomCmd->setType('action');
-        $protexiomCmd->setSubType('other');
-        //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save();
-        
-        $protexiomCmd = new protexiomCmd();
-        $protexiomCmd->setName(__('Volets stop', __FILE__));
-        $protexiomCmd->setLogicalId('shutter_stop');
-        $protexiomCmd->setEqLogic_id($this->id);
-        $protexiomCmd->setConfiguration('somfyCmd', 'SHUTTER_STOP');
-        $protexiomCmd->setType('action');
-        $protexiomCmd->setSubType('other');
-        //$protexiomCmd->setIsVisible(0);
-        $protexiomCmd->save(); */
         
         $protexiomCmd = new protexiomCmd();
         $protexiomCmd->setName(__('Eff. defaut alarm', __FILE__));
@@ -678,8 +629,10 @@ class protexiom extends eqLogic {
         $protexiomCmd->setTemplate('dashboard', 'protexiomCamera');
         $protexiomCmd->setTemplate('mobile', 'protexiomCamera');
         $protexiomCmd->save();
+        
+        //subEqlogic will be taken car of in postSave, as detecting them require protexiom eqLogic to be enabled and connected to the protexiom box
   
-    }
+    }//End postInsert func
 
     /**
      * Called after a plugin device configuration setup or update
@@ -709,6 +662,7 @@ class protexiom extends eqLogic {
     			$this->setConfiguration('HwVersion', '');
     			// then deactivate the Device
     			$this->setIsEnable('0');
+    			$this->propagateIsEnable2subDevices();
     			// and finally save our config modifications
     			$this->save();
     			// Let's raise an exception
@@ -720,6 +674,11 @@ class protexiom extends eqLogic {
     				$this->save();
     				$this->log('info', 'HwVersion set to '.$myProtexiom->getHwVersion());
     			}
+    			
+    			//Creating / refreshing subDevices
+    			$this->createSubdevices();
+    			//Let's propagate isEnable status before updating CMDs
+    			$this->propagateIsEnable2subDevices();
     			
     			// Let's initialize status
     			$this->pullStatus();
@@ -742,7 +701,9 @@ class protexiom extends eqLogic {
     			}
     			
     		}
-    	}//else{//eqLogic disabled
+    	}else{//eqLogic disabled
+    		$this->propagateIsEnable2subDevices();
+    	}
     	
     	//Let's set specific CMD configuration
     	foreach ($this->getCmd('info') as $cmd) {
@@ -750,19 +711,6 @@ class protexiom extends eqLogic {
     			$cmd->setConfiguration('maxValue', 5);
     			$cmd->save();
     		}
-    		// TODO Move light and shutters to a subdevice, and remove this comment block
-    		/* }elseif($cmd->getLogicalId() == 'light_on'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Lum. On');
-    		}elseif($cmd->getLogicalId() == 'light_off'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Lum. Off');
-    		}elseif($cmd->getLogicalId() == 'shutter_up'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ouv');
-    		}elseif($cmd->getLogicalId() == 'shutter_down'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Volets Ferm');
-    		}elseif($cmd->getLogicalId() == 'shutter_stop'){
-    			$protexiomCmd->setConfiguration('mobileTag', 'Volets stop');
-    		}*/
-    		
     	}
     }
     
@@ -774,6 +722,13 @@ class protexiom extends eqLogic {
      */
     public function preRemove(){
     	$this->unSchedulePull();
+    	// Let's remove subDevices
+    	foreach (self::byType('protexiom_ctrl') as $eqLogic) {
+    		if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    			$this->log('info', 'Removing master remote control '.$eqLogic->getName());
+    			$eqLogic->remove();
+    		}
+    	}
     }
     
     /**
@@ -949,6 +904,79 @@ class protexiom extends eqLogic {
     	}
     }//End function workaroundSomfySessionTimeoutBug
 
+    /**
+     * get the subdevices from the protexiom, and create them under jeedom
+     * @author Fdp1
+     */
+    public function createSubdevices() {
+    	// First, the master remote control, which list is static
+    	 
+    	if ( ! is_object(self::byLogicalId($this->getId().'_ctrl-lights', 'protexiom_ctrl')) ) {
+    		$this->log('debug', 'Creating protexiom_ctrl ctrl-lights');
+    		$eqLogic = new protexiom_ctrl();
+    		$eqLogic->setEqType_name('protexiom_ctrl');
+    		$eqLogic->setIsEnable(1);
+    		$eqLogic->setName('Centralisation lumières');
+    		$eqLogic->setLogicalId($this->getId().'_ctrl-lights');
+    		$eqLogic->setIsVisible(1);
+    		$eqLogic->setIsEnable(1);
+    		$eqLogic->setConfiguration('disbledByParent', '0');
+    		$eqLogic->setCategory("light", 1);
+    		$eqLogic->save();
+    	}
+    	 
+    	if ( ! is_object(self::byLogicalId($this->getId().'_ctrl-shutters', 'protexiom_ctrl')) ) {
+    		$this->log('debug', 'Creating protexiom_ctrl ctrl-shutters');
+    		$eqLogic = new protexiom_ctrl();
+    		$eqLogic->setEqType_name('protexiom_ctrl');
+    		$eqLogic->setIsEnable(1);
+    		$eqLogic->setName('Centralisation volets');
+    		$eqLogic->setLogicalId($this->getId().'_ctrl-shutters');
+    		$eqLogic->setIsVisible(1);
+    		$eqLogic->setIsEnable(1);
+    		$eqLogic->setConfiguration('disbledByParent', '0');
+    		$eqLogic->setCategory("automatism", 1);
+    		$eqLogic->save();
+    	}
+    
+    }//End function createSubdevices
+    
+    /**
+     * propagate eqLogic isEnable status to every subdevice
+     * @author Fdp1
+     */
+    public function propagateIsEnable2subDevices() {
+    	$_isEnable=$this->getIsEnable();
+    	 
+    	if($_isEnable){
+    		$_disabledByParent='0';
+    
+    		foreach (self::byType('protexiom_ctrl') as $eqLogic) {
+    			if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    				if($eqLogic->getConfiguration('disabledByParent')=='1'){
+    					$this->log('info', 'Enabling '.$eqLogic->getName().' from parent.');
+    					$eqLogic->setIsEnable($_isEnable);
+    					$eqLogic->setConfiguration('disabledByParent', $_disabledByParent);
+    					$eqLogic->save();
+    				}
+    			}
+    		}
+    	}else{
+    		$_disabledByParent='1';
+    
+    		foreach (self::byType('protexiom_ctrl') as $eqLogic) {
+    			if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    				if($eqLogic->getIsEnable()){
+    					$this->log('info', 'Disabling '.$eqLogic->getName().' from parent.');
+    					$eqLogic->setIsEnable($_isEnable);
+    					$eqLogic->setConfiguration('disabledByParent', $_disabledByParent);
+    					$eqLogic->save();
+    				}
+    			}
+    		}
+    	}
+    }//End function propagateIsEnable2subDevices
+    
 
     /*     * **********************Getteur Setteur*************************** */
 
@@ -1017,12 +1045,13 @@ class protexiom extends eqLogic {
     		return $this->_spBrowser->getStatus();
     	}
     }//End function getStatusFromCache
+    
 
 }
 
 class protexiomCmd extends cmd {
     /*     * *************************Attributs****************************** */
-	private static $_templateArray = array();
+	private static $_templateArray = array();//Needed for toHtml()
 
     /*     * ***********************Static methods*************************** */
     /*     * ****accessible without needing an instantiation of the class**** */

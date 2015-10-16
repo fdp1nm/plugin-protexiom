@@ -121,7 +121,7 @@ function protexiom_update() {
 		//Let's remove battery cmd, as this is now handled with Jeedom standard
 		$cmd=$eqLogic->getCmd('info', 'battery');
 		if (is_object($cmd)) {
-			message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a été supprimée. Le niveau de batterie est maintenant géré au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
+			message::add('protexiom', 'Somfy alarme: La commande d\'info "'.$cmd->getName().'" a ï¿½tï¿½ supprimï¿½e. Le niveau de batterie est maintenant gï¿½rï¿½ au standard Jeedom (getConfiguration(batteryStatus)).', '', 'Protexiom');
 			$cmd->remove();
 		}
 		/*
@@ -212,8 +212,17 @@ function protexiom_update() {
 	    if (is_object($cmd)) {
             log::add('protexiom', 'info', '[*-*] '.getmypid().' removing needs_reboot cmd for '.$cmd->getName(), 'Protexiom');
             $cmd->remove();
-            message::add('protexiom', 'Somfy alarme '.$eqLogic->getName().': La commande d\'info "'.$cmd->getName().'" a Ã©tÃ© supprimÃ©e. La stabilité du plugin est maintenant optimale, et cette commande devenue inutile avait été inhibée depuis plusieurs mois. Si cette commande est utilisÃ©e dans des scenarios, vous devez les supprimer.', '', 'Protexiom');
+            message::add('protexiom', 'Somfy alarme '.$eqLogic->getName().': La commande d\'info "'.$cmd->getName().'" a Ã©tÃ© supprimÃ©e. La stabilitï¿½ du plugin est maintenant optimale, et cette commande devenue inutile avait ï¿½tï¿½ inhibï¿½e depuis plusieurs mois. Si cette commande est utilisÃ©e dans des scenarios, vous devez les supprimer.', '', 'Protexiom');
         }
+        /*
+         * Upgrade to v1.1.0 & v1.1.1
+        */
+        //Let's detect subEqlogic only if eqLogic is enabled.
+        //If not, the detection will take place at enable time
+        if($eqLogic->getIsEnable()){
+        	$eqLogic->createSubdevices();
+        }
+        
         
 		/*
 		 * End of version spÃ©cific upgrade actions. Let's run standard actions
@@ -228,7 +237,7 @@ function protexiom_update() {
 			// Need to find a workaround
 			$cron->stop();
 		}
-	}
+	}//End foreach eqLogic
 	
 	log::add('protexiom', 'info', '[*-*] '.getmypid().' End of protexiom post-update script', 'Protexiom');
 }
