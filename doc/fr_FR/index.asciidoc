@@ -16,8 +16,8 @@ A ce jour la solution permet de :
 * Reseter es defauts de l'alarme
 
 
-image::../images/widget.png[Widget dashboard]
-image::../images/widget_mobile.png[Widget mobile]
+image::../images/protexiom_screenshot2.png[Widget dashboard]
+image::../images/protexiom_screenshot3.png[Widget mobile]
 
 == Les limites de la solution
 
@@ -58,7 +58,7 @@ image::../images/timeout_setup.png[]
 Une fois le plugin installé via le market, l'ensemble du paramétrage se fait depuis l'administration, comme n'importe quel plugin.
 Les champs sont tous documentés sur la page de paramétrage, et la validité des paramêtres est vérifiée avant l'enregistrement.
 
-image::../images/plugin_setup.png[] 
+image::../images/protexiom_screenshot1.png[] 
 
 NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
 Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
