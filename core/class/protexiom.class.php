@@ -918,6 +918,7 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setName('Centralisation lumières');
     		$eqLogic->setLogicalId($this->getId().'_ctrl-lights');
+    		$eqLogic->setObject_id($this->getObject_id());
     		$eqLogic->setIsVisible(1);
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disbledByParent', '0');
@@ -932,6 +933,7 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setName('Centralisation volets');
     		$eqLogic->setLogicalId($this->getId().'_ctrl-shutters');
+    		$eqLogic->setObject_id($this->getObject_id());
     		$eqLogic->setIsVisible(1);
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disbledByParent', '0');
