@@ -86,7 +86,18 @@ class phpProtexiom {
 		//V3 Hw would be positive to V1 test, but might then be broken
 		$fullHwParam['3']['Pattern']['Auth']="#<b>(..)</b>#";
 		$fullHwParam['3']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
-		$fullHwParam['3']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
+		$fullHwParam['3']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';	
+		$fullHwParam['3']['Pattern']['ListeElmt']['Type']='/var item_type     = \[(.*?)\];'; // Type de l'élément
+		$fullHwParam['3']['Pattern']['ListeElmt']['Label']='/var item_label    = \[(.*?)\];'; // Label (nom) du Type
+		$fullHwParam['3']['Pattern']['ListeElmt']['Pause']='/var item_pause    = \[(.*?)\];'; // Mise en pause de l'élément (running | paused)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Name']='/var elt_name      = \[(.*?)\];'; // Nom de l'élément
+		$fullHwParam['3']['Pattern']['ListeElmt']['Id']='/var elt_code      = \[(.*?)\];'; // UID de l'élément
+		$fullHwParam['3']['Pattern']['ListeElmt']['Battery']='/var elt_pile      = \[(.*?)\];'; // Etat des piles (itembattok | itembattnok | itemhidden)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[(.*?)\];'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Alarm']='/var elt_maison    = \[(.*?)\];'; // Alarme déclenchée (itemhouseok | itemhousedomestic | itemhouseintrusion)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Link']='/var elt_onde      = \[(.*?)\];'; // Etat liaison radio (itemcomok | itemcomnok | itemhidden)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Door']='/var elt_porte     = \[(.*?)\];'; // Porte ouverte / fermée (itemdoorok | itemdoornok | itemhidden)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Zone']='/var elt_zone      = \[(.*?)\];'; // Zone de l'élément (SYS | AT | A | B | C | TEC | AT (f)| A (f) | B (f) | C (f))
 		$fullHwParam['3']['URL']['login']="/m_login.htm";
 		$fullHwParam['3']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['3']['URL']['welcome']="/mu_welcome.htm";
@@ -126,6 +137,17 @@ class phpProtexiom {
 		$fullHwParam['1']['Pattern']['Auth']="#Code d'authentification (..)</td>#";
 		$fullHwParam['1']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
 		$fullHwParam['1']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
+		$fullHwParam['1']['Pattern']['ListeElmt']['Type']='/var item_type     = \[(.*?)\];'; // Type de l'élément
+		$fullHwParam['1']['Pattern']['ListeElmt']['Label']='/var item_label    = \[(.*?)\];'; // Label (nom) du Type
+		$fullHwParam['1']['Pattern']['ListeElmt']['Pause']='/var item_pause    = \[(.*?)\];'; // Mise en pause de l'élément (running | paused)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Name']='/var elt_name      = \[(.*?)\];'; // Nom de l'élément
+		$fullHwParam['1']['Pattern']['ListeElmt']['Id']='/var elt_code      = \[(.*?)\];'; // UID de l'élément
+		$fullHwParam['1']['Pattern']['ListeElmt']['Battery']='/var elt_pile      = \[(.*?)\];'; // Etat des piles (itembattok | itembattnok | itemhidden)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[(.*?)\];'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Alarm']='/var elt_maison    = \[(.*?)\];'; // Alarme déclenchée (itemhouseok | itemhousedomestic | itemhouseintrusion)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Link']='/var elt_onde      = \[(.*?)\];'; // Etat liaison radio (itemcomok | itemcomnok | itemhidden)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Door']='/var elt_porte     = \[(.*?)\];'; // Porte ouverte / fermée (itemdoorok | itemdoornok | itemhidden)
+		$fullHwParam['1']['Pattern']['ListeElmt']['Zone']='/var elt_zone      = \[(.*?)\];'; // Zone de l'élément (SYS | AT | A | B | C | TEC | AT (f)| A (f) | B (f) | C (f))
 		$fullHwParam['1']['URL']['login']="/login.htm";
 		$fullHwParam['1']['URL']['logout']="/logout.htm";
 		$fullHwParam['1']['URL']['welcome']="/welcome.htm";
@@ -165,6 +187,18 @@ class phpProtexiom {
 		$fullHwParam['2']['Pattern']['Auth']="#<b>(..)</b>#";
 		$fullHwParam['2']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
 		$fullHwParam['2']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
+		//TODO Ajuster les tabulations des différents éléments
+		$fullHwParam['2']['Pattern']['ListeElmt']['Type']='/var item_type     = \[(.*?)\];'; // Type de l'élément
+		$fullHwParam['2']['Pattern']['ListeElmt']['Label']='/var item_label    = \[(.*?)\];'; // Label (nom) du Type
+		$fullHwParam['2']['Pattern']['ListeElmt']['Pause']='/var item_pause    = \[(.*?)\];'; // Mise en pause de l'élément (running | paused)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Name']='/var elt_name      = \[(.*?)\];'; // Nom de l'élément
+		$fullHwParam['2']['Pattern']['ListeElmt']['Id']='/var elt_code      = \[(.*?)\];'; // UID de l'élément
+		$fullHwParam['2']['Pattern']['ListeElmt']['Battery']='/var elt_pile      = \[(.*?)\];'; // Etat des piles (itembattok | itembattnok | itemhidden)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[(.*?)\];'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Alarm']='/var elt_maison    = \[(.*?)\];'; // Alarme déclenchée (itemhouseok | itemhousedomestic | itemhouseintrusion)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Link']='/var elt_onde      = \[(.*?)\];'; // Etat liaison radio (itemcomok | itemcomnok | itemhidden)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Door']='/var elt_porte     = \[(.*?)\];'; // Porte ouverte / fermée (itemdoorok | itemdoornok | itemhidden)
+		$fullHwParam['2']['Pattern']['ListeElmt']['Zone']='/var elt_zone      = \[(.*?)\];'; // Zone de l'élément (SYS | AT | A | B | C | TEC | AT (f)| A (f) | B (f) | C (f))
 		$fullHwParam['2']['URL']['login']="/fr/m_login.htm";
 		$fullHwParam['2']['URL']['logout']="/m_logout.htm";
 		$fullHwParam['2']['URL']['welcome']="/fr/mu_welcome.htm";
@@ -206,6 +240,17 @@ class phpProtexiom {
 		$fullHwParam['4']['Pattern']['Auth']="#<b>(..)</b>#";
 		$fullHwParam['4']['Pattern']['Error']['0']='/<div id="infobox">(.*?)<\/div>/s';
 		$fullHwParam['4']['Pattern']['Error']['1']='/<table>(.*?)<\/table>/s';
+		$fullHwParam['4']['Pattern']['ListeElmt']['Type']='/var item_type     = \[(.*?)\];'; // Type de l'élément
+		$fullHwParam['4']['Pattern']['ListeElmt']['Label']='/var item_label    = \[(.*?)\];'; // Label (nom) du Type
+		$fullHwParam['4']['Pattern']['ListeElmt']['Pause']='/var item_pause    = \[(.*?)\];'; // Mise en pause de l'élément (running | paused)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Name']='/var elt_name      = \[(.*?)\];'; // Nom de l'élément
+		$fullHwParam['4']['Pattern']['ListeElmt']['Id']='/var elt_code      = \[(.*?)\];'; // UID de l'élément
+		$fullHwParam['4']['Pattern']['ListeElmt']['Battery']='/var elt_pile      = \[(.*?)\];'; // Etat des piles (itembattok | itembattnok | itemhidden)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[(.*?)\];'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Alarm']='/var elt_maison    = \[(.*?)\];'; // Alarme déclenchée (itemhouseok | itemhousedomestic | itemhouseintrusion)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Link']='/var elt_onde      = \[(.*?)\];'; // Etat liaison radio (itemcomok | itemcomnok | itemhidden)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Door']='/var elt_porte     = \[(.*?)\];'; // Porte ouverte / fermée (itemdoorok | itemdoornok | itemhidden)
+		$fullHwParam['4']['Pattern']['ListeElmt']['Zone']='/var elt_zone      = \[(.*?)\];'; // Zone de l'élément (SYS | AT | A | B | C | TEC | AT (f)| A (f) | B (f) | C (f))
 		$fullHwParam['4']['URL']['login']="/fr/login.htm";
 		$fullHwParam['4']['URL']['logout']="/logout.htm";
 		$fullHwParam['4']['URL']['welcome']="/fr/welcome.htm";
