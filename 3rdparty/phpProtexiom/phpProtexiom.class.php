@@ -744,7 +744,8 @@ class phpProtexiom {
 																													"alarm" => $alarms_list[$i],
 																													"link" => $links_list[$i],
 																													"door" => $doors_list[$i],
-																													"zone" => $zones_list[$i]
+																													//Some versions have a trailing " (f)" after the zone name. Let's remove it
+																													"zone" => strtok($zones_list[$i], " ")
 																												);
 																											//print($elements[$ids_list[$i]]["name"]."\r\n");
 																										}
