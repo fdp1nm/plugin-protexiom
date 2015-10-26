@@ -692,135 +692,92 @@ class phpProtexiom {
 				$this->doLogout();
 			}
 			if(!$myError=$this->isWgetError($response, '200')){
-				
-				if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Type'], $response['responseBody'], $types_str, PREG_SET_ORDER)==1){
-					if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Label'], $response['responseBody'], $labels_str, PREG_SET_ORDER)==1){
-						if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Pause'], $response['responseBody'], $pause_str, PREG_SET_ORDER)==1){
-							if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Name'], $response['responseBody'], $names_str, PREG_SET_ORDER)==1){
-								if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Id'], $response['responseBody'], $ids_str, PREG_SET_ORDER)==1){
-									if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Battery'], $response['responseBody'], $batteries_str, PREG_SET_ORDER)==1){
-										if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Tampered'], $response['responseBody'], $tampered_str, PREG_SET_ORDER)==1){
-											if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Alarm'], $response['responseBody'], $alarms_str, PREG_SET_ORDER)==1){
-												if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Link'], $response['responseBody'], $links_str, PREG_SET_ORDER)==1){
-													if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Door'], $response['responseBody'], $doors_str, PREG_SET_ORDER)==1){
-														if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Zone'], $response['responseBody'], $zones_str, PREG_SET_ORDER)==1){
-															//All element details found.
-															//Let's explode them
-															$types_list=explode('", "', $types_str[0][1]);
-															$labels_list=explode('", "', $labels_str[0][1]);
-															$pause_list=explode('", "', $pause_str[0][1]);
-															$names_list=explode('", "', $names_str[0][1]);
-															$ids_list=explode('", "', $ids_str[0][1]);
-															$batteries_list=explode('", "', $batteries_str[0][1]);
-															$tampered_list=explode('", "', $tampered_str[0][1]);
-															$alarms_list=explode('", "', $alarms_str[0][1]);
-															$links_list=explode('", "', $links_str[0][1]);
-															$doors_list=explode('", "', $doors_str[0][1]);
-															$zones_list=explode('", "', $zones_str[0][1]);
-
-															//Then count them
-															$nbElement=count($ids_list);
-															if($nbElement>1){
-																if(count($types_list)==$nbElement){
-																	if(count($labels_list)==$nbElement){
-																		if(count($pause_list)==$nbElement){
-																			if(count($names_list)==$nbElement){
-																				if(count($batteries_list)==$nbElement){
-																					if(count($tampered_list)==$nbElement){
-																						if(count($alarms_list)==$nbElement){
-																							if(count($links_list)==$nbElement){
-																								if(count($doors_list)==$nbElement){
-																									if(count($zones_list)==$nbElement){
-																										//All arrays size are cohérents. Let's go one
-																										$elements=array ();
-																											for ($i = 0; $i < $nbElement; $i++) {
-																												$elements[$ids_list[$i]] = array (
-																													"type" => $types_list[$i],
-																													"label" => utf8_encode($labels_list[$i]),
-																													"name" => utf8_encode($names_list[$i]),
-																													"pause" => $pause_list[$i],
-																													"battery" => $batteries_list[$i],
-																													"tampered" => $tampered_list[$i],
-																													"alarm" => $alarms_list[$i],
-																													"link" => $links_list[$i],
-																													"door" => $doors_list[$i],
-																													//Some versions have a trailing " (f)" after the zone name. Let's remove it
-																													"zone" => strtok($zones_list[$i], " ")
-																												);
-																											//print($elements[$ids_list[$i]]["name"]."\r\n");
-																										}
-																										$this->elements=$elements;
-																										//print_r($this->elements);
-																										
-																									}else{
-																										$myError="Bad number of element zones.";
-																									}
-																								}else{
-																									$myError="Bad number of element doors.";
-																								}
-																							}else{
-																								$myError="Bad number of element links.";
-																							}
-																						}else{
-																							$myError="Bad number of element alarms.";
-																						}
-																					}else{
-																						$myError="Bad number of tampered elements.";
-																					}
-																				}else{
-																					$myError="Bad number of elements batteries.";
-																				}
-																			}else{
-																				$myError="Bad number of element names.";
-																			}
-																		}else{
-																			$myError="Bad number of pause elements.";
-																		}
-																	}else{
-																		$myError="Bad number of element labels.";
-																	}
-																}else{
-																	$myError="Bad number of element types.";
-																}
-															}else{
-																//Count=1 could mean that $ids_list is nt an array. Otherwise woud mean an alarm with only the panel and no element, which is useless, so unlikely
-																$myError="No element found.";
-															}
-														}else{
-															$myError.="elt_zone not found";
-														}
-													}else{
-														$myError.="elt_porte not found";
-													}
-												}else{
-													$myError.="elt_onde not found";
-												}
-											}else{
-												$myError.="elt_maison not found";
-											}
-										}else{
-											$myError.="elt_as not found";
-										}
-									}else{
-										$myError.="elt_pile not found";
-									}
-								}else{
-									$myError.="elt_code not found";
-								}
-							}else{
-								$myError.="elt_name not found";
-							}
-						}else{
-							$myError.="item_pause not found";
-						}
-					}else{
-						$myError.="item_label not found";
-					}
-				}else{
+				if(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Type'], $response['responseBody'], $types_str, PREG_SET_ORDER)!=1){
 					$myError.="item_type not found";
-				}
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Label'], $response['responseBody'], $labels_str, PREG_SET_ORDER)!=1){
+					$myError.="item_label not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Pause'], $response['responseBody'], $pause_str, PREG_SET_ORDER)!=1){
+					$myError.="item_pause not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Name'], $response['responseBody'], $names_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_name not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Id'], $response['responseBody'], $ids_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_code not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Battery'], $response['responseBody'], $batteries_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_pile not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Tampered'], $response['responseBody'], $tampered_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_as not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Alarm'], $response['responseBody'], $alarms_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_maison not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Link'], $response['responseBody'], $links_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_onde not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Door'], $response['responseBody'], $doors_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_porte not found";
+				}elseif(preg_match_all($this->hwParam['Pattern']['ListeElmt']['Zone'], $response['responseBody'], $zones_str, PREG_SET_ORDER)!=1){
+					$myError.="elt_zone not found";
+				}else{
+						
+					//All element details found.
+					//Let's explode them
+					$types_list=explode('", "', $types_str[0][1]);
+					$labels_list=explode('", "', $labels_str[0][1]);
+					$pause_list=explode('", "', $pause_str[0][1]);
+					$names_list=explode('", "', $names_str[0][1]);
+					$ids_list=explode('", "', $ids_str[0][1]);
+					$batteries_list=explode('", "', $batteries_str[0][1]);
+					$tampered_list=explode('", "', $tampered_str[0][1]);
+					$alarms_list=explode('", "', $alarms_str[0][1]);
+					$links_list=explode('", "', $links_str[0][1]);
+					$doors_list=explode('", "', $doors_str[0][1]);
+					$zones_list=explode('", "', $zones_str[0][1]);
 				
-
+					//Then count them
+					$nbElement=count($ids_list);
+					if($nbElement<=1){
+						//Count=1 could mean that $ids_list is nt an array. Otherwise woud mean an alarm with only the panel and no element, which is useless, so unlikely
+						$myError="No element found.";
+					}elseif(count($types_list)!=$nbElement){
+						$myError="Bad number of element types.";
+					}elseif(count($labels_list)!=$nbElement){
+						$myError="Bad number of element labels.";
+					}elseif(count($pause_list)!=$nbElement){
+						$myError="Bad number of pause elements.";
+					}elseif(count($names_list)!=$nbElement){
+						$myError="Bad number of element names.";
+					}elseif(count($batteries_list)!=$nbElement){
+						$myError="Bad number of elements batteries.";
+					}elseif(count($tampered_list)!=$nbElement){
+						$myError="Bad number of tampered elements.";
+					}elseif(count($alarms_list)!=$nbElement){
+						$myError="Bad number of element alarms.";
+					}elseif(count($links_list)!=$nbElement){
+						$myError="Bad number of element links.";
+					}elseif(count($doors_list)!=$nbElement){
+						$myError="Bad number of element doors.";
+					}elseif(count($zones_list)!=$nbElement){
+						$myError="Bad number of element zones.";
+					}else{
+						//All arrays size are cohérents. Let's go one
+						$elements=array ();
+						for ($i = 0; $i < $nbElement; $i++) {
+							$elements[$ids_list[$i]] = array (
+									"type" => $types_list[$i],
+									"label" => utf8_encode($labels_list[$i]),
+									"name" => utf8_encode($names_list[$i]),
+									"pause" => $pause_list[$i],
+									"battery" => $batteries_list[$i],
+									"tampered" => $tampered_list[$i],
+									"alarm" => $alarms_list[$i],
+									"link" => $links_list[$i],
+									"door" => $doors_list[$i],
+									//Some versions have a trailing " (f)" after the zone name. Let's remove it
+									"zone" => strtok($zones_list[$i], " ")
+							);
+							//print($elements[$ids_list[$i]]["name"]."\r\n");
+						}
+						$this->elements=$elements;
+						//print_r($this->elements);
+					}
+				}
 			}//else: $myerror should be returned
 		}
 		
