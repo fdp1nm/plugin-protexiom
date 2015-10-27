@@ -759,19 +759,36 @@ class phpProtexiom {
 						//All arrays size are cohérents. Let's go one
 						$elements=array ();
 						for ($i = 0; $i < $nbElement; $i++) {
-							$elements[$ids_list[$i]] = array (
+							$element=array(
 									"type" => $types_list[$i],
 									"label" => utf8_encode($labels_list[$i]),
 									"name" => utf8_encode($names_list[$i]),
-									"pause" => $pause_list[$i],
-									"battery" => $batteries_list[$i],
-									"tampered" => $tampered_list[$i],
-									"alarm" => $alarms_list[$i],
-									"link" => $links_list[$i],
-									"door" => $doors_list[$i],
 									//Some versions have a trailing " (f)" after the zone name. Let's remove it
 									"zone" => strtok($zones_list[$i], " ")
 							);
+
+							if($pause_list[$i]=="running"){
+								$element["pause"]=0;
+							}else{
+								$element["pause"]=1;
+							}
+							if($batteries_list[$i]!="itemhidden"){
+								$element["battery"]=$batteries_list[$i];
+							}
+							if($tampered_list[$i]!="itemhidden"){
+								$element["tampered"]=$tampered_list[$i];
+							}
+							if(($alarms_list[$i]!="itemhidden") and ($types_list[$i]!="typeremote4") and ($types_list[$i]!="typeremotemulti") and ($types_list[$i]!="typebadgerfid")){
+								$element["alarm"]=$alarms_list[$i];
+							}
+							if($links_list[$i]!="itemhidden"){
+								$element["link"]=$links_list[$i];
+							}
+							if($doors_list[$i]!="itemhidden"){
+								$element["door"]=$doors_list[$i];
+							}
+							
+							$elements[$ids_list[$i]] = $element;
 							//print($elements[$ids_list[$i]]["name"]."\r\n");
 						}
 						$this->elements=$elements;
