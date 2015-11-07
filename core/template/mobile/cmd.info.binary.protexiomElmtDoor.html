@@ -1,0 +1,14 @@
+<div class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" data-cmd_uid="#uid#">
+    <center>
+        <span style="font-weight: bold;font-size : 12px;">#name#</span><br>
+        <span style="font-size: 2em;margin-top: 5px;" id="iconCmd#uid#"></span>
+    </center>
+    <script>
+        if ('#state#' == '1' || '#state#' == 1) {
+            $('#iconCmd#uid#').addClass('fa jeedom-porte-ferme');
+        }
+        if ('#state#' == '0' || '#state#' == 0) {
+            $('#iconCmd#uid#').addClass('fa jeedom-porte-ouverte');
+        }
+    </script>
+</div>

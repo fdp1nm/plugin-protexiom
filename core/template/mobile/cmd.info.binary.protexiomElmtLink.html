@@ -1,0 +1,23 @@
+<div class="cmd" data-type="info" data-subtype="binary" data-cmd_id="#id#" data-cmd_uid="#uid#">
+    <center>
+        <span style="font-weight: bold;font-size : 12px;">#name#</span><br>
+        <span style="margin-top: 5px;" class="spanCmd#uid#">
+        	<i style="font-size: 2em;margin-top: 5px;" class="backIconCmd#uid#"></i>
+        	<i style="font-size: 2em;margin-top: 5px;" class="frontIconCmd#uid#"></i>
+        </span>
+    </center>
+
+    <script>
+        if ('#state#' == '1' || '#state#' == 1) {
+            $('.spanCmd#uid#').addClass('fa-stack fa-1x');
+            //$('.cmd[data-cmd_id=#uid#]').attr('title', 'OK  -  #collectDate#');
+            $('.backIconCmd#uid#').addClass('fa fa-rss fa-stack-1x')
+        }
+        if ('#state#' == '0' || '#state#' == 0) {
+            $('.spanCmd#uid#').addClass('fa-stack fa-1x');
+            $('.backIconCmd#uid#').addClass('fa fa-rss fa-stack-1x');
+            $('.frontIconCmd#uid#').addClass('fa fa-exclamation fa-stack-1x text-danger');
+            $('.cmd[data-cmd_id=#uid#]').attr('title', 'Erreur liaison  -  #collectDate#');
+        }
+    </script>
+</div>
