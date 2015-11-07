@@ -250,4 +250,6 @@ function protexiom_remove(){
 	}
 }//End function protexiom_remove()
 
+//TODO Add a stop function to logoff from protexiom during halt or reboot
+
 ?>

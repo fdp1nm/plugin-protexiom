@@ -18,6 +18,7 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 require_once dirname(__FILE__) . '/../../3rdparty/phpProtexiom/phpProtexiom.class.php';
 
 include_file('core', 'protexiom_ctrl', 'class', 'protexiom');
+include_file('core', 'protexiom_elmt', 'class', 'protexiom');
 
 class protexiom extends eqLogic {
     /*     * *************************Attributs****************************** */
@@ -91,7 +92,7 @@ class protexiom extends eqLogic {
      * @author Fdp1
      * @return 0 in case of sucess, 1 otherwise
      */
-    public function pullStatus() {
+    public function pullStatus($forceElementUpdate=false) {
     	 
     	$myError="";
     	if (!is_object($this->_spBrowser)) {
@@ -142,11 +143,42 @@ class protexiom extends eqLogic {
     	}else{
     		//Status pulled. Let's now refreh CMD
     		$this->log('debug', 'Status refreshed');
-    		$this->setStatusFromSpBrowser();
+    		$this->setStatusFromSpBrowser($forceElementUpdate);
     		$this->log('debug', 'Pull status... Done');
     		return 0;
     	}
     }//End function pullStatus()
+    
+    /**
+     * Pull Elements from the protexiom
+     * @author Fdp1
+     * @return 0 in case of sucess, 1 otherwise
+     */
+    public function pullElements() {
+    
+    	$myError="";
+    	if (!is_object($this->_spBrowser)) {
+    		$this->initSpBrowser();
+    	}
+    	if($myError=$this->_spBrowser->pullElements()){
+    		//An error occured while pulling status. This may be a session timeout issue.
+    		$this->log('debug', 'The folowing error occured while pulling elements: '.$myError.'. This may be a session timeout issue. Let\'s workaround it');
+    		if(!$myError=$this->workaroundSomfySessionTimeoutBug()){
+    			$myError=$this->_spBrowser->pullElements();
+    		}
+    	}
+    	if($myError){
+    		//An error occured.
+    		$this->log('error', " An error occured during elements update: ".$myError);
+    		return 1;
+    	}else{
+    		//Elements pulled. Let's now refreh CMD
+    		$this->log('debug', 'Elements refreshed');
+    		$this->setElementsFromSpBrowser();
+    		$this->log('debug', 'Pull elements... Done');
+    		return 0;
+    	}
+    }//End function pullElements()
     
     /**
      * Check wether the parameter is a valid port number.
@@ -681,7 +713,7 @@ class protexiom extends eqLogic {
     			$this->propagateIsEnable2subDevices();
     			
     			// Let's initialize status
-    			$this->pullStatus();
+    			$this->pullStatus(true);
     			
     			//And finally, Let's schedule pull if polling is on
     			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
@@ -915,13 +947,12 @@ class protexiom extends eqLogic {
     		$this->log('debug', 'Creating protexiom_ctrl ctrl-lights');
     		$eqLogic = new protexiom_ctrl();
     		$eqLogic->setEqType_name('protexiom_ctrl');
-    		$eqLogic->setIsEnable(1);
     		$eqLogic->setName('Centralisation lumières');
     		$eqLogic->setLogicalId($this->getId().'_ctrl-lights');
     		$eqLogic->setObject_id($this->getObject_id());
     		$eqLogic->setIsVisible(1);
     		$eqLogic->setIsEnable(1);
-    		$eqLogic->setConfiguration('disbledByParent', '0');
+    		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("light", 1);
     		$eqLogic->save();
     	}
@@ -930,13 +961,12 @@ class protexiom extends eqLogic {
     		$this->log('debug', 'Creating protexiom_ctrl ctrl-shutters');
     		$eqLogic = new protexiom_ctrl();
     		$eqLogic->setEqType_name('protexiom_ctrl');
-    		$eqLogic->setIsEnable(1);
     		$eqLogic->setName('Centralisation volets');
     		$eqLogic->setLogicalId($this->getId().'_ctrl-shutters');
     		$eqLogic->setObject_id($this->getObject_id());
     		$eqLogic->setIsVisible(1);
     		$eqLogic->setIsEnable(1);
-    		$eqLogic->setConfiguration('disbledByParent', '0');
+    		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("automatism", 1);
     		$eqLogic->save();
     	}
@@ -963,10 +993,30 @@ class protexiom extends eqLogic {
     				}
     			}
     		}
+    		foreach (self::byType('protexiom_elmt') as $eqLogic) {
+    			if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    				if($eqLogic->getConfiguration('disabledByParent')=='1'){
+    					$this->log('info', 'Enabling '.$eqLogic->getName().' from parent.');
+    					$eqLogic->setIsEnable($_isEnable);
+    					$eqLogic->setConfiguration('disabledByParent', $_disabledByParent);
+    					$eqLogic->save();
+    				}
+    			}
+    		}
     	}else{
     		$_disabledByParent='1';
     
     		foreach (self::byType('protexiom_ctrl') as $eqLogic) {
+    			if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    				if($eqLogic->getIsEnable()){
+    					$this->log('info', 'Disabling '.$eqLogic->getName().' from parent.');
+    					$eqLogic->setIsEnable($_isEnable);
+    					$eqLogic->setConfiguration('disabledByParent', $_disabledByParent);
+    					$eqLogic->save();
+    				}
+    			}
+    		}
+    		foreach (self::byType('protexiom_elmt') as $eqLogic) {
     			if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
     				if($eqLogic->getIsEnable()){
     					$this->log('info', 'Disabling '.$eqLogic->getName().' from parent.');
@@ -986,9 +1036,11 @@ class protexiom extends eqLogic {
      * Update status from spBrowser
      * @author Fdp1
      */
-    public function setStatusFromSpBrowser() {
+    public function setStatusFromSpBrowser($forceElementUpdate=false) {
     
     	$myError="";
+    	$statusUpdated=0;
+    	
     	if (!is_object($this->_spBrowser)) {
     		throw new Exception(__('Fatal error: setStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
     	}
@@ -1006,9 +1058,11 @@ class protexiom extends eqLogic {
     			//Let's clear it before throwing the event
     			$cmd->setCollectDate('');
     			$cmd->event($newValue);
+    			$statusUpdated++;
     		}// else, unchanged value. Let's keep the cached one
     	}
         // Battery level is a specific info handle by Jeedom in a specific way.
+    	// For Jeedom, 10% means low battery
         if($status['BATTERY']=="ok"){
             $newValue='100';
         }else{
@@ -1017,10 +1071,173 @@ class protexiom extends eqLogic {
         if(!($this->getConfiguration('batteryStatus')==$newValue)){//Changed value
     		$this->log('debug', 'Setting new battery value to '.$newValue);
             $this->batteryStatus($newValue);
+            $statusUpdated++;
         }
+        //TODO remove if statement
+        //if($statusUpdated or $forceElementUpdate){
+        	//Status has changed. Let's update elements as well
+        	$this->pullElements();
+        //}
         
     	return;
     }//End function setStatusFromSpBrowser
+
+    /**
+     * Update elements from spBrowser
+     * @author Fdp1
+     */
+    public function setElementsFromSpBrowser() {
+    
+    	$myError="";
+    	if (!is_object($this->_spBrowser)) {
+    		throw new Exception(__('Fatal error: setElemensFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
+    	}
+    	$elements=$this->_spBrowser->getElements();
+    	
+    	foreach ($elements as $elementId => $element) {
+    		$eqLogic = self::byLogicalId($this->getId().'_elmt-'.$elementId, 'protexiom_elmt');
+    		if ( ! is_object($eqLogic) ) {
+    			//The subdevice does not exist. Let's create it
+    			$this->log('debug', 'Creating protexiom_elmt elmt-'.$elementId);
+    			$eqLogic = new protexiom_elmt();
+    			$eqLogic->setEqType_name('protexiom_elmt');
+    			$eqLogic->setIsEnable(1);
+    			$eqLogic->setName($element['name']);
+    			$eqLogic->setLogicalId($this->getId().'_elmt-'.$elementId);
+    			//By default, objectId is the same as the parent device
+    			$eqLogic->setObject_id($this->getObject_id());
+    			//However, we can try and guess a better objectId in the device name
+    			foreach (object::all() as $object) {
+    				if (stristr($element['name'],$object->getName())){
+    					$eqLogic->setObject_id($object->getId());
+    					break;
+    				}
+    			}
+    			//Remotes or badges subdevices are pretty useless in Jeedom. Let's disable them by default
+    			if(preg_match("/(remote|badge)/i", $element['type'])){
+    				$eqLogic->setIsEnable(0);
+    			}else{
+    				$eqLogic->setIsEnable(1);
+    			}
+    			//Transmitters, sirens and keybord are not really usefull as well, but at least, we can get their battery status.
+    			//Let's enable them by default, but hide them
+    			if(preg_match("/(trans|siren|keyb)/i", $element['type'])){
+    				$eqLogic->setIsVisible(0);
+    			}else{
+    				$eqLogic->setIsVisible(1);
+    			}
+    			
+    			
+    			$eqLogic->setConfiguration('disabledByParent', '0');
+    			$eqLogic->setCategory("security", 1);
+    			$eqLogic->setConfiguration('item_type', $element['type']);
+    			$eqLogic->setConfiguration('item_label', $element['label']);
+    			$eqLogic->setConfiguration('item_zone', $element['zone']);
+    			$eqLogic->setConfiguration('disabledByParent', '0');
+    			$eqLogic->save();
+    			@message::add('protexiom', 'New protexiom subdevice created: '.$this->name.'/'.$element['name'], '', $this->name);
+    			//Let's clear element properties from the array and just keep element cmds
+    			unset($element['name']);
+    			unset($element['type']);
+    			unset($element['label']);
+    			unset($element['zone']);
+    			
+    			//Let's now create cmds for the newly created subdevice
+    			foreach ($element as $cmdName => $cmdValue) {
+    				$elmtCmd = new protexiom_elmtCmd();
+    				$elmtCmd->setName(__($cmdName, __FILE__));
+    				$elmtCmd->setLogicalId($cmdName);
+    				$elmtCmd->setEqLogic_id($eqLogic->id);
+    				$elmtCmd->setUnite('');
+    				$elmtCmd->setType('info');
+    				//It would appear that every cmd is binary. However, unknown cmd could come in a future version
+    				//To keep compatible in such a case, let's try and guess if the cmd really is binay
+    				if(preg_match("/^([0:1]|[0-9 a-z]*ok)$/i", $cmdValue)){//Cmd is binary
+    					$this->log('debug', 'Setting '.$eqLogic->getName()."/".$cmdName." as binary.");
+    					$elmtCmd->setSubType('binary');
+    					
+    				}else{//Cmd is not binary
+    					$elmtCmd->setSubType('string');
+    					$this->log('debug', 'Setting '.$eqLogic->getName()."/".$cmdName." as string.");
+    				}
+    				switch ($cmdName) {
+    					case "pause":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomPause');
+    						$elmtCmd->setTemplate('mobile', 'protexiomPause');
+    						$elmtCmd->setIsVisible(0);
+    						break;
+    					case "battery":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomElmtBattery');
+    						$elmtCmd->setTemplate('mobile', 'protexiomElmtBattery');
+    						$elmtCmd->setIsVisible(0);
+    						break;
+    					case "tampered":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomElmtTampered');
+    						$elmtCmd->setTemplate('mobile', 'protexiomElmtTampered');
+    						$elmtCmd->setIsVisible(1);
+    						break;
+    					case "alarm":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomAlarm');
+    						$elmtCmd->setTemplate('mobile', 'protexiomAlarm');
+    						$elmtCmd->setIsVisible(1);
+    						break;
+    					case "link":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomElmtLink');
+    						$elmtCmd->setTemplate('mobile', 'protexiomElmtLink');
+    						$elmtCmd->setIsVisible(1);
+    						break;
+    					case "door":
+    						$elmtCmd->setTemplate('dashboard', 'protexiomElmtDoor');
+    						$elmtCmd->setTemplate('mobile', 'protexiomElmtDoor');
+    						$elmtCmd->setIsVisible(1);
+    						break;
+    					default:
+    						$elmtCmd->setIsVisible(1);
+    				}
+    				$elmtCmd->save();
+    				$this->log('debug', 'Cmd '.$eqLogic->getName()."/".$cmdName." created.");
+    				
+    			}
+    		}//Else the subdevice already exists
+    		
+    		//Let's update the subdevice, but only if it's enabled
+    		if($eqLogic->getIsEnable()){
+    			foreach ($eqLogic->getCmd('info') as $cmd) {
+    				if($cmd->getSubType()=='binary'){
+    					//false binary values = 0 or end with NOK
+    					if(preg_match("/^([0]|[0-9 a-z]*nok)$/i", $element[$cmd->getLogicalId()])){
+    						$newValue='0';
+    					}else{
+    						$newValue='1';
+    					}
+    				}else{
+    					$newValue=$element[$cmd->getLogicalId()];
+    				}
+    					 
+    				if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
+    					//We just ran execCmd, wich set $_collectDate
+    					//Event() will check if $_collectDate is old, and reject the event if it's the case.
+    					//Let's clear it before throwing the event
+    					$cmd->setCollectDate('');
+    					$cmd->event($newValue);
+    						
+    					// Battery level is a specific info handle by Jeedom in a specific way.
+    					// For Jeedom, 10% means low battery
+    					if($cmdName=="battery"){
+    						if(preg_match("/^([0]|[0-9 a-z]*nok)$/i", $element[$cmd->getLogicalId()])){
+    							$eqLogic->batteryStatus('10');
+    						}else{
+    							$eqLogic->batteryStatus('100');
+    						}
+    					}
+    						
+    				}// else, unchanged value. Let's keep the cached one
+    			}//End of cmd iteration
+    		}// else eqLogic is NOT enabled
+    	}//End of elements iteration
+    
+    	return;
+    }//End function setElementsFromSpBrowser
     
     /**
      * get protexiom status from cache. If not availlable in cache, puul and cache it
@@ -1047,7 +1264,32 @@ class protexiom extends eqLogic {
     		return $this->_spBrowser->getStatus();
     	}
     }//End function getStatusFromCache
-    
+
+    /**
+     * get protexiom elements from cache. If not availlable in cache, pull and cache it
+     * @author Fdp1
+     * @return array status
+     */
+    public function getElementsFromCache() {
+    	$cache=cache::byKey('somfyElements::'.$this->getId());
+    	$elements=$cache->getValue();
+    	if(!($elements==='' || $elements===null || $elements=='false')){
+    		if(!$cache->hasExpired()){
+    			$this->log('debug', 'Cached protexiom elements found.');
+    			return json_decode($elements, true);
+    		}
+    	}
+    	$this->log('debug', 'No (unexpired) cached protexiom elements found. Let\'s pull elements.');
+    	if ($myError=$this->pullElements()){
+    		//An error occured while pulling elements
+    		$this->log('debug', 'An error occured while pulling elements: '.$myError);
+    		throw new Exception(__("An error occured while pulling elements: $myError",__FILE__));
+    	}else{
+    		cache::set('somfyElements::'.$this->getId(), json_encode($this->_spBrowser->getElements()), $this->_SomfyStatusCacheLifetime);
+    		$this->log('debug', 'Somfy protexiom elements successfully pulled and cache');
+    		return $this->_spBrowser->getElements();
+    	}
+    }//End function getElementsFromCache
 
 }
 

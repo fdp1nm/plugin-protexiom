@@ -18,6 +18,7 @@ $eqLogics = eqLogic::byType('protexiom')
 						echo '<i class="fa jeedom-alerte cursor eqLogicAction" data-action="hide" data-eqLogic_id="' . $eqLogic->getId() . '"></i>';
 						echo '<a class="cursor li_eqLogic" style="display: inline;" data-eqLogic_id="' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">' . $eqLogic->getName() . '</a>';
 						echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="' . $eqLogic->getId() . '" style="display: none;">';
+							//Protexiom master control subdevices
 							echo '<li>';
 								echo '<i class="fa jeedom2-bulb19 cursor eqLogicAction" data-action="hide" data-eqLogic_id="ctrl_' . $eqLogic->getId() . '"></i>';
 								echo '<a class="cursor eqLogicAction" data-action="hide" style="display: inline;" data-eqLogic_id="ctrl_' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">{{Centralisations}}</a>';
@@ -29,17 +30,19 @@ $eqLogics = eqLogic::byType('protexiom')
 									}
 								echo '</ul>';
 							echo '</li>';
-							/*echo '<li>';
-								echo '<i class="fa jeedom-mouvement cursor eqLogicAction" data-action="hide" data-eqLogic_id="sensor_' . $eqLogic->getId() . '"></i>';
-								echo '<a class="cursor eqLogicAction" data-action="hide" style="display: inline;" data-eqLogic_id="sensor_' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">{{Détécteur}}</a>';
-								echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="sensor_' . $eqLogic->getId() . '" style="display: none;">';
-									foreach (eqLogic::byType('protexiom_sensor') as $SubeqLogic) {
+							//Protexiom elements subdevices
+							echo '<li>';
+								echo '<i class="fa jeedom-mouvement cursor eqLogicAction" data-action="hide" data-eqLogic_id="elmt_' . $eqLogic->getId() . '"></i>';
+								echo '<a class="cursor eqLogicAction" data-action="hide" style="display: inline;" data-eqLogic_id="elmt_' . $eqLogic->getId() . '" data-eqLogic_type="protexiom">{{Eléments}}</a>';
+								echo '<ul id="ul_eqLogic" class="nav nav-list bs-sidenav sub-nav-list" data-eqLogic_id="elmt_' . $eqLogic->getId() . '" style="display: none;">';
+									foreach (eqLogic::byType('protexiom_elmt') as $SubeqLogic) {
 										if ( substr ($SubeqLogic->getLogicalId(), 0, strpos($SubeqLogic->getLogicalId(),"_")) == $eqLogic->getId() ) {
-											echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $SubeqLogic->getId() . '" data-eqLogic_type="protexiom_sensor"><a>' . $SubeqLogic->getName() . '</a></li>';
+											echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $SubeqLogic->getId() . '" data-eqLogic_type="protexiom_elmt"><a>' . $SubeqLogic->getName() . '</a></li>';
 										}
 									}
 								echo '</ul>';
-							echo '</li>';*/
+							echo '</li>';
+							//End of subdevices
 						echo '</ul>';
 					echo '</li>';
 				}
@@ -251,6 +254,7 @@ $eqLogics = eqLogic::byType('protexiom')
 
     </div>
     <?php include_file('desktop', 'protexiom_ctrl', 'php', 'protexiom'); ?>
+    <?php include_file('desktop', 'protexiom_elmt', 'php', 'protexiom'); ?>
 </div>
 
 <?php include_file('desktop', 'protexiom', 'js', 'protexiom'); ?>

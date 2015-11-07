@@ -1,4 +1,4 @@
-    <div class="col-lg-10 col-md-9 col-sm-8 eqLogic protexiom_ctrl" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
+    <div class="col-lg-10 col-md-9 col-sm-8 eqLogic protexiom_elmt" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
         <form class="form-horizontal">
             <fieldset>
                 <legend>
@@ -6,10 +6,10 @@
 				   <i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i>
                 </legend>
                 <div class="form-group">
-                    <label class="col-lg-2 control-label">{{Nom de la télécommande}}</label>
+                    <label class="col-lg-2 control-label">{{Nom de l'élément}}</label>
                     <div class="col-lg-3">
                         <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
-                        <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de la télécommande}}"/>
+                        <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'élément}}"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -63,7 +63,7 @@
         <?php /* The command list is static. Lets not offer the possibility to remove them
         <a class="btn btn-success btn-sm cmdAction" data-action="add"><i class="fa fa-plus-circle"></i> {{Commandes}}</a><br/><br/>
         */ ?>
-        <table id="table_cmd_protexiom_ctrl" class="table table-bordered table-condensed">
+        <table id="table_cmd_protexiom_elmt" class="table table-bordered table-condensed">
             <thead>
                 <tr>
                     <th style="width: 50px;">{{ID}}</th>
