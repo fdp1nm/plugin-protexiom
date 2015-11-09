@@ -1040,16 +1040,21 @@ class protexiom extends eqLogic {
     
     	$myError="";
     	$statusUpdated=0;
+    	$elementUpdateRequired=0;
     	
     	if (!is_object($this->_spBrowser)) {
     		throw new Exception(__('Fatal error: setStatusFromSpBrowser called but $_spBrowser is not initialised.', __FILE__));
     	}
     	$status=$this->_spBrowser->getStatus();
     	foreach ($this->getCmd('info') as $cmd) {
+    		$currentLogicalId=$cmd->getLogicalId();
     		if($cmd->getSubType()=='binary'){
     			$newValue=(string)preg_match("/^o[k n]$/i", $status[$cmd->getConfiguration('somfyCmd')]);
     		}else{
     			$newValue=$status[$cmd->getConfiguration('somfyCmd')];
+    			if($currentLogicalId=="alarm" or $currentLogicalId=="link" or $currentLogicalId=="battery_status" or $currentLogicalId=="door" or $currentLogicalId=="tampered"){
+    				$elementUpdateRequired++;
+    			}
     		}
     		
     		if(!($cmd->execCmd(null, 2)==$newValue)){//Changed value
@@ -1073,11 +1078,10 @@ class protexiom extends eqLogic {
             $this->batteryStatus($newValue);
             $statusUpdated++;
         }
-        //TODO remove if statement
-        //if($statusUpdated or $forceElementUpdate){
-        	//Status has changed. Let's update elements as well
+        //To avoid stressing the protexiom, let's not get Elements details when we know for sure they are unchanged.
+        if($statusUpdated or $forceElementUpdate or $elementUpdateRequired){
         	$this->pullElements();
-        //}
+        }
         
     	return;
     }//End function setStatusFromSpBrowser
@@ -1223,7 +1227,7 @@ class protexiom extends eqLogic {
     						
     					// Battery level is a specific info handle by Jeedom in a specific way.
     					// For Jeedom, 10% means low battery
-    					if($cmdName=="battery"){
+    					if($cmd->getLogicalId()=="battery"){
     						if(preg_match("/^([0]|[0-9 a-z]*nok)$/i", $element[$cmd->getLogicalId()])){
     							$eqLogic->batteryStatus('10');
     						}else{
