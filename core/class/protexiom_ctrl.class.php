@@ -166,6 +166,15 @@ class protexiom_ctrl extends eqLogic {
 	public function getLinkToConfiguration() {
 		return 'index.php?v=d&p=protexiom&m=protexiom&id=' . $this->getId();
 	}//End getLinkToConfiguration func
+	
+	/**
+	 * search subdevice image file, and return it's path
+	 * @author Fdp1
+	 * @return string imgFilePath, or false if no img is found
+	 */
+	public function getImgFilePath() {
+		return 'ctrl_' . substr($this->getLogicalId(), strpos($this->getLogicalId(),"-")+1) . '.png';
+	}//End function getImgFilePath
 
     /*     * **********************Getteur Setteur*************************** */
 }

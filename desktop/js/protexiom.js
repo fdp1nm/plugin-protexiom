@@ -27,6 +27,14 @@ $('.eqLogicAction[data-action=hide]').on('click', function () {
     return false;
 });
 
+function printEqLogic(_eqLogic){
+	if($('.li_eqLogic.active').attr('data-eqlogic_id') != ''){
+		$('.img_device').attr("src", $('.eqLogicDisplayCard[data-eqLogic_id='+$('.li_eqLogic.active').attr('data-eqlogic_id')+'] img').attr('src'));
+	}else{
+		$('.img_device').attr("src",'plugins/protexiom/desktop/images/typedefault.png');
+	}
+}
+
 function addCmdToTable(_cmd) {
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};

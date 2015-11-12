@@ -84,6 +84,8 @@ class protexiom_elmt extends eqLogic {
 
 
 	}//End postInsert func*/
+
+    /*     * **********************Getteur Setteur*************************** */
 	
 	/**
 	 * Return link to the eqLogicConfiguration page.
@@ -95,8 +97,22 @@ class protexiom_elmt extends eqLogic {
 	public function getLinkToConfiguration() {
 		return 'index.php?v=d&p=protexiom&m=protexiom&id=' . $this->getId();
 	}//End getLinkToConfiguration func
-
-    /*     * **********************Getteur Setteur*************************** */
+	
+	/**
+	 * search subdevice image file, and return it's path
+	 * @author Fdp1
+	 * @return string imgFilePath, or false if no img is found
+	 */
+	public function getImgFilePath() {
+		$imgName=$this->getConfiguration('item_type','typedefault') . '.png';
+		$localFileName=dirname(__FILE__) . '/../../desktop/images/' . $imgName;
+		if(file_exists($localFileName)){
+			return $imgName;
+		}else{
+			echo($localFileName);
+			return false;
+		}
+	}//End function getImgFilePath
 }
 
 class protexiom_elmtCmd extends cmd 
