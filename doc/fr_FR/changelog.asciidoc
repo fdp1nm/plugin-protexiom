@@ -2,6 +2,10 @@
 
 ==== v1.1.0 - 2015-10-21
 
+- Ajout des composants de l'alarme en subDevices
+
+==== v1.1.0 - 2015-10-21
+
 - Ajout des commandes centralisées en subDevices
 
 ==== v1.0.0 - 2015-09-24

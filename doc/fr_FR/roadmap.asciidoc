@@ -1,2 +1,2 @@
-* Rajout de sudevices correspondants aux detecteurs d'ouverture de l'alarme
 * Récupération des logs de l'alarme
+* Création d'un panel
