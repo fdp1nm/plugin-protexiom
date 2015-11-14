@@ -761,6 +761,12 @@ class protexiom extends eqLogic {
     			$eqLogic->remove();
     		}
     	}
+    	foreach (self::byType('protexiom_elmt') as $eqLogic) {
+    		if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
+    			$this->log('info', 'Removing element '.$eqLogic->getName());
+    			$eqLogic->remove();
+    		}
+    	}
     }
     
     /**
