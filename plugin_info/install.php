@@ -220,7 +220,9 @@ function protexiom_update() {
         //Let's detect subEqlogic only if eqLogic is enabled.
         //If not, the detection will take place at enable time
         if($eqLogic->getIsEnable()){
-        	$eqLogic->createSubdevices();
+        	$eqLogic->createCtrlSubDevices();
+        	// Let's force elements creation / update
+        	$eqLogic->pullStatus(true);
         }
         
         

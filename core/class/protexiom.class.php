@@ -708,11 +708,11 @@ class protexiom extends eqLogic {
     			}
     			
     			//Creating / refreshing subDevices
-    			$this->createSubdevices();
+    			$this->createCtrlSubDevices();
     			//Let's propagate isEnable status before updating CMDs
     			$this->propagateIsEnable2subDevices();
     			
-    			// Let's initialize status
+    			// Let's initialize status, and force elements creation / update
     			$this->pullStatus(true);
     			
     			//And finally, Let's schedule pull if polling is on
@@ -946,8 +946,7 @@ class protexiom extends eqLogic {
      * get the subdevices from the protexiom, and create them under jeedom
      * @author Fdp1
      */
-    public function createSubdevices() {
-    	// First, the master remote control, which list is static
+    public function createCtrlSubDevices() {
     	 
     	if ( ! is_object(self::byLogicalId($this->getId().'_ctrl-lights', 'protexiom_ctrl')) ) {
     		$this->log('debug', 'Creating protexiom_ctrl ctrl-lights');
@@ -977,7 +976,7 @@ class protexiom extends eqLogic {
     		$eqLogic->save();
     	}
     
-    }//End function createSubdevices
+    }//End function createCtrlSubDevices
     
     /**
      * propagate eqLogic isEnable status to every subdevice

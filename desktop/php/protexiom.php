@@ -285,9 +285,3 @@ $eqLogics = eqLogic::byType('protexiom')
 
 <?php include_file('desktop', 'protexiom', 'js', 'protexiom'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
-
-<script type="text/javascript">
-if (getUrlVars('saveSuccessFull') == 1) {
-    $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}<br>{{Utilisez l\icône suivante pour voir le détail de l\'élément <i class="fa jeedom-alerte"></i>}}', level: 'success'});
-}
-</script>
