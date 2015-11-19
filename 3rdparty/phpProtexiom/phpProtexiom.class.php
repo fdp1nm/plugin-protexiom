@@ -94,7 +94,7 @@ class phpProtexiom {
 		$fullHwParam['3']['Pattern']['ListeElmt']['Name']='/var elt_name      = \[\"(.*?)\"\];/'; // Nom de l'élément
 		$fullHwParam['3']['Pattern']['ListeElmt']['Id']='/var elt_code      = \[\"(.*?)\\"];/'; // UID de l'élément
 		$fullHwParam['3']['Pattern']['ListeElmt']['Battery']='/var elt_pile      = \[\"(.*?)\"\];/'; // Etat des piles (itembattok | itembattnok | itemhidden)
-		$fullHwParam['3']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[\"(.*?)\"\]/;'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
+		$fullHwParam['3']['Pattern']['ListeElmt']['Tampered']='/var elt_as        = \[\"(.*?)\"\];/'; // Etat de l'autopotection (itemboxok | itemboxnok | itemhidden)
 		$fullHwParam['3']['Pattern']['ListeElmt']['Alarm']='/var elt_maison    = \[\"(.*?)\"\];/'; // Alarme déclenchée (itemhouseok | itemhousedomestic | itemhouseintrusion)
 		$fullHwParam['3']['Pattern']['ListeElmt']['Link']='/var elt_onde      = \[\"(.*?)\"\];/'; // Etat liaison radio (itemcomok | itemcomnok | itemhidden)
 		$fullHwParam['3']['Pattern']['ListeElmt']['Door']='/var elt_porte     = \[\"(.*?)\"\];/'; // Porte ouverte / fermée (itemdoorok | itemdoornok | itemhidden)
