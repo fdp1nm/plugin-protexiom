@@ -1111,6 +1111,11 @@ class protexiom extends eqLogic {
     			$eqLogic = new protexiom_elmt();
     			$eqLogic->setEqType_name('protexiom_elmt');
     			$eqLogic->setIsEnable(1);
+    			if($element['name']!=""){
+    				$eqLogic->setName($element['name']);
+    			}else{
+    				$eqLogic->setName($element['label'].$elementId);
+    			}
     			$eqLogic->setName($element['name']);
     			$eqLogic->setLogicalId($this->getId().'_elmt-'.$elementId);
     			//By default, objectId is the same as the parent device
