@@ -1201,8 +1201,13 @@ class protexiom extends eqLogic {
     						$elmtCmd->setIsVisible(1);
     						break;
     					case "door":
-    						$elmtCmd->setTemplate('dashboard', 'protexiomElmtDoor');
-    						$elmtCmd->setTemplate('mobile', 'protexiomElmtDoor');
+    						if($element['type']=='typedogarage'){
+    							$elmtCmd->setTemplate('dashboard', 'protexiomElmtGarage');
+    							$elmtCmd->setTemplate('mobile', 'protexiomElmtGarage');
+    						}else{
+    							$elmtCmd->setTemplate('dashboard', 'protexiomElmtDoor');
+    							$elmtCmd->setTemplate('mobile', 'protexiomElmtDoor');
+    						}
     						$elmtCmd->setIsVisible(1);
     						break;
     					default:
