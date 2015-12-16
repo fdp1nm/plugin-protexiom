@@ -109,7 +109,6 @@ class protexiom_elmt extends eqLogic {
 		if(file_exists($localFileName)){
 			return $imgName;
 		}else{
-			echo($localFileName);
 			return false;
 		}
 	}//End function getImgFilePath
