@@ -1201,7 +1201,7 @@ class protexiom extends eqLogic {
     						$elmtCmd->setIsVisible(1);
     						break;
     					case "door":
-    						if($element['type']=='typedogarage'){
+    						if($eqLogic->getConfiguration('item_type')=='typedogarage'){
     							$elmtCmd->setTemplate('dashboard', 'protexiomElmtGarage');
     							$elmtCmd->setTemplate('mobile', 'protexiomElmtGarage');
     						}else{
