@@ -1116,7 +1116,6 @@ class protexiom extends eqLogic {
     			}else{
     				$eqLogic->setName($element['label'].$elementId);
     			}
-    			$eqLogic->setName($element['name']);
     			$eqLogic->setLogicalId($this->getId().'_elmt-'.$elementId);
     			//By default, objectId is the same as the parent device
     			$eqLogic->setObject_id($this->getObject_id());
@@ -1149,7 +1148,7 @@ class protexiom extends eqLogic {
     			$eqLogic->setConfiguration('item_zone', $element['zone']);
     			$eqLogic->setConfiguration('disabledByParent', '0');
     			$eqLogic->save();
-    			@message::add('protexiom', 'New protexiom subdevice created: '.$this->name.'/'.$element['name'], '', $this->name);
+    			@message::add('protexiom', 'New protexiom subdevice created: '.$this->name.'/'.$eqLogic->getName(), '', $this->name);
     			//Let's clear element properties from the array and just keep element cmds
     			unset($element['name']);
     			unset($element['type']);
