@@ -959,6 +959,11 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("light", 1);
+    		//Before saving the eqLogic, let's check if an homonym deosn't already exists   		
+    		if(count(is_object(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName())))){
+    			//Another eqLogic already exists with the same name. Let's create a (hopefully) new unique name
+    			$eqLogic->setName('Centralisation lumières'."-".$this->getId());
+    		}
     		$eqLogic->save();
     	}
     	 
@@ -973,6 +978,11 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("automatism", 1);
+    	//Before saving the eqLogic, let's check if an homonym deosn't already exists   		
+    		if(count(is_object(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName())))){
+    			//Another eqLogic already exists with the same name. Let's create a (hopefully) new unique name
+    			$eqLogic->setName('Centralisation volets'."-".$this->getId());
+    		}
     		$eqLogic->save();
     	}
     
@@ -1114,7 +1124,7 @@ class protexiom extends eqLogic {
     			if($element['name']!=""){
     				$eqLogic->setName($element['name']);
     			}else{
-    				$eqLogic->setName($element['label'].$elementId);
+    				$eqLogic->setName($element['label']."-".$elementId);
     			}
     			$eqLogic->setLogicalId($this->getId().'_elmt-'.$elementId);
     			//By default, objectId is the same as the parent device
@@ -1139,14 +1149,21 @@ class protexiom extends eqLogic {
     			}else{
     				$eqLogic->setIsVisible(1);
     			}
-    			
-    			
     			$eqLogic->setConfiguration('disabledByParent', '0');
     			$eqLogic->setCategory("security", 1);
     			$eqLogic->setConfiguration('item_type', $element['type']);
     			$eqLogic->setConfiguration('item_label', $element['label']);
     			$eqLogic->setConfiguration('item_zone', $element['zone']);
     			$eqLogic->setConfiguration('disabledByParent', '0');
+    			//Before saving the eqLogic, let's check if an homonym deosn't already exists
+    			if(count(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName()))){
+    				//Another eqLogic already exists with the same name. Let's create a new unique name
+    				if($element['name']!=""){
+    					$eqLogic->setName($element['name']."-".$elementId."-".$this->getId());
+    				}else{
+    					$eqLogic->setName($element['label']."-".$elementId."-".$this->getId());
+    				}
+    			}
     			$eqLogic->save();
     			@message::add('protexiom', 'New protexiom subdevice created: '.$this->name.'/'.$eqLogic->getName(), '', $this->name);
     			//Let's clear element properties from the array and just keep element cmds
