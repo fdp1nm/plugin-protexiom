@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v1.1.5 - 2015-12-27
+
+- Bugfix import de composants si l'alarme n'a pas d'objet parent sous Jeedom
+
 ==== v1.1.4 - 2015-12-21
 
 - Bugfix import de composants n'ayant pas de nom

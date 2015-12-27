@@ -959,8 +959,13 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("light", 1);
-    		//Before saving the eqLogic, let's check if an homonym deosn't already exists   		
-    		if(count(is_object(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName())))){
+    		//Before saving the eqLogic, let's check if an homonym deosn't already exists  
+    		if($eqLogic->getObject()){
+    			$objectName=$eqLogic->getObject()->getName();
+    		}else{
+    			$objectName='';
+    		}	
+    		if(count(eqLogic::byObjectNameEqLogicName($objectName, $eqLogic->getName()))){
     			//Another eqLogic already exists with the same name. Let's create a (hopefully) new unique name
     			$eqLogic->setName('Centralisation lumières'."-".$this->getId());
     		}
@@ -978,8 +983,13 @@ class protexiom extends eqLogic {
     		$eqLogic->setIsEnable(1);
     		$eqLogic->setConfiguration('disabledByParent', '0');
     		$eqLogic->setCategory("automatism", 1);
-    	//Before saving the eqLogic, let's check if an homonym deosn't already exists   		
-    		if(count(is_object(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName())))){
+    		//Before saving the eqLogic, let's check if an homonym deosn't already exists   
+    		if($eqLogic->getObject()){
+    			$objectName=$eqLogic->getObject()->getName();
+    		}else{
+    			$objectName='';
+    		}
+    		if(count(eqLogic::byObjectNameEqLogicName($objectName, $eqLogic->getName()))){
     			//Another eqLogic already exists with the same name. Let's create a (hopefully) new unique name
     			$eqLogic->setName('Centralisation volets'."-".$this->getId());
     		}
@@ -1156,7 +1166,12 @@ class protexiom extends eqLogic {
     			$eqLogic->setConfiguration('item_zone', $element['zone']);
     			$eqLogic->setConfiguration('disabledByParent', '0');
     			//Before saving the eqLogic, let's check if an homonym deosn't already exists
-    			if(count(eqLogic::byObjectNameEqLogicName($eqLogic->getObject()->getName(), $eqLogic->getName()))){
+    			if($eqLogic->getObject()){
+    				$objectName=$eqLogic->getObject()->getName();
+    			}else{
+    				$objectName='';
+    			}
+    			if(count(eqLogic::byObjectNameEqLogicName($objectName, $eqLogic->getName()))){
     				//Another eqLogic already exists with the same name. Let's create a new unique name
     				if($element['name']!=""){
     					$eqLogic->setName($element['name']."-".$elementId."-".$this->getId());
