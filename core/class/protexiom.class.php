@@ -64,8 +64,8 @@ class protexiom extends eqLogic {
         	}
         	$protexiom->pullStatus();
         } else {
-            log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©', $_options['protexiom_id']);
-            throw new Exception('Protexiom ID non trouvÃ© : ' . $_options['protexiom_id'] . '. Tache pull supprimÃ©');
+            log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Protexiom ID non trouvé : ' . $_options['protexiom_id'] . '. Tache pull supprimée', $_options['protexiom_id']);
+            throw new Exception('Protexiom ID non trouvé : ' . $_options['protexiom_id'] . '. Tache pull supprimée');
             $protexiom->unSchedulePull(false);
         }
     	return;
@@ -124,15 +124,8 @@ class protexiom extends eqLogic {
     				$this->log('error', 'Login failed while trying to workaround somfy empty XML bug. Returned error: '.$myError);
     				return 1;
     			}else{//Login OK
+    				cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
     				$myError=$this->_spBrowser->pullStatus();
-    				if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
-    					//Polling is on. Let's cache session cookie
-    					cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
-    				}else{//Polling is off
-    					if($myError.=$this->_spBrowser->doLogout()){
-    						$this->log('error', 'Logout failed after empty XML workaround, with polling off. Returned error: '.$myError);
-    					}
-    				}
     			}
     		}
     	}
@@ -357,11 +350,9 @@ class protexiom extends eqLogic {
         	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
         }
         //Checking polling interval
-        if(!($this->getConfiguration('PollInt')=="" || $this->getConfiguration('PollInt')=="0")){
-        	if(!filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
-        		throw new Exception(__('La frequence de mise à jour (polling) est invalide. Elle doit vide ou égale a zero si vous souhaitez désactiver le polling. Elle doit contenir un nombre (entier) de seconde superieur a 5 sinon.', __FILE__));
-        	}
-        }//else, PollInt empty or 0, means polling is off.
+        if(!filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
+        	throw new Exception(__('La frequence de mise à jour (polling) est invalide. Elle doit vide ou égale a zero si vous souhaitez désactiver le polling. Elle doit contenir un nombre (entier) de seconde superieur a 5 sinon.', __FILE__));
+        }
 			
         /* //Finally, if a proxy is specified, let's check it's valid
         if($this->getConfiguration('WebProxyHostPort')){
@@ -629,6 +620,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setEqLogic_id($this->id);
         $protexiomCmd->setConfiguration('somfyCmd', 'GSM_SIGNAL');
         $protexiomCmd->setConfiguration('mobileLabel', 'Récéption GSM');
+        $protexiomCmd->setConfiguration('maxValue', 5);
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('numeric');
@@ -662,7 +654,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setTemplate('mobile', 'protexiomCamera');
         $protexiomCmd->save();
         
-        //subEqlogic will be taken car of in postSave, as detecting them require protexiom eqLogic to be enabled and connected to the protexiom box
+        //subEqlogic will be taken care of in postSave, as detecting them require protexiom eqLogic to be enabled and connected to the protexiom box
   
     }//End postInsert func
 
@@ -715,37 +707,21 @@ class protexiom extends eqLogic {
     			// Let's initialize status, and force elements creation / update
     			$this->pullStatus(true);
     			
-    			//And finally, Let's schedule pull if polling is on
-    			if(filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 1)))){
-    				$this->schedulePull();
-    				// If polling is on, we can set every info CMD to setEventOnly
-    				// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
-    				foreach ($this->getCmd('info') as $cmd) {
-    						$cmd->setEventOnly(1);
-    						$cmd->save();
-    				}
-    			}else{// Polling is off
-    				// As no event will be thrown by polling, let's let jeedom refresh collect info CMD when cache is expired
-    				foreach ($this->getCmd('info') as $cmd) {
-                        $cmd->setEventOnly(0);
+    			//And finally, Let's schedule pull
+    			$this->schedulePull();
+    			//TODO Remove this when Jeedom 2.0 is out
+    			// Until Jeedom 2.0, we still need to set every info CMD to setEventOnly
+    			// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
+    			foreach ($this->getCmd('info') as $cmd) {
+    					$cmd->setEventOnly(1);
     					$cmd->save();
-    				}
     			}
-    			
     		}
     	}else{//eqLogic disabled
     		$this->propagateIsEnable2subDevices();
     	}
-    	
-    	//Let's set specific CMD configuration
-    	foreach ($this->getCmd('info') as $cmd) {
-    		if($cmd->getLogicalId() == 'gsm_signal'){
-    			$cmd->setConfiguration('maxValue', 5);
-    			$cmd->save();
-    		}
-    	}
     }
-    
+
     /**
      * Called before removing a protexiom eqLogic
      * Standard Jeedom function
@@ -848,7 +824,7 @@ class protexiom extends eqLogic {
     }  
     
     /**
-     * Schedule status update of polling is turned on
+     * Schedule status update
      * @author Fdp1
      *
      */
@@ -914,7 +890,6 @@ class protexiom extends eqLogic {
      */
     public function workaroundSomfySessionTimeoutBug() {
     	//Session timeout is only possible if a long session is maintained, meaning polling is on.
-    	//Let's check if polling is on and if yes, try to start a new session
     	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
     	$cachedCookie=$cache->getValue();
     	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
@@ -933,13 +908,14 @@ class protexiom extends eqLogic {
     		}else{//Login OK
     			$this->log('debug', 'Login successfull for workaroundSomfySessionTimeoutBug. Caching session cookie.');
     			cache::set('somfyAuthCookie::'.$this->getId(), $this->_spBrowser->authCookie, $this->_SomfySessionCookieTTL);
-    			return 0;
+    			
     		}
     	}else{
-    		// Session timeout bug is not likely as polling seems to be turned off
-		$this->log('error', 'Session timeout bug is not likely as polling seems to be turned off (at least, no cookie as been found).');
-    		return 1; 
+    		// No cached cookie found... Login off and on again should be performed somewhere else. Let's wait 2 seconds for it to be done
+    		sleep(2);
+			$this->log('debug', 'Session timeout bug is not likely as no cookie as been found. Let\'s wait for 2 seconds, as login off and on again may be running somewhere else');
     	}
+    	return 0;
     }//End function workaroundSomfySessionTimeoutBug
 
     /**

@@ -213,7 +213,6 @@ $eqLogics = eqLogic::byType('protexiom')
                     <div class="col-md-3">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="PollInt" placeholder="{{Interval de polling}}"/>
 									{{Interval (en secondes) de mise à jour de l'etat.}}<br/>
-									{{Si vide ou 0, polling désactivé.<br/>
 									{{Valeur minimum: 5 secondes.}}<br/>
 									{{Valeur recommandée: 10 secondes}}<br/>
 									{{Exemple}}: 10
