@@ -15,12 +15,32 @@
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
-/*function protexiom_install() {
-}*/
+$_daemonTimeout=1660;
+$_daemonSleepTime=10;
+
+function protexiom_install() {
+	$cron = cron::byClassAndFunction('protexiom', 'pull');
+	if (!is_object($cron)) {
+		$cron=new cron();
+		$cron->setClass('protexiom');
+		$cron->setFunction('pull');
+		$cron->setEnable(1);
+		$cron->setDeamon(1);
+		$cron->setDeamonSleepTime($_daemonSleepTime);
+		$cron->setSchedule('* * * * *');
+		$cron->setTimeout($_daemonTimeout);//60 is the default. It's not a good odea to restart every daemons at once.
+		$cron->save();
+		$this->log('info', 'Protexiom daemon created');
+	}
+}
 
 function protexiom_update() {
+	//Variable to be used in 1.1.6 upgrade
+	$pollint_1_1_6 = "10";
+	
 	log::add('protexiom', 'info', '[*-*] '.getmypid().' Running protexiom post-update script', 'Protexiom');
 	
+	//eqLogic scope upgrade
 	foreach (eqLogic::byType('protexiom') as $eqLogic) {
 		/*
 		 * Upgrade to v0.0.9
@@ -225,33 +245,65 @@ function protexiom_update() {
         	$eqLogic->pullStatus(true);
         }
         
+        /*
+         * Upgrade to v1.1.6
+        */
+        //If we can find an enabled protexiom with polling activated, let's get the setup polling interval for the global daemon
+        if($eqLogic->getIsEnable()){
+        	if(filter_var($eqLogic->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
+        		$pollint_1_1_6=$eqLogic->getConfiguration('PollInt');
+        	}
+        }
+        //We will use this when the foreach loop is over
+        //Let's remove perEqlogic daemon, as they are replaced by a global one from now on
+        $cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
+        if (!is_object($cron)) {
+        	$cron->remove();
+        }
         
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */
-		//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
-		//Let's stop it, it will then automatically restart
-		$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
-		if (is_object($cron)) {
-			log::add('protexiom', 'info', '['.$eqLogic->getName().'-'.$eqLogic->getId().'] '.getmypid().' Stopping pull daemon', $eqLogic->getName());
-			// TODO The cron->stop allows a restrt of the task with an up to date script.
-			// However, stopping the task in the middle of the executioncan lead to authcookie lost
-			// Need to find a workaround
-			$cron->stop();
-		}
+		//Nothing to do in the eqLogic scope
+		
 	}//End foreach eqLogic
+	
+	//plugin scope upgrade
+	
+	/*
+	 * Upgrade to v1.1.6
+	*/
+	//Let's create a global cron task if does not exists
+	$cron = cron::byClassAndFunction('protexiom', 'pull');
+	if (!is_object($cron)) {
+		$cron=new cron();
+		$cron->setClass('protexiom');
+		$cron->setFunction('pull');
+		$cron->setEnable(1);
+		$cron->setDeamon(1);
+		$cron->setDeamonSleepTime(intval($pollint_1_1_6));
+		$cron->setSchedule('* * * * *');
+		$cron->setTimeout(1660);//60 is the default. It's not a good odea to restart every daemons at once.
+		$cron->save();
+		$this->log('info', 'Protexiom daemon created');
+	}
+	
+	/*
+	 * End of version spécific upgrade actions. Let's run standard actions
+	*/
+	//As the protexiom::pull task is schedulded as a daemon, we should restart it so that it uses functions from the new plugin version.
+	protexiom::deamon_start();
+	
 	
 	log::add('protexiom', 'info', '[*-*] '.getmypid().' End of protexiom post-update script', 'Protexiom');
 }
 
 
 function protexiom_remove(){
-	foreach (eqLogic::byType('protexiom') as $eqLogic) {
-		$eqLogic->unSchedulePull();
-		$eqLogic->unScheduleIsRebooted();
+	$cron = cron::byClassAndFunction('protexiom', 'pull');
+	if (is_object($cron)) {
+		$cron->remove();
 	}
 }//End function protexiom_remove()
-
-//TODO Add a stop function to logoff from protexiom during halt or reboot
 
 ?>

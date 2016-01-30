@@ -48,28 +48,118 @@ class protexiom extends eqLogic {
      * @param array $_options['protexiom_id']
      * @return 
      */
-    public static function pull($_options) {
-    	log::add('protexiom', 'debug', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Running protexiom pull '.date("Y-m-d H:i:s"), $_options['protexiom_id']);
-        $protexiom = protexiom::byId($_options['protexiom_id']);
-        if (is_object($protexiom)) {
-        	$protexiom->initSpBrowser();
-        	if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
-        		if($myError=$protexiom->_spBrowser->doLogin()){
-        			$protexiom->log('error', 'Login failed during scheduled pull. Pull aborted. Returned error was: '.$myError);
-        			throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError);
-        		}else{//Login OK
-        			cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionCookieTTL);
-        			$protexiom->log('debug', 'Sucessfull login during scheduled pull. authCookie cached.');
-        		}
-        	}
-        	$protexiom->pullStatus();
-        } else {
-            log::add('protexiom', 'error', '[*-'.$_options['protexiom_id'].'] '.getmypid().' Protexiom ID non trouvé : ' . $_options['protexiom_id'] . '. Tache pull supprimée', $_options['protexiom_id']);
-            throw new Exception('Protexiom ID non trouvé : ' . $_options['protexiom_id'] . '. Tache pull supprimée');
-            $protexiom->unSchedulePull(false);
-        }
+    public static function pull() {
+    	log::add('protexiom', 'debug', '[*-*] '.getmypid().' Starting protexiom pull '.date("Y-m-d H:i:s"));
+    	foreach (eqLogic::byType('protexiom') as $protexiom) {
+    		if($protexiom->getIsEnable()){
+		    	$protexiom->log('debug', 'running scheduled equipement update');
+		        $protexiom->initSpBrowser();
+		        if (!($protexiom->_spBrowser->authCookie)){//Empty authCookie mean not logged in
+		        	if($myError=$protexiom->_spBrowser->doLogin()){
+		        		$protexiom->log('error', 'Login failed during scheduled pull. Pull aborted. Returned error was: '.$myError);
+		        		throw new Exception('Login failed during scheduled pull for the protexiom device '.$protexiom->name.'. Pull aborted. Returned error was: '.$myError);
+		        	}else{//Login OK
+		        		cache::set('somfyAuthCookie::'.$protexiom->getId(), $protexiom->_spBrowser->authCookie, $protexiom->_SomfySessionCookieTTL);
+		        		$protexiom->log('debug', 'Sucessfull login during scheduled pull. authCookie cached.');
+		        	}
+		        }
+		        $protexiom->pullStatus();
+    		}
+    	}
     	return;
-    } //end pull function 
+    } //end pull function
+    
+    /**
+     * Called to get daemon informations
+     * Standard Jeedom function
+     * Don't forget to set <hasOwnDeamon>1</hasOwnDeamon> in info.xml if using a daemon
+     * @param
+     * @return array Daemon informations
+     * @author Fdp1
+     *
+     */
+    public static function deamon_info() {
+    	$return = array();
+    	$return['log'] = '';
+    	$return['state'] = 'nok';
+    	$return['launchable'] = 'nok';
+    	$cron = cron::byClassAndFunction('protexiom', 'pull');
+    	if (is_object($cron) && $cron->running()) {
+    		$return['state'] = 'ok';
+    	}
+    	//Daemon is Launchable only if at least one eqLogic is enabled
+    	foreach (eqLogic::byType('protexiom') as $eqLogic) {
+    		if($eqLogic->getIsEnable()){
+    			$eqLogic->log('debug', 'Equipement enabled. Setting daemon to launchable');
+    			$return['launchable'] = 'ok';
+    		}
+    	}
+    	log::add('protexiom', 'debug', '[*-*] '.getmypid().' Daemon_info:  launchable='.$return['launchable']);
+    	 
+    	return $return;
+    }//end deamon_info function
+    
+    /**
+     * automatically called by Jeedom to start plugin Daemon
+     * Standard Jeedom function
+     * Don't forget to set <hasOwnDeamon>1</hasOwnDeamon> in info.xml if using a daemon
+     * @param
+     * @return
+     * @author Fdp1
+     *
+     */
+    public static function deamon_start($_debug = false) {
+    	self::deamon_stop();
+    	$deamon_info = self::deamon_info();
+    	/*if ($deamon_info['launchable'] != 'ok') {
+    	 throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+    	}*/
+    	if ($deamon_info['launchable'] == 'ok') {
+    		$cron = cron::byClassAndFunction('protexiom', 'pull');
+    		if (!is_object($cron)) {
+    			throw new Exception(__('Tache cron introuvable', __FILE__));
+    		}
+    		$cron->run();
+    		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Daemon started (launchable='.$deamon_info['launchable'].')');
+    	}else{
+    		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Daemon unlaunchable. Won\'t start (launchable='.$deamon_info['launchable'].')');
+    	}
+    }//end deamon_start function
+    
+    /**
+     * automatically called by Jeedom to stop plugin Daemon
+     * Standard Jeedom function
+     * Don't forget to set <hasOwnDeamon>1</hasOwnDeamon> in info.xml if using a daemon
+     * @param
+     * @return
+     * @author Fdp1
+     *
+     */
+    public static function deamon_stop() {
+    	//TODO vérifier si Jeedom V2.0 appel cette methode lors de son arret 
+    	$cron = cron::byClassAndFunction('protexiom', 'pull');
+    	if (!is_object($cron)) {
+    		throw new Exception(__('Tache cron introuvable', __FILE__));
+    	}
+    	$cron->halt();
+    	//Logoff protexiom
+    	foreach (eqLogic::byType('protexiom') as $protexiom) {
+    		if($protexiom->getIsEnable()){
+    			$protexiom->log('debug', 'Logging off during daemon_stop');
+    			$protexiom->initSpBrowser();
+    			if (($protexiom->_spBrowser->authCookie)){//not Empty authCookie means logged in
+    				if(!$myError=$protexiom->_spBrowser->doLogout()){
+    					$protexiom->log('debug', 'Successfull logout during daemon_stop');
+    					cache::deleteBySearch('somfyAuthCookie::'.$protexiom->getId());
+    				}else{
+    					$protexiom->log('debug', 'Logout failed during daemon_stop. Returned error: '.$myError);
+    				}
+    			}
+    		}
+    	}
+    	 
+    }//end deamon_stop function
+    
 
 
     /*     * **********************Instance methods************************** */
@@ -666,9 +756,11 @@ class protexiom extends eqLogic {
      */
     public function postSave() {
     	$this->log('debug', "Running postsave method...");
-    	//Let's unschedule protexiom pull
-    	//If getIsenable == 1, we will reschedule (with an up to date polling interval)
-    	$this->unSchedulePull();
+    	//Let's stop daemon to force logoff during th postsave process
+    	//To avoid HW detection failure, and to validte credentials
+    	//Daemon will be restarted at the end of the postSave
+    	$this->deamon_stop();
+    	
     	if($this->getIsEnable()=='1'){
     		//Let's detect hardware version only if the device isEnabled.
     		//This will avoid infinite loop, as in case of error, we'll deactivate the device and save it again, meaning this function will run again
@@ -686,6 +778,8 @@ class protexiom extends eqLogic {
     			$this->setConfiguration('HwVersion', '');
     			// then deactivate the Device
     			$this->setIsEnable('0');
+    			// then restart daemon before the exception raise, to allow daemon stop in case no protexiom is enabled
+    			$this->deamon_start();
     			$this->propagateIsEnable2subDevices();
     			// and finally save our config modifications
     			$this->save();
@@ -707,8 +801,6 @@ class protexiom extends eqLogic {
     			// Let's initialize status, and force elements creation / update
     			$this->pullStatus(true);
     			
-    			//And finally, Let's schedule pull
-    			$this->schedulePull();
     			//TODO Remove this when Jeedom 2.0 is out
     			// Until Jeedom 2.0, we still need to set every info CMD to setEventOnly
     			// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
@@ -720,6 +812,8 @@ class protexiom extends eqLogic {
     	}else{//eqLogic disabled
     		$this->propagateIsEnable2subDevices();
     	}
+    	//Let's start (or implicitely stop) the deamon, depending on the existence or not of an enabled protexiom
+    	$this->deamon_start();
     }
 
     /**
@@ -729,7 +823,9 @@ class protexiom extends eqLogic {
      *
      */
     public function preRemove(){
-    	$this->unSchedulePull();
+    	$this->setIsEnable(false);
+    	//Let's restart (or implicitely stop) demon depending on the existence of an enabled protexiom
+    	$this->deamon_start();
     	// Let's remove subDevices
     	foreach (self::byType('protexiom_ctrl') as $eqLogic) {
     		if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
@@ -821,64 +917,7 @@ class protexiom extends eqLogic {
     		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
     	}
     	return $html;
-    }  
-    
-    /**
-     * Schedule status update
-     * @author Fdp1
-     *
-     */
-    public function schedulePull(){
-    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
-    	if (!is_object($cron)) {
-    		$cron=new cron();
-    		$cron->setClass('protexiom');
-    		$cron->setFunction('pull');
-    		$cron->setOption(array('protexiom_id' => intval($this->getId())));
-    		$cron->setEnable(1);
-    		$cron->setDeamon(1);
-    		$cron->setDeamonSleepTime(intval($this->getConfiguration('PollInt')));
-    		$cron->setSchedule('* * * * *');
-    		$cron->setTimeout(70);//60 is the default. It's not a good odea to restart every daemons at once.
-    		$cron->save();
-    		$this->log('info', 'Scheduling protexiom pull.');
-    	}
-    }//end schedulePull function
-    
-    /**
-     * Unchedule periodic status update
-     * @author Fdp1
-     *
-     */
-    public function unSchedulePull($halt_before = true){
-    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-    		$cron->remove($halt_before);
-    		$this->log('info', 'Protexiom pull schedule removed.');
-    	}else{
-    		$this->log('debug', 'Unable to find protexiom pull daemon. Removal FAILED.');
-    	}
-    	$cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($this->getId())));
-    	if (is_object($cron)) {
-    		echo '*!*!*!*!*!*!*IMPORTANT : unable to remove protexiom pull daemon for device '.$this->name.'. You may have to manually remove it. *!*!*!*!*!*!*!*';
-    		$this->log('error', 'Unable to remove protexiom pull daemon. You may have to manually remove it.');
-    	}
-    	
-    	//Polling is stopped. Let's logoff en clear authCookie
-    	$cache=cache::byKey('somfyAuthCookie::'.$this->getId());
-    	$cachedCookie=$cache->getValue();
-    	if(!($cachedCookie==='' || $cachedCookie===null || $cachedCookie=='false')){
-    		
-    		$this->log('debug', 'Cached cookie found  while unscheduling. Trying to logoff');
-    		$this->initSpBrowser();
-    		if(!$myError=$this->_spBrowser->doLogout()){
-    			$this->log('debug', 'Successfull logout while unscheduling. Deleting session cookie');
-                cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
-    		}else{
-    			$this->log('debug', 'Logout failed while unscheduling. Returned error: '.$myError);
-    		}
-    	}
-    }//end unSchedulePull function
+    }//end toHtml function  
 
     /**
      * Workaround somfy session timeout bug
