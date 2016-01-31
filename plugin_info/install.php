@@ -15,10 +15,10 @@
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
-$_daemonTimeout=1660;
-$_daemonSleepTime=10;
-
 function protexiom_install() {
+	//Loading default configuration value
+	$_config = config::getDefaultConfiguration('protexiom')['protexiom'];
+	
 	$cron = cron::byClassAndFunction('protexiom', 'pull');
 	if (!is_object($cron)) {
 		$cron=new cron();
@@ -26,19 +26,22 @@ function protexiom_install() {
 		$cron->setFunction('pull');
 		$cron->setEnable(1);
 		$cron->setDeamon(1);
-		$cron->setDeamonSleepTime($_daemonSleepTime);
+		$cron->setDeamonSleepTime($_config['pollInt']);
 		$cron->setSchedule('* * * * *');
-		$cron->setTimeout($_daemonTimeout);//60 is the default. It's not a good odea to restart every daemons at once.
+		$cron->setTimeout($_config['daemonTimeout']);//60 is the default. It's not a good odea to restart every daemons at once.
 		$cron->save();
-		$this->log('info', 'Protexiom daemon created');
+		log::add('protexiom', 'info', '[*-*] '.getmypid().' Protexiom daemon created', 'Protexiom');
 	}
 }
 
 function protexiom_update() {
-	//Variable to be used in 1.1.6 upgrade
-	$pollint_1_1_6 = "10";
-	
 	log::add('protexiom', 'info', '[*-*] '.getmypid().' Running protexiom post-update script', 'Protexiom');
+	//Loading default configuration value
+	$_config = config::getDefaultConfiguration('protexiom')['protexiom'];
+	
+	//Variable to be used in 1.1.6 upgrade
+	$pollint_1_1_6 = $_config['pollInt'];
+	
 	
 	//eqLogic scope upgrade
 	foreach (eqLogic::byType('protexiom') as $eqLogic) {
@@ -257,7 +260,7 @@ function protexiom_update() {
         //We will use this when the foreach loop is over
         //Let's remove perEqlogic daemon, as they are replaced by a global one from now on
         $cron = cron::byClassAndFunction('protexiom', 'pull', array('protexiom_id' => intval($eqLogic->getId())));
-        if (!is_object($cron)) {
+        if (is_object($cron)) {
         	$cron->remove();
         }
         
@@ -283,10 +286,13 @@ function protexiom_update() {
 		$cron->setDeamon(1);
 		$cron->setDeamonSleepTime(intval($pollint_1_1_6));
 		$cron->setSchedule('* * * * *');
-		$cron->setTimeout(1660);//60 is the default. It's not a good odea to restart every daemons at once.
+		$cron->setTimeout($_config['daemonTimeout']);//60 is the default. It's not a good odea to restart every daemons at once.
 		$cron->save();
-		$this->log('info', 'Protexiom daemon created');
+		log::add('protexiom', 'info', '[*-*] '.getmypid().' Protexiom daemon created', 'Protexiom');
+		config::save('pollInt', $pollint_1_1_6, 'protexiom');
+		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Polling interval set to '.$pollint_1_1_6, 'Protexiom');
 	}
+	
 	
 	/*
 	 * End of version spécific upgrade actions. Let's run standard actions
