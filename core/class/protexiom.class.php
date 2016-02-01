@@ -1174,6 +1174,12 @@ class protexiom extends eqLogic {
     			}else{
     				$eqLogic->setIsVisible(1);
     			}
+    			//TODO add battery types
+    			/* https://www.jeedom.com/forum/viewtopic.php?f=78&t=13905#p254569
+    			 * (ex : $eqLogic->setConfiguration('battery_type', 'ma_batterie_type')
+    			 * Attention il y a une norme a respecter : NB_PILExVOLTAGE TYPE_PILE
+    			 */
+    			
     			$eqLogic->setConfiguration('disabledByParent', '0');
     			$eqLogic->setCategory("security", 1);
     			$eqLogic->setConfiguration('item_type', $element['type']);

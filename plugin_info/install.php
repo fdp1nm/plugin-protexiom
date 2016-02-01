@@ -39,8 +39,8 @@ function protexiom_update() {
 	//Loading default configuration value
 	$_config = config::getDefaultConfiguration('protexiom')['protexiom'];
 	
-	//Variable to be used in 1.1.6 upgrade
-	$pollint_1_1_6 = $_config['pollInt'];
+	//Variable to be used in 1.2.0 upgrade
+	$pollint_1_2_0 = $_config['pollInt'];
 	
 	
 	//eqLogic scope upgrade
@@ -249,12 +249,12 @@ function protexiom_update() {
         }
         
         /*
-         * Upgrade to v1.1.6
+         * Upgrade to v1.2.0
         */
         //If we can find an enabled protexiom with polling activated, let's get the setup polling interval for the global daemon
         if($eqLogic->getIsEnable()){
         	if(filter_var($eqLogic->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
-        		$pollint_1_1_6=$eqLogic->getConfiguration('PollInt');
+        		$pollint_1_2_0=$eqLogic->getConfiguration('PollInt');
         	}
         }
         //We will use this when the foreach loop is over
@@ -274,7 +274,7 @@ function protexiom_update() {
 	//plugin scope upgrade
 	
 	/*
-	 * Upgrade to v1.1.6
+	 * Upgrade to v1.2.0
 	*/
 	//Let's create a global cron task if does not exists
 	$cron = cron::byClassAndFunction('protexiom', 'pull');
@@ -284,13 +284,13 @@ function protexiom_update() {
 		$cron->setFunction('pull');
 		$cron->setEnable(1);
 		$cron->setDeamon(1);
-		$cron->setDeamonSleepTime(intval($pollint_1_1_6));
+		$cron->setDeamonSleepTime(intval($pollint_1_2_0));
 		$cron->setSchedule('* * * * *');
 		$cron->setTimeout($_config['daemonTimeout']);//60 is the default. It's not a good odea to restart every daemons at once.
 		$cron->save();
 		log::add('protexiom', 'info', '[*-*] '.getmypid().' Protexiom daemon created', 'Protexiom');
-		config::save('pollInt', $pollint_1_1_6, 'protexiom');
-		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Polling interval set to '.$pollint_1_1_6, 'Protexiom');
+		config::save('pollInt', $pollint_1_2_0, 'protexiom');
+		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Polling interval set to '.$pollint_1_2_0, 'Protexiom');
 	}
 	
 	

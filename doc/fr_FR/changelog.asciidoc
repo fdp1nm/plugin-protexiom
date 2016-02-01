@@ -1,5 +1,11 @@
 :numbered!:
 
+==== v1.2.0 - 2016-02-02
+
+- Mise à jour pour compatibilité avec Jeedom v 2.0
+- Le mode polling est maintenant obligatoire
+- L'intervalle de polling est maintenant paramétrable de manière globale dans la configuration du plugin
+
 ==== v1.1.5 - 2015-12-27
 
 - Bugfix import de composants si l'alarme n'a pas d'objet parent sous Jeedom
