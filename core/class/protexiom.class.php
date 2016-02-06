@@ -160,6 +160,18 @@ class protexiom extends eqLogic {
     	 
     }//end deamon_stop function
     
+    /**
+     * Called after configuration update (from ajax postsave) to check config values
+     * @author Fdp1
+     */
+    public static function checkConfig() {
+    	//Checking polling interval
+    	if(!filter_var(config::byKey('pollInt', 'protexiom'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
+    		throw new Exception(__('La frequence de mise à jour (polling) est invalide. Elle doit contenir un nombre (entier) de seconde superieur a 5.', __FILE__));
+    	}
+    	 
+    }//End checkConfig func
+    
 
 
     /*     * **********************Instance methods************************** */
@@ -438,10 +450,6 @@ class protexiom extends eqLogic {
         //	Line 5
         if(!preg_match ( "/^([0-9]{4}[^0-9]){5}[0-9]{4}$/" , $this->getConfiguration('AuthCardL5') )){
         	throw new Exception(__('Le format de la carte d\'authentification (ligne 5) est invalide.', __FILE__));
-        }
-        //Checking polling interval
-        if(!filter_var($this->getConfiguration('PollInt'), FILTER_VALIDATE_INT, array('options' => array('min_range' => 5)))){
-        	throw new Exception(__('La frequence de mise à jour (polling) est invalide. Elle doit vide ou égale a zero si vous souhaitez désactiver le polling. Elle doit contenir un nombre (entier) de seconde superieur a 5 sinon.', __FILE__));
         }
 			
         /* //Finally, if a proxy is specified, let's check it's valid

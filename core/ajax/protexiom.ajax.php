@@ -23,6 +23,19 @@ try {
 
     if (init('action') == 'postSave') {
     	//Called after a plugin configuration save
+    	
+    	// Let's first check new configuration values
+    	try {
+    		protexiom::checkConfig();
+    	} catch (Exception $e) {
+    		//Invalid configuration.
+    		//Let's firt set back the old values
+    		config::save('pollInt', init('pollInt'), 'protexiom');
+    		//Let's then the error details
+    		ajax::error(displayExeption($e), $e->getCode());
+    	}
+    	
+    	//Configuration check OK
     	//Restart daemon with new polling interval
     	$cron = cron::byClassAndFunction('protexiom', 'pull');
     	if (!is_object($cron)) {

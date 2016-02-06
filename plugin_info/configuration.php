@@ -40,6 +40,8 @@ if (!isConnect()) {
                     url: "plugins/protexiom/core/ajax/protexiom.ajax.php", // url du fichier php
                     data: {
                         action: "postSave",
+                        //Let's send previous values as parameters, to be able to set them back in case of bad values
+                        pollInt: "<?php echo config::byKey('pollInt', 'protexiom'); ?>",
                     },
                     dataType: 'json',
                     error: function (request, status, error) {

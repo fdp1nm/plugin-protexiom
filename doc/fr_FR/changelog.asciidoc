@@ -1,5 +1,9 @@
 :numbered!:
 
+==== v1.2.1 - 2016-02-06
+
+- Ajout de validation lors de modification de configuration globale du plugin
+
 ==== v1.2.0 - 2016-02-02
 
 - Mise à jour pour compatibilité avec Jeedom v 2.0
