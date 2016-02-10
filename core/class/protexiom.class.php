@@ -143,19 +143,17 @@ class protexiom extends eqLogic {
     	}
     	$cron->halt();
     	//Logoff protexiom
-    	foreach (eqLogic::byType('protexiom') as $protexiom) {
-    		if($protexiom->getIsEnable()){
-    			$protexiom->log('debug', 'Logging off during daemon_stop');
-    			$protexiom->initSpBrowser();
-    			if (($protexiom->_spBrowser->authCookie)){//not Empty authCookie means logged in
-    				if(!$myError=$protexiom->_spBrowser->doLogout()){
-    					$protexiom->log('debug', 'Successfull logout during daemon_stop');
-    					cache::deleteBySearch('somfyAuthCookie::'.$protexiom->getId());
-    				}else{
-    					$protexiom->log('debug', 'Logout failed during daemon_stop. Returned error: '.$myError);
-    				}
-    			}
-    		}
+    	foreach (eqLogic::byType('protexiom') as $protexiom) {   		
+   			$protexiom->log('debug', 'Logging off during daemon_stop');
+   			$protexiom->initSpBrowser();
+   			if (($protexiom->_spBrowser->authCookie)){//not Empty authCookie means logged in
+   				if(!$myError=$protexiom->_spBrowser->doLogout()){
+   					$protexiom->log('debug', 'Successfull logout during daemon_stop');
+   					cache::byKey('somfyAuthCookie::'.$protexiom->getId())->remove();
+   				}else{
+   					$protexiom->log('debug', 'Logout failed during daemon_stop. Returned error: '.$myError);
+   				}
+   			}
     	}
     	 
     }//end deamon_stop function
@@ -217,7 +215,7 @@ class protexiom extends eqLogic {
     			
     			if(!$myError=$this->_spBrowser->doLogout()){
     				$this->log('debug', 'Successfull logout while trying to workaround Empty XML file. Deleting session cookie');
-    				cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
+    				cache::byKey('somfyAuthCookie::'.$this->getId())->remove();
     			}else{
     				$this->log('debug', 'Logout failed while trying to workaround Empty XML file. Returned error: '.$myError);
     			}
@@ -944,7 +942,7 @@ class protexiom extends eqLogic {
     		
     		if(!$myError=$this->_spBrowser->doLogout()){
     			$this->log('debug', 'Successfull logout for workaroundSomfySessionTimeoutBug. Deleting session cookie');
-                cache::deleteBySearch('somfyAuthCookie::'.$this->getId());
+                cache::byKey('somfyAuthCookie::'.$this->getId())->remove();
     		}else{
     			$this->log('debug', 'Logout failed for workaroundSomfySessionTimeoutBug. Returned error: '.$myError);
     		}

@@ -1,5 +1,10 @@
 :numbered!:
 
+==== v1.2.2 - 2016-02-10
+
+- Hotfix: supression de la methode cache::deleteBySearch dans Jeedom 2.0
+  Merci @Cdrik https://www.jeedom.com/forum/viewtopic.php?f=28&t=2866&p=279828#p279631
+
 ==== v1.2.1 - 2016-02-06
 
 - Ajout de validation lors de modification de configuration globale du plugin
