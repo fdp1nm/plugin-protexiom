@@ -807,13 +807,6 @@ class protexiom extends eqLogic {
     			// Let's initialize status, and force elements creation / update
     			$this->pullStatus(true);
     			
-    			//TODO Remove this when Jeedom 2.0 is out
-    			// Until Jeedom 2.0, we still need to set every info CMD to setEventOnly
-    			// this way, cmd cache TTL is not taken into account, and polling is the only way to update an info cmd
-    			foreach ($this->getCmd('info') as $cmd) {
-    					$cmd->setEventOnly(1);
-    					$cmd->save();
-    			}
     		}
     	}else{//eqLogic disabled
     		$this->propagateIsEnable2subDevices();
