@@ -10,7 +10,6 @@
     <require>1.209</require>
     <version>1.2.2</version>
     <category>security</category>
-    <hasDependency>0</hasDependency>
     <hasOwnDeamon>1</hasOwnDeamon>
 </info>
 
