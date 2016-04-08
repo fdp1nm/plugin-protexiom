@@ -1,5 +1,13 @@
 :numbered!:
 
+==== v1.2.4 - 2016-04-09
+
+- Bugfix: Supression d'une requète cache posant des problèmes de compatibilité avec Jeedom 2.0
+
+==== v1.2.3 - 2016-03-13
+
+- Supression définitive de eventOnly (v2.1 compliance)
+
 ==== v1.2.2 - 2016-02-10
 
 - Hotfix: supression de la methode cache::deleteBySearch dans Jeedom 2.0
