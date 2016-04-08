@@ -845,78 +845,41 @@ class protexiom extends eqLogic {
      * Standard Jeedom function
      * @param string $_version Widget version to display (mobile, dashboard or scenario)
      * @return string widget HTML code
-     * @author Fdp1
+     * @author Fdp1 - Based on Jeedom core - Rev 5267cf6
      *
      */
-    public function toHtml($_version = 'dashboard') {
-    	if ($_version == '') {
-    		throw new Exception(__('La version demandée ne peut pas être vide (mobile, dashboard ou scénario)', __FILE__));
-    	}
-    	if (!$this->hasRight('r')) {
-    		return '';
-    	}
-    	$hasOnlyEventOnly = $this->hasOnlyEventOnlyCmd();
-    	if($hasOnlyEventOnly){
-    		$sql = 'SELECT `value` FROM cache
-           WHERE `key`="widgetHtml' . $_version . $this->getId().'"';
-    		$result = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
-    		if ($result['value'] != '') {
-    			return $result['value'];
-    		}
-    	}
-    
-    	$version = jeedom::versionAlias($_version);
-
-    	$replace = array(
-    			'#id#' => $this->getId(),
-    			'#name#' => $this->getName(),
-    			'#eqLink#' => $this->getLinkToConfiguration(),
-    			'#category#' => $this->getPrimaryCategory(),
-    			'#background_color#' => $this->getBackgroundColor($version),
-    			'#style#' => '',
-    			'#max_width#' => '650px',
-    			'#logicalId#' => $this->getLogicalId(),
-                '#battery#' => $this->getConfiguration('batteryStatus', -2),
-                '#batteryDatetime#' => $this->getConfiguration('batteryStatusDatetime', __('inconnue', __FILE__)),
-    	);
-    	
-    	if ($this->getIsEnable()) {
-    		foreach ($this->getCmd() as $cmd) {
-    			if($cmd->getIsVisible()){
-    				$replace['#'.$cmd->getLogicalId().'#'] = $cmd->toHtml($_version);
-    			}else{
-    				$replace['#'.$cmd->getLogicalId().'#'] = "";
-    			}
-    		}
-    	}
-    	
-    	if ($_version == 'dview' || $_version == 'mview') {
-    		$object = $this->getObject();
-    		$replace['#object_name#'] = (is_object($object)) ? '(' . $object->getName() . ')' : '';
-    	} else {
-    		$replace['#object_name#'] = '';
-    	}
-    	if (($_version == 'dview' || $_version == 'mview') && $this->getDisplay('doNotShowNameOnView') == 1) {
-    		$replace['#name#'] = '';
-    	}
-    	if (($_version == 'mobile' || $_version == 'dashboard') && $this->getDisplay('doNotShowNameOnDashboard') == 1) {
-    		$replace['#name#'] = '';
-    	}
-    	$parameters = $this->getDisplay('parameters');
-    	if (is_array($parameters)) {
-    		foreach ($parameters as $key => $value) {
-    			$replace['#' . $key . '#'] = $value;
-    		}
-    	}
-    	
-        self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
-    	
-    	$html = template_replace($replace, self::$_templateArray[$version]);
-    	if($hasOnlyEventOnly){
-    		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
-    	}
-    	return $html;
-    }//end toHtml function  
+	public function toHtml($_version = 'dashboard') {
+		$replace = $this->preToHtml($_version);
+		if (!is_array($replace)) {
+			return $replace;
+		}
+		$version = jeedom::versionAlias($_version);
+		$cmd_html = '';
+		foreach ($this->getCmd() as $cmd) {
+			if($cmd->getIsVisible()){
+				if ($cmd->getLogicalId() == 'refresh') {
+					continue;
+				}
+				if ($cmd->getDisplay('forceReturnLineBefore', 0) == 1) {
+					$cmd_html .= '<br/>';
+				}
+				$cmd_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
+				if ($cmd->getDisplay('forceReturnLineAfter', 0) == 1) {
+					$cmd_html .= '<br/>';
+				}
+				$replace['#'.$cmd->getLogicalId().'#'] = $cmd->toHtml($_version);
+			}else{
+				$replace['#'.$cmd->getLogicalId().'#'] = "";
+			}
+		}
+		$replace['#cmd#'] = $cmd_html;
+		
+		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
+		
+		return template_replace($replace, self::$_templateArray[$version]);
+		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
+		return $html;
+	}//end toHtml function  
 
     /**
      * Workaround somfy session timeout bug
