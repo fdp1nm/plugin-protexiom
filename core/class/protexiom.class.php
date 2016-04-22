@@ -849,12 +849,14 @@ class protexiom extends eqLogic {
      *
      */
 	public function toHtml($_version = 'dashboard') {
+		$this->log('debug', 'Running toHtml');
 		$replace = $this->preToHtml($_version);
 		if (!is_array($replace)) {
 			return $replace;
 		}
 		$version = jeedom::versionAlias($_version);
 		$cmd_html = '';
+		$this->log('debug', 'toHtml...Running throught cmds');
 		foreach ($this->getCmd() as $cmd) {
 			if($cmd->getIsVisible()){
 				if ($cmd->getLogicalId() == 'refresh') {
@@ -873,11 +875,14 @@ class protexiom extends eqLogic {
 			}
 		}
 		$replace['#cmd#'] = $cmd_html;
-		
+		$this->log('debug', 'toHtml...Getting template');
 		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
+		$this->log('debug', 'toHtml...Template loaded');
 		
-		return template_replace($replace, self::$_templateArray[$version]);
+		$html = template_replace($replace, self::$_templateArray[$version]);
+		$this->log('debug', 'toHtml...Caching widget');
 		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
+		$this->log('debug', 'toHtml...Done');
 		return $html;
 	}//end toHtml function  
 
