@@ -26,14 +26,14 @@ class protexiom extends eqLogic {
 	// Standard Jeedom properties. Enables widget properties. To be set only if eqLogic implement it's own toHtml Class
 	// See https://www.jeedom.com/forum/viewtopic.php?f=78&t=16647&p=306539&hilit=avanc%C3%A9#p299809
 	public static $_widgetPossibility = array('custom' => array(
-      'visibility' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'displayName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'displayObjectName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'optionalParameters' => true/false,
-      'background-color' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'text-color' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'border' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'border-radius' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'visibility' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'displayName' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'displayObjectName' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'optionalParameters' => true,
+      'background-color' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'text-color' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'border' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'border-radius' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
 	));
 	
     protected $_UpdateDate = '';
@@ -1345,10 +1345,10 @@ class protexiomCmd extends cmd {
 	// Standard Jeedom properties. Enables widget properties. To be set only if cmd implement it's own toHtml Class
 	// See https://www.jeedom.com/forum/viewtopic.php?f=78&t=16647&p=306539&hilit=avanc%C3%A9#p299809
 	public static $_widgetPossibility = array('custom' => array(
-      'widget' => array('dashboard' => true/false,'mobile' => true/false),
-      'displayName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'displayObjectName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
-      'optionalParameters' => true/false,
+      'widget' => array('dashboard' => true,'mobile' => true),
+      'displayName' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'displayObjectName' => array('dashboard' => true,'plan' => true,'view' => true,'mobile' => true),
+      'optionalParameters' => true,
 	));
 
     /*     * ***********************Static methods*************************** */
