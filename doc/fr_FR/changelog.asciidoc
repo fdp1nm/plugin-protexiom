@@ -1,4 +1,7 @@
 :numbered!:
+==== v1.2.6 - 2016-05-01
+
+- Bugfix: MAJ gestion de l'affichage avancé sous Jeedom 2.2
 
 ==== v1.2.4 - 2016-04-09
 

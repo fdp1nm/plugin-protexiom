@@ -1435,183 +1435,160 @@ class protexiomCmd extends cmd {
      * @param array $_options
      * @author Fdp1
      */
-    	public function toHtml($_version = 'dashboard', $options = '', $_cmdColor = null, $_cache = 2) {
-		$version = jeedom::versionAlias($_version);
-		$html = '';
-		$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.' . $this->getTemplate($version, 'default');
-		$template = '';
-		if ($this->getTemplate($version, 'default') != 'default') {
-			if (config::byKey('active', 'widget') == 1) {
-				$template = getTemplate('core', $version, $template_name, 'widget');
-			}
-			if ($template == '') {
-				foreach (plugin::listPlugin(true) as $plugin) {
-					$template = getTemplate('core', $version, $template_name, $plugin->getId());
-					if ($template != '') {
-						break;
-					}
-				}
-			}
-			if ($template == '') {
-				$template_name = 'cmd.' . $this->getType() . '.' . $this->getSubType() . '.default';
-				$template = getTemplate('core', $version, $template_name);
-			}
-		} else {
-			$template = getTemplate('core', $version, $template_name);
-		}
-		self::$_templateArray[$version . '::' . $template_name] = $template;
-		$replace = array(
-			'#id#' => $this->getId(),
-            '#icon#' => $this->getDisplay('icon'),
-			'#name#' => ($_version == 'mobile' || $_version == 'mview') ? $this->getConfiguration('mobileLabel') : $this->getName(),
-			'#name_display#' => ($this->getDisplay('icon') != '') ? $this->getDisplay('icon') : $this->getName(),
-			'#history#' => '',
-			'#displayHistory#' => 'display : none;',
-			'#unite#' => $this->getUnite(),
-			'#minValue#' => $this->getConfiguration('minValue', 0),
-			'#maxValue#' => $this->getConfiguration('maxValue', 100),
-			'#logicalId#' => $this->getLogicalId(),
-		);
-		if ($_cmdColor == null && $version != 'scenario') {
-			$eqLogic = $this->getEqLogic();
-			$vcolor = ($version == 'mobile') ? 'mcmdColor' : 'cmdColor';
-			if ($eqLogic->getPrimaryCategory() == '') {
-				$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:default:' . $vcolor);
-			} else {
-				$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:' . $eqLogic->getPrimaryCategory() . ':' . $vcolor);
-			}
-		} else {
-			$replace['#cmdColor#'] = $_cmdColor;
-		}
-		if ($this->getDisplay('doNotShowNameOnView') == 1 && ($_version == 'dview' || $_version == 'mview')) {
-			$replace['#name_display#'] = '';
-			$replace['#name#'] = '';
-		} else if ($this->getDisplay('doNotShowNameOnDashboard') == 1 && ($_version == 'mobile' || $_version == 'dashboard')) {
-			$replace['#name_display#'] = '';
-			$replace['#name#'] = '';
-		} else {
-			$replace['#name_display#'] .= '<br/>';
-		}
-		if ($this->getType() == 'info') {
-			$replace['#state#'] = '';
-			$replace['#tendance#'] = '';
-			$replace['#state#'] = $this->execCmd(null, $_cache);
-			if (strpos($replace['#state#'], 'error::') !== false) {
-				$template = getTemplate('core', $version, 'cmd.error');
-				$replace['#state#'] = str_replace('error::', '', $replace['#state#']);
-			} else {
-				if ($this->getSubType() == 'binary' && $this->getDisplay('invertBinary') == 1) {
-					$replace['#state#'] = ($replace['#state#'] == 1) ? 0 : 1;
-				}
-			}
-			if (method_exists($this, 'formatValueWidget')) {
-				$replace['#state#'] = $this->formatValueWidget($replace['#state#']);
-			}
-			$replace['#collectDate#'] = $this->getCollectDate();
-			$replace['#valueDate#'] = $this->getValueDate();
-			if ($this->getIsHistorized() == 1) {
-				$replace['#history#'] = 'history cursor';
-				if (config::byKey('displayStatsWidget') == 1 && strpos($template, '#displayHistory#') !== false) {
-					$showStat = true;
-					if ($this->getDisplay('doNotShowStatOnDashboard') == 1 && $_version == 'dashboard') {
-						$showStat = false;
-					}
-					if ($this->getDisplay('doNotShowStatOnView') == 1 && ($_version == 'dview' || $_version == 'mview')) {
-						$showStat = false;
-					}
-					if ($this->getDisplay('doNotShowStatOnMobile') == 1 && $_version == 'mobile') {
-						$showStat = false;
-					}
-					if ($showStat) {
-						$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculPeriod') . ' hour'));
-						$replace['#displayHistory#'] = '';
-						$historyStatistique = $this->getStatistique($startHist, date('Y-m-d H:i:s'));
-						if ($historyStatistique['avg'] == 0 && $historyStatistique['min'] == 0 && $historyStatistique['max'] == 0) {
-							$replace['#averageHistoryValue#'] = round($replace['#state#'], 1);
-							$replace['#minHistoryValue#'] = round($replace['#state#'], 1);
-							$replace['#maxHistoryValue#'] = round($replace['#state#'], 1);
-						} else {
-							$replace['#averageHistoryValue#'] = round($historyStatistique['avg'], 1);
-							$replace['#minHistoryValue#'] = round($historyStatistique['min'], 1);
-							$replace['#maxHistoryValue#'] = round($historyStatistique['max'], 1);
-						}
-						$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculTendance') . ' hour'));
-						$tendance = $this->getTendance($startHist, date('Y-m-d H:i:s'));
-						if ($tendance > config::byKey('historyCalculTendanceThresholddMax')) {
-							$replace['#tendance#'] = 'fa fa-arrow-up';
-						} else if ($tendance < config::byKey('historyCalculTendanceThresholddMin')) {
-							$replace['#tendance#'] = 'fa fa-arrow-down';
-						} else {
-							$replace['#tendance#'] = 'fa fa-minus';
-						}
-					}
-				}
-			}
-			$parameters = $this->getDisplay('parameters');
-			if (is_array($parameters)) {
-				foreach ($parameters as $key => $value) {
-					$replace['#' . $key . '#'] = $value;
-				}
-			}
-			return template_replace($replace, $template);
-		} else {
-			$cmdValue = $this->getCmdValue();
-			if (is_object($cmdValue) && $cmdValue->getType() == 'info') {
-				$replace['#state#'] = $cmdValue->execCmd(null, 2);
-				$replace['#valueName#'] = $cmdValue->getName();
-				$replace['#unite#'] = $cmdValue->getUnite();
-			} else {
-				$replace['#state#'] = ($this->getLastValue() != null) ? $this->getLastValue() : '';
-				$replace['#valueName#'] = $this->getName();
-				$replace['#unite#'] = $this->getUnite();
-			}
-			$parameters = $this->getDisplay('parameters');
-			if (is_array($parameters)) {
-				foreach ($parameters as $key => $value) {
-					$replace['#' . $key . '#'] = $value;
-				}
-			}
-			$replace['#valueName#'] .= '<br/>';
-			$html .= template_replace($replace, $template);
-			if (trim($html) == '') {
-				return $html;
-			}
-			if ($options != '') {
-				$options = jeedom::toHumanReadable($options);
-				if (is_json($options)) {
-					$options = json_decode($options, true);
-				}
-				if (is_array($options)) {
-					foreach ($options as $key => $value) {
-						$replace['#' . $key . '#'] = $value;
-					}
-				}
-			}
-			if ($version == 'scenario' && $this->getType() == 'action' && $this->getSubtype() == 'message') {
-				if (!isset($replace['#title#'])) {
-					$replace['#title#'] = '';
-				}
-				if (!isset($replace['#message#'])) {
-					$replace['#message#'] = '';
-				}
-			}
-			if ($version == 'scenario' && $this->getType() == 'action' && $this->getSubtype() == 'slider' && !isset($replace['#slider#'])) {
-				$replace['#slider#'] = '';
-			}
-			if ($version == 'scenario' && $this->getType() == 'action' && $this->getSubtype() == 'slider' && !isset($replace['#color#'])) {
-				$replace['#color#'] = '';
-			}
-			$replace['#title_placeholder#'] = $this->getDisplay('title_placeholder', __('Titre', __FILE__));
-			$replace['#message_placeholder#'] = $this->getDisplay('message_placeholder', __('Message', __FILE__));
-			$replace['#message_disable#'] = $this->getDisplay('message_disable', 0);
-			$replace['#title_disable#'] = $this->getDisplay('title_disable', 0);
-			$replace['#title_possibility_list#'] = str_replace("'", "\'", $this->getDisplay('title_possibility_list', ''));
-			$replace['#slider_placeholder#'] = $this->getDisplay('slider_placeholder', __('Valeur', __FILE__));
-			$replace['#other_tooltips#'] = ($replace['#name#'] != $this->getName()) ? $this->getName() : '';
-			$html = template_replace($replace, $html);
-			return $html;
-		}
-	}
+    public function toHtml($_version = 'dashboard', $options = '', $_cmdColor = null) {
+    	$version2 = jeedom::versionAlias($_version, false);
+    	if ($this->getDisplay('showOn' . $version2, 1) == 0) {
+    		return '';
+    	}
+    	$version = jeedom::versionAlias($_version);
+    	$html = '';
+    	$replace = array(
+    			'#id#' => $this->getId(),
+    			//Modified from core version, revision c794f92
+    			'#icon#' => $this->getDisplay('icon'),
+    			'#name#' => ($_version == 'mobile' || $_version == 'mview') ? $this->getConfiguration('mobileLabel') : $this->getName(),
+    			//'#name#' => $this->getName(),
+    			//End of modification
+    			'#name_display#' => ($this->getDisplay('icon') != '') ? $this->getDisplay('icon') : $this->getName(),
+    			'#history#' => '',
+    			'#displayHistory#' => 'display : none;',
+    			'#unite#' => $this->getUnite(),
+    			'#minValue#' => $this->getConfiguration('minValue', 0),
+    			'#maxValue#' => $this->getConfiguration('maxValue', 100),
+    			'#logicalId#' => $this->getLogicalId(),
+    			'#uid#' => 'cmd' . $this->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER,
+    			'#hideCmdName#' => '',
+    	);
+    	if ($this->getDisplay('showNameOn' . $version2, 1) == 0) {
+    		$replace['#hideCmdName#'] = 'display:none;';
+    	}
+    	$template = $this->getWidgetTemplateCode($_version);
+    	if ($_cmdColor == null && $version != 'scenario') {
+    		$eqLogic = $this->getEqLogic();
+    		$vcolor = ($version == 'mobile') ? 'mcmdColor' : 'cmdColor';
+    		if ($eqLogic->getPrimaryCategory() == '') {
+    			$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:default:' . $vcolor);
+    		} else {
+    			$replace['#cmdColor#'] = jeedom::getConfiguration('eqLogic:category:' . $eqLogic->getPrimaryCategory() . ':' . $vcolor);
+    		}
+    	} else {
+    		$replace['#cmdColor#'] = $_cmdColor;
+    	}
+    	if ($this->getType() == 'info') {
+    		$replace['#state#'] = '';
+    		$replace['#tendance#'] = '';
+    		$replace['#state#'] = $this->execCmd();
+    		if (strpos($replace['#state#'], 'error::') !== false) {
+    			$template = getTemplate('core', $version, 'cmd.error');
+    			$replace['#state#'] = str_replace('error::', '', $replace['#state#']);
+    		} else {
+    			if ($this->getSubType() == 'binary' && $this->getDisplay('invertBinary') == 1) {
+    				$replace['#state#'] = ($replace['#state#'] == 1) ? 0 : 1;
+    			}
+    			if ($this->getSubType() == 'numeric' && trim($replace['#state#']) === '') {
+    				$replace['#state#'] = 0;
+    			}
+    		}
+    		if (method_exists($this, 'formatValueWidget')) {
+    			$replace['#state#'] = $this->formatValueWidget($replace['#state#']);
+    		}
+    		$replace['#collectDate#'] = $this->getCollectDate();
+    		$replace['#valueDate#'] = $this->getValueDate();
+    		if ($this->getIsHistorized() == 1) {
+    			$replace['#history#'] = 'history cursor';
+    			if (config::byKey('displayStatsWidget') == 1 && strpos($template, '#displayHistory#') !== false) {
+    				if ($this->getDisplay('showStatsOn' . $version2, 1) == 1) {
+    					$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculPeriod') . ' hour'));
+    					$replace['#displayHistory#'] = '';
+    					$historyStatistique = $this->getStatistique($startHist, date('Y-m-d H:i:s'));
+    					if ($historyStatistique['avg'] == 0 && $historyStatistique['min'] == 0 && $historyStatistique['max'] == 0) {
+    						$replace['#averageHistoryValue#'] = round($replace['#state#'], 1);
+    						$replace['#minHistoryValue#'] = round($replace['#state#'], 1);
+    						$replace['#maxHistoryValue#'] = round($replace['#state#'], 1);
+    					} else {
+    						$replace['#averageHistoryValue#'] = round($historyStatistique['avg'], 1);
+    						$replace['#minHistoryValue#'] = round($historyStatistique['min'], 1);
+    						$replace['#maxHistoryValue#'] = round($historyStatistique['max'], 1);
+    					}
+    					$startHist = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . ' -' . config::byKey('historyCalculTendance') . ' hour'));
+    					$tendance = $this->getTendance($startHist, date('Y-m-d H:i:s'));
+    					if ($tendance > config::byKey('historyCalculTendanceThresholddMax')) {
+    						$replace['#tendance#'] = 'fa fa-arrow-up';
+    					} else if ($tendance < config::byKey('historyCalculTendanceThresholddMin')) {
+    						$replace['#tendance#'] = 'fa fa-arrow-down';
+    					} else {
+    						$replace['#tendance#'] = 'fa fa-minus';
+    					}
+    				}
+    			}
+    		}
+    		$parameters = $this->getDisplay('parameters');
+    		if (is_array($parameters)) {
+    			foreach ($parameters as $key => $value) {
+    				$replace['#' . $key . '#'] = $value;
+    			}
+    		}
+    		return template_replace($replace, $template);
+    	} else {
+    		$cmdValue = $this->getCmdValue();
+    		if (is_object($cmdValue) && $cmdValue->getType() == 'info') {
+    			$replace['#state#'] = $cmdValue->execCmd();
+    			$replace['#valueName#'] = $cmdValue->getName();
+    			$replace['#unite#'] = $cmdValue->getUnite();
+    			if (trim($replace['#state#']) === '' && ($cmdValue->getSubtype() == 'binary' || $cmdValue->getSubtype() == 'numeric')) {
+    				$replace['#state#'] = 0;
+    			}
+    		} else {
+    			$replace['#state#'] = ($this->getLastValue() != null) ? $this->getLastValue() : '';
+    			$replace['#valueName#'] = $this->getName();
+    			$replace['#unite#'] = $this->getUnite();
+    		}
+    		$parameters = $this->getDisplay('parameters');
+    		if (is_array($parameters)) {
+    			foreach ($parameters as $key => $value) {
+    				$replace['#' . $key . '#'] = $value;
+    			}
+    		}
+    		$html .= template_replace($replace, $template);
+    		if (trim($html) == '') {
+    			return $html;
+    		}
+    		if ($options != '') {
+    			$options = jeedom::toHumanReadable($options);
+    			if (is_json($options)) {
+    				$options = json_decode($options, true);
+    			}
+    			if (is_array($options)) {
+    				foreach ($options as $key => $value) {
+    					$replace['#' . $key . '#'] = $value;
+    				}
+    			}
+    		}
+    		if ($version == 'scenario') {
+    			if (!isset($replace['#title#'])) {
+    				$replace['#title#'] = '';
+    			}
+    			if (!isset($replace['#message#'])) {
+    				$replace['#message#'] = '';
+    			}
+    			if (!isset($replace['#slider#'])) {
+    				$replace['#slider#'] = '';
+    			}
+    			if (!isset($replace['#color#'])) {
+    				$replace['#color#'] = '';
+    			}
+    			$replace['#title_placeholder#'] = $this->getDisplay('title_placeholder', __('Titre', __FILE__));
+    			$replace['#message_placeholder#'] = $this->getDisplay('message_placeholder', __('Message', __FILE__));
+    			$replace['#message_disable#'] = $this->getDisplay('message_disable', 0);
+    			$replace['#title_disable#'] = $this->getDisplay('title_disable', 0);
+    			$replace['#title_possibility_list#'] = str_replace("'", "\'", $this->getDisplay('title_possibility_list', ''));
+    			$replace['#slider_placeholder#'] = $this->getDisplay('slider_placeholder', __('Valeur', __FILE__));
+    		}
+    		$replace['#other_tooltips#'] = ($replace['#name#'] != $this->getName()) ? $this->getName() : '';
+    		$html = template_replace($replace, $html);
+    		return $html;
+    	}
+    }
 
     /*     * **********************Getteur Setteur*************************** */
 }
