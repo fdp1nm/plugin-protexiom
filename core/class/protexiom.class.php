@@ -23,6 +23,19 @@ include_file('core', 'protexiom_elmt', 'class', 'protexiom');
 class protexiom extends eqLogic {
     /*     * *************************Attributs****************************** */
 
+	// Standard Jeedom properties. Enables widget properties. To be set only if eqLogic implement it's own toHtml Class
+	// See https://www.jeedom.com/forum/viewtopic.php?f=78&t=16647&p=306539&hilit=avanc%C3%A9#p299809
+	public static $_widgetPossibility = array('custom' => array(
+      'visibility' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'displayName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'displayObjectName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'optionalParameters' => true/false,
+      'background-color' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'text-color' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'border' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'border-radius' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+	));
+	
     protected $_UpdateDate = '';
     protected $_HwVersion = '';
     protected $_SomfyAuthCookie = '';
@@ -1328,6 +1341,15 @@ class protexiom extends eqLogic {
 class protexiomCmd extends cmd {
     /*     * *************************Attributs****************************** */
 	private static $_templateArray = array();//Needed for toHtml()
+	
+	// Standard Jeedom properties. Enables widget properties. To be set only if cmd implement it's own toHtml Class
+	// See https://www.jeedom.com/forum/viewtopic.php?f=78&t=16647&p=306539&hilit=avanc%C3%A9#p299809
+	public static $_widgetPossibility = array('custom' => array(
+      'widget' => array('dashboard' => true/false,'mobile' => true/false),
+      'displayName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'displayObjectName' => array('dashboard' => true/false,'plan' => true/false,'view' => true/false,'mobile' => true/false),
+      'optionalParameters' => true/false,
+	));
 
     /*     * ***********************Static methods*************************** */
     /*     * ****accessible without needing an instantiation of the class**** */
