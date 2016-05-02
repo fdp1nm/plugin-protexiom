@@ -836,8 +836,9 @@ class protexiom extends eqLogic {
      */
     public function preRemove(){
     	$this->setIsEnable(false);
-    	//Let's restart (or implicitely stop) demon depending on the existence of an enabled protexiom
-    	$this->deamon_start();
+    	$this->save();
+    	//postSave will restart (or stop if there is no enabled eqLogic left) daemon, closing session on the disabled protexiom in the process
+    	
     	// Let's remove subDevices
     	foreach (self::byType('protexiom_ctrl') as $eqLogic) {
     		if ( substr($eqLogic->getLogicalId(), 0, strpos($eqLogic->getLogicalId(),"_")) == $this->getId() ) {
