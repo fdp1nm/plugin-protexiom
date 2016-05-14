@@ -107,11 +107,13 @@ $eqLogics = eqLogic::byType('protexiom')
     </div>
     
     <div class="col-lg-10 col-md-9 col-sm-8 protexiom eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
+	 <div class="row">
+      <div class="col-sm-7">
         <form class="form-horizontal">
             <fieldset>
                 <legend><i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i> {{Général}}<i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i></legend>
                 <div class="form-group">
-                    <label class="col-md-2 control-label">{{Nom de la centrale Somfy Protexiom}}</label>
+                    <label class="col-md-2 control-label">{{Nom de la centrale}}</label>
                     <div class="col-md-3">
                         <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
                         <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de la centrale Somfy Protexiom}}"/>
@@ -145,13 +147,13 @@ $eqLogics = eqLogic::byType('protexiom')
                 </div>
                 <div class="form-group">
 			<label class="col-md-2 control-label">{{Activer}}</label>
-			<div class="col-md-3">
+			<div class="col-lg-8">
 				<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="isEnable" checked/>
 				<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="Visible" data-l1key="isVisible" checked/>
 			</div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 control-label">{{Adresse IP ou Hostname:port}}</label>
+                    <label class="col-md-2 control-label">{{Adresse}}</label>
                     <div class="col-md-3">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="SomfyHostPort" placeholder="{{Adresse IP ou Hostname:port}}"/>
 									{{Exemple}}: alarme.mondomaine.com:80 {{ou}} 192.168.1.253:80 {{ou}} 192.1681.253
@@ -160,7 +162,7 @@ $eqLogics = eqLogic::byType('protexiom')
 
                 <div class="form-group">
                     <label class="col-md-2 control-label" >{{SSL Enabled}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-8">
                         <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="SSLEnabled" placeholder="{{SSL Enabled}}" size="16" checked/>
 									{{SSL PAS ENCORE SUPPORTE. Ne pas activer.}}
                     </div>
@@ -175,40 +177,46 @@ $eqLogics = eqLogic::byType('protexiom')
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{AuthCard Line 1}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-6">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="AuthCardL1" placeholder="{{AuthCard Line 1}}"/>
 									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{AuthCard Line 2}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-6">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="AuthCardL2" placeholder="{{AuthCard Line 2}}"/>
-									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{AuthCard Line 3}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-6">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="AuthCardL3" placeholder="{{AuthCard Line 3}}"/>
-									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{AuthCard Line 4}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-6">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="AuthCardL4" placeholder="{{AuthCard Line 4}}"/>
-									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">{{AuthCard Line 5}}</label>
-                    <div class="col-md-3">
+                    <div class="col-lg-6">
                         <input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="AuthCardL5" placeholder="{{AuthCard Line 5}}"/>
-									{{Exemple}}: 1234|5678|9012|3456|7890|1234
                     </div>
                 </div>
-                <div class="form-group">
+           </fieldset> 
+        </form>
+      </div>
+
+        <div class="col-sm-5">
+			<form class="form-horizontal">
+    			<fieldset>
+    			<legend>{{Informations}}
+       					<i id="bt_displayStatus" title="{{Afficher le status}}" class="fa fa-search expertModeVisible pull-right tooltips cursor"></i>
+     			</legend>
+    			<div class="form-group">
                     <label class="col-md-2 control-label">{{Version hardware}}<br></label>
                     <div class="col-md-3">
                     	<input type="text" class="eqLogicAttr configuration form-control" data-l1key="configuration" data-l2key="HwVersion" placeholder="{{Non détéctée}}" disabled/>
@@ -217,21 +225,24 @@ $eqLogics = eqLogic::byType('protexiom')
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">{{Commentaire}}</label>
-                    <div class="col-sm-3">
+                    <div class="col-sm-10">
                     	<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
                     </div>
                 </div>
-           </fieldset> 
-        </form>
-	
-        <form class="form-horizontal">
+    			</fieldset>
+    		</form>
+    		
+    		<form class="form-horizontal">
             <fieldset>
                 <div class="form-actions">
                     <a class="btn btn-danger eqLogicAction" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
                     <a class="btn btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
                 </div>
             </fieldset>
-        </form>
+        	</form>
+    	</div>
+    	
+	 </div>
 
 <?php
 /* Command list
