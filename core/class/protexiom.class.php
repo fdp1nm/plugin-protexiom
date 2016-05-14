@@ -96,6 +96,7 @@ class protexiom extends eqLogic {
     	$return['log'] = '';
     	$return['state'] = 'nok';
     	$return['launchable'] = 'nok';
+    	$return['launchable_message'] = __('Vous devez disposer d\'au moins un equipement "alarme protexiom" actif pour que le demon puisse être lancé.', __FILE__);
     	$cron = cron::byClassAndFunction('protexiom', 'pull');
     	if (is_object($cron) && $cron->running()) {
     		$return['state'] = 'ok';
@@ -105,6 +106,7 @@ class protexiom extends eqLogic {
     		if($eqLogic->getIsEnable()){
     			$eqLogic->log('debug', 'Equipement enabled. Setting daemon to launchable');
     			$return['launchable'] = 'ok';
+    			$return['launchable_message'] = '';
     		}
     	}
     	log::add('protexiom', 'debug', '[*-*] '.getmypid().' Daemon_info:  launchable='.$return['launchable']);
@@ -173,6 +175,7 @@ class protexiom extends eqLogic {
     
     /**
      * Called after configuration update (from ajax postsave) to check config values
+     * Standard Jeedom function
      * @author Fdp1
      */
     public static function checkConfig() {
@@ -183,7 +186,83 @@ class protexiom extends eqLogic {
     	 
     }//End checkConfig func
     
-
+    /**
+     * Display healt information in Jeedom health page
+     * Standard Jeedom function
+     * @author Fdp1
+     * @return (array)pluginHealth
+     */
+    public static function health() {
+    	$return = array();
+    	
+    	//Plugin Version
+    	try {
+    		$pluginVersion=self::getPluginVersion();
+    		$return[] = array(
+    			'test' => __('Version plugin', __FILE__),
+    			'result' =>  $pluginVersion,
+    			'advice' => '',
+    			'state' => $pluginVersion,
+    		);	
+    	} catch (Exception $e) {
+    		echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    		$return[] = array(
+    				'test' => __('Version plugin', __FILE__),
+    				'result' => __('NOK', __FILE__),
+    				'advice' => __($e->getMessage(), __FILE__),
+    				'state' => false,
+    		);
+    	}
+    	
+    	//nbProtexiom
+    	$numberProtexiom = 0;
+    	$numberProtexiomEnabled = 0;
+    	foreach (eqLogic::byType('protexiom') as $eqLogic) {
+    		$numberProtexiom++;
+    		if($eqLogic->getIsEnable()){
+    			$numberProtexiomEnabled++;
+    		}
+    	}
+    	
+    	$return[] = array(
+    			'test' => __('Nombre de centrales somfy', __FILE__),
+    			'result' => "$numberProtexiom ($numberProtexiomEnabled enabled)",
+    			'advice' => ($numberProtexiom) ? '' : __('Veuillez créer un équipement Alarme Somfy.', __FILE__),
+    			'state' => true,
+    	);
+    	
+    	//PollingInterval
+    	$pollInt=config::byKey('pollInt', 'protexiom');
+    	$return[] = array(
+    			'test' => __('Interval de polling', __FILE__),
+    			'result' => ($pollInt) ? __("$pollInt secondes", __FILE__) : __('NOK', __FILE__),
+    			'advice' => ($pollInt) ? '' : __('Interval de polling introuvable. Vérifier la configuration du plugin.', __FILE__),
+    			'state' => $pollInt,
+    	);
+    	
+    	return $return;
+    }//End health func
+    
+    /**
+     * Get plugin version from the plugin info.xml file
+     * @author Fdp1
+     * @return (string) pluginVersion
+     */
+    public static function getPluginVersion() {
+    	$infoXmlPath=plugin::getPathById('protexiom');
+    	
+    	if (!file_exists($infoXmlPath)) {
+    		throw new Exception('Plugin info introuvable : ' . $infoXmlPath);
+    	}
+    	libxml_use_internal_errors(true);
+    	$infoXmlPath = str_replace('//', '/', $infoXmlPath);
+    	$plugin_xml = @simplexml_load_file($infoXmlPath);
+    	if (!is_object($plugin_xml)) {
+    		throw new Exception('Plugin introuvable (xml invalide) : ' . $infoXmlPath . '. Description : ' . print_r(libxml_get_errors(), true));
+    	}
+    	return (string) $plugin_xml->version;
+    }//End getPluginVersion func
+    
 
     /*     * **********************Instance methods************************** */
 
