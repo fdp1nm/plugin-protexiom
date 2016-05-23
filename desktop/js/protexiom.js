@@ -27,6 +27,12 @@ $('.eqLogicAction[data-action=hide]').on('click', function () {
     return false;
 });
 
+//Show protexiom tree modal
+$('#bt_displayElmtTree').on('click', function () {
+	$('#md_modal').dialog({title: "{{Arbre des composants protexiom}}"});
+	$('#md_modal').load('index.php?v=d&plugin=protexiom&modal=protexiom.tree&id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
+});
+
 function printEqLogic(_eqLogic){
 	if($('.li_eqLogic.active').attr('data-eqlogic_id') != ''){
 		$('.img_device').attr("src", $('.eqLogicDisplayCard[data-eqLogic_id='+$('.li_eqLogic.active').attr('data-eqlogic_id')+'] img').attr('src'));

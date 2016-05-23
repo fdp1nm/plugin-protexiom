@@ -214,7 +214,7 @@ $eqLogics = eqLogic::byType('protexiom')
 			<form class="form-horizontal">
     			<fieldset>
     			<legend>{{Informations}}
-       					<i id="bt_displayStatus" title="{{Afficher le status}}" class="fa fa-search expertModeVisible pull-right tooltips cursor"></i>
+       					<i id="bt_displayElmtTree" title="{{Voir l'arbre des composants}}" class="fa fa-tree expertModeVisible pull-right tooltips cursor"></i>
      			</legend>
     			<div class="form-group">
                     <label class="col-md-2 control-label">{{Version hardware}}<br></label>
