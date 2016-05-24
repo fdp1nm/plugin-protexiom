@@ -373,8 +373,11 @@ class phpProtexiom {
 								if($response['returnCode']=='404'){
 									$guessLog.="Test URL [$currentUrlID]: FAILED\r\n";
 									$failedURL=true;
+								}elseif($response['returnCode']=='302'){
+									$guessLog.="Test URL [$currentUrlID]: 302 Location(".$response['responseHeaders']['Location'].") OK\r\n";
 								}else{
 									$guessLog.="Test URL [$currentUrlID]: ".$response['returnCode']." OK\r\n";
+									//.$response['responseHeaders']['Location']
 								}
 							}
 							if(!$failedURL){
