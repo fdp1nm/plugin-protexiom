@@ -53,7 +53,7 @@
 			<form class="form-horizontal">
     			<fieldset>
       				<legend>{{Informations}}
-       					<i id="bt_displayStatus" title="{{Afficher le status}}" class="fa fa-search expertModeVisible pull-right tooltips cursor"></i>
+       					<i id="bt_displayElmtStatus" title="{{Afficher le status}}" class="fa fa-search expertModeVisible pull-right tooltips cursor"></i>
      				</legend>
         			<center>
     					<img src="core/img/no_image.gif" data-original=".jpg" class="img-responsive img_device" style="max-height : 250px;"/>

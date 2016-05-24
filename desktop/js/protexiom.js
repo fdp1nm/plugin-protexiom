@@ -27,10 +27,18 @@ $('.eqLogicAction[data-action=hide]').on('click', function () {
     return false;
 });
 
+/*
+ * Show modals
+ */
 //Show protexiom tree modal
 $('#bt_displayElmtTree').on('click', function () {
 	$('#md_modal').dialog({title: "{{Arbre des composants protexiom}}"});
 	$('#md_modal').load('index.php?v=d&plugin=protexiom&modal=protexiom.tree&id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
+});
+//Show protexiom tree modal
+$('#bt_displayElmtStatus').on('click', function () {
+	$('#md_modal').dialog({title: "{{Status de l'équipement}}"});
+	$('#md_modal').load('index.php?v=d&plugin=protexiom&modal=protexiomElmt.status&id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
 });
 
 function printEqLogic(_eqLogic){
