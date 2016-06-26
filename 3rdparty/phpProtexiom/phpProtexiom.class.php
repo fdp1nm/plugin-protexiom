@@ -38,7 +38,7 @@ class phpProtexiom {
 	 * @param string $host protexiom host[:port]
 	 * @param bool $sslEnabled sslEnabled (optional)
 	 */
-	function phpProtexiom($host, $sslEnabled=false)
+	function __construct($host, $sslEnabled=false)
 	{
 		if($sslEnabled){
 			$this->somfyBaseURL='https://'.$host;
@@ -55,21 +55,23 @@ class phpProtexiom {
 	 * @param string $header protexiom host
 	 * @return array headers as $key => $value
 	 */
-	protected static function http_parse_headers( $header )
-	{
-		$retVal = array();
-		$fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
-		foreach( $fields as $field ) {
-			if( preg_match('/([^:]+): (.+)/m', $field, $match) ) {
-				$match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
-				if( isset($retVal[$match[1]]) ) {
-					$retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+	protected static function http_parse_headers ($raw_headers) {
+		$headers = array(); // $headers = [];
+		foreach (explode("\n", $raw_headers) as $i => $h) {
+			$h = explode(':', $h, 2); 
+			if (isset($h[1])) {
+				if(!isset($headers[$h[0]])) {
+					$headers[$h[0]] = trim($h[1]);
+				} else if(is_array($headers[$h[0]])) {
+					$tmp = array_merge($headers[$h[0]],array(trim($h[1])));
+					$headers[$h[0]] = $tmp;
 				} else {
-					$retVal[$match[1]] = trim($match[2]);
+					$tmp = array_merge(array($headers[$h[0]]),array(trim($h[1])));
+					$headers[$h[0]] = $tmp;
 				}
 			}
-		}
-		return $retVal;
+		}	 
+		return $headers;
 	}
 	
 	/**
