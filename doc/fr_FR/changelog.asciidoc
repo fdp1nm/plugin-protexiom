@@ -1,4 +1,8 @@
 :numbered!:
+==== v1.2.7 - 2016-06-26
+
+- Compatibilité PHP 7.0
+
 ==== v1.2.6 - 2016-05-01
 
 - Bugfix: MAJ gestion de l'affichage avancé sous Jeedom 2.2
