@@ -274,8 +274,7 @@ class protexiom extends eqLogic {
      * @param string $type log type (error, info, event, debug).
      * @param string $message message to add in the log.
      */
-    public function log($_type = 'INFO', $_message)
-    {
+    public function log($_type = 'INFO', $_message){
     	log::add('protexiom', $_type, '['.$this->name.'-'.$this->getId().'] '.getmypid().' '.$_message, $this->name);
     }//End log func
     
@@ -373,8 +372,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidPort("80")
      */
-    protected function isValidPort($port = '')
-    {
+    protected function isValidPort($port = ''){
     	$error=false;
     	if($port){//A port number was specified. Is it a int
     		if(ctype_digit($port)){
@@ -407,8 +405,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidHost("192.168.1.111")
      */
-    protected function isValidHost($host = '')
-    {
+    protected function isValidHost($host = ''){
     	$error=false;
     
     	if(!filter_var($host, FILTER_VALIDATE_IP)){//$host is neither an ipv4, nore an ipv6. Let's see if it's a hostname
@@ -435,8 +432,7 @@ class protexiom extends eqLogic {
      * @return bool True if the string is valid, false otherwise
      * @usage isValid = isValidHostPort("192.168.1.111:80")
      */
-    protected function isValidHostPort($hostPort = '')
-    {
+    protected function isValidHostPort($hostPort = ''){
     	$error=false;
     	$host = strtok($hostPort, ":");
     	$port = strtok(":");
@@ -471,8 +467,7 @@ class protexiom extends eqLogic {
      * @return array authcard
      * @usage authCard = getAuthCar()
      */
-    protected function getAuthCard()
-    {
+    protected function getAuthCard(){
     	$authCard=array();
     	$authCode='';
     	 
@@ -490,8 +485,7 @@ class protexiom extends eqLogic {
      * @author Fdp1
      * @return
      */
-    public function initSpBrowser()
-    {
+    public function initSpBrowser(){
     	$this->_spBrowser=new phpProtexiom($this->getConfiguration('SomfyHostPort'), $this->getConfiguration('SSLEnabled'));
     	$this->_spBrowser->userPwd=$this->getConfiguration('UserPwd');
     	$this->_spBrowser->authCard=$this->getAuthCard();
@@ -587,6 +581,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+		$protexiomCmd->setDisplay('generic_type','ALARM_ARMED');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -600,6 +595,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+		$protexiomCmd->setDisplay('generic_type','ALARM_SET_MODE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -613,6 +609,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+		$protexiomCmd->setDisplay('generic_type','ALARM_SET_MODE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -626,6 +623,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-lock"></i>');
+		$protexiomCmd->setDisplay('generic_type','ALARM_SET_MODE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -639,6 +637,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-unlock"></i>');
+		$protexiomCmd->setDisplay('generic_type','ALARM_RELEASED');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -652,6 +651,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
+		//Todo Let's not set the generic_type for now, as pulse is not implemented yet
+		//$protexiomCmd->setDisplay('generic_type','PULSE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -665,6 +666,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
+		//Todo Let's not set the generic_type for now, as pulse is not implemented yet
+		//$protexiomCmd->setDisplay('generic_type','PULSE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -678,6 +681,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('action');
         $protexiomCmd->setSubType('other');
         $protexiomCmd->setDisplay('icon', '<i class="fa fa-trash-o"></i>');
+		//Todo Let's not set the generic_type for now, as pulse is not implemented yet
+		//$protexiomCmd->setDisplay('generic_type','PULSE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -693,6 +698,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		//Todo set generic type to DONT and implement a ALARM_MODE info, as well as a global ALARM_ENABLE_STATE
+		$protexiomCmd->setDisplay('generic_type','ALARM_ENABLE_STATE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
         $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
@@ -706,6 +713,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		//Todo set generic type to DONT and implement a ALARM_MODE info, as well as a global ALARM_ENABLE_STATE
+		$protexiomCmd->setDisplay('generic_type','ALARM_ENABLE_STATE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
         $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
@@ -719,6 +728,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		//Todo set generic type to DONT and implement a ALARM_MODE info, as well as a global ALARM_ENABLE_STATE
+		$protexiomCmd->setDisplay('generic_type','ALARM_ENABLE_STATE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomZone');
         $protexiomCmd->setTemplate('mobile', 'protexiomZone');
         $protexiomCmd->save();
@@ -732,6 +743,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		$protexiomCmd->setDisplay('generic_type','BATTERY');
         $protexiomCmd->setIsVisible(0);
         $protexiomCmd->setTemplate('dashboard', 'protexiomBattery');
         $protexiomCmd->setTemplate('mobile', 'protexiomBattery');
@@ -746,6 +758,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		$protexiomCmd->setDisplay('generic_type','DONT');
         $protexiomCmd->setTemplate('dashboard', 'protexiomLink');
         $protexiomCmd->setTemplate('mobile', 'protexiomLink');
         $protexiomCmd->save();
@@ -759,6 +772,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		$protexiomCmd->setDisplay('generic_type','OPENING');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDoor');
         $protexiomCmd->setTemplate('mobile', 'protexiomDoor');
         $protexiomCmd->save();
@@ -772,6 +786,8 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+		//Todo Implement different info CMD, for ALARM_STATE, SMOKE, FLOOD
+		$protexiomCmd->setDisplay('generic_type','DONT');
         $protexiomCmd->setTemplate('dashboard', 'protexiomAlarm');
         $protexiomCmd->setTemplate('mobile', 'protexiomAlarm');
         $protexiomCmd->save();
@@ -785,6 +801,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		$protexiomCmd->setDisplay('generic_type','SABOTAGE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomTampered');
         $protexiomCmd->setTemplate('mobile', 'protexiomTampered');
         $protexiomCmd->save();
@@ -798,6 +815,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+		$protexiomCmd->setDisplay('generic_type','GENERIC');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -812,6 +830,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('numeric');
+		$protexiomCmd->setDisplay('generic_type','DONT');
         $protexiomCmd->setTemplate('dashboard', 'protexiomGsmSignal');
         $protexiomCmd->setTemplate('mobile', 'protexiomGsmSignal');
         $protexiomCmd->save();
@@ -825,6 +844,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
+		$protexiomCmd->setDisplay('generic_type','GENERIC');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -838,6 +858,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('binary');
+		$protexiomCmd->setDisplay('generic_type','DONT');
         $protexiomCmd->setTemplate('dashboard', 'protexiomCamera');
         $protexiomCmd->setTemplate('mobile', 'protexiomCamera');
         $protexiomCmd->save();
