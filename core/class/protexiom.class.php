@@ -787,7 +787,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
 		//Todo Implement different info CMD, for ALARM_STATE, SMOKE, FLOOD
-		$protexiomCmd->setDisplay('generic_type','DONT');
+		//$protexiomCmd->setDisplay('generic_type','ALARM_STATE');
         $protexiomCmd->setTemplate('dashboard', 'protexiomAlarm');
         $protexiomCmd->setTemplate('mobile', 'protexiomAlarm');
         $protexiomCmd->save();

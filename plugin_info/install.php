@@ -264,6 +264,75 @@ function protexiom_update() {
         	$cron->remove();
         }
         
+        /*
+         * Upgrade to v1.2.8
+        */
+        foreach ($eqLogic->getCmd() as $cmd) {
+        	if($cmd->getDisplay('generic_type')==''){
+        		switch($cmd->getLogicalId())
+        		{
+        			case 'zoneabc_on';
+        				$cmd->setDisplay('generic_type','ALARM_ARMED');
+        				$cmd->save();
+        			break;
+        			case 'zonea_on';
+        			case 'zoneb_on';
+        			case 'zonec_on';
+        				$cmd->setDisplay('generic_type','ALARM_SET_MODE');
+        				$cmd->save();
+        			break;
+        			case 'zoneabc_off';
+        				$cmd->setDisplay('generic_type','ALARM_RELEASED');
+        				$cmd->save();
+        			break;
+        			case 'reset_alarm_err';
+        			case 'reset_battery_err';
+        			case 'reset_link_err';
+        			break;
+        			case 'zonea';
+        			case 'zoneb';
+        			case 'zonec';
+        				$cmd->setDisplay('generic_type','ALARM_ENABLE_STATE');
+        				$cmd->save();
+        			break;
+        			case 'battery_status';
+        				$cmd->setDisplay('generic_type','BATTERY');
+        				$cmd->save();
+        			break;
+        			case 'link';
+        				$cmd->setDisplay('generic_type','DONT');
+        				$cmd->save();
+        			break;
+        			case 'door';
+        				$cmd->setDisplay('generic_type','OPENING');
+        				$cmd->save();
+        			break;
+        			case 'alarm';
+        			break;
+        			case 'tampered';
+        				$cmd->setDisplay('generic_type','SABOTAGE');
+        				$cmd->save();
+        			break;
+        			case 'gsm_link';
+        				$cmd->setDisplay('generic_type','GENERIC');
+        				$cmd->save();
+        			break;
+        			case 'gsm_signal';
+        				$cmd->setDisplay('generic_type','DONT');
+        				$cmd->save();
+        			break;
+        			case 'gsm_operator';
+        				$cmd->setDisplay('generic_type','GENERIC');
+        				$cmd->save();
+        			break;
+        			case 'camera';
+        				$cmd->setDisplay('generic_type','DONT');
+        				$cmd->save();
+        			break;
+        		}
+        	}
+        }
+        
 		/*
 		 * End of version spécific upgrade actions. Let's run standard actions
 		 */
