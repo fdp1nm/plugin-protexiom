@@ -815,7 +815,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
-		$protexiomCmd->setDisplay('generic_type','GENERIC');
+		$protexiomCmd->setDisplay('generic_type','GENERIC_INFO');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();
@@ -844,7 +844,7 @@ class protexiom extends eqLogic {
         $protexiomCmd->setUnite('');
         $protexiomCmd->setType('info');
         $protexiomCmd->setSubType('string');
-		$protexiomCmd->setDisplay('generic_type','GENERIC');
+		$protexiomCmd->setDisplay('generic_type','GENERIC_INFO');
         $protexiomCmd->setTemplate('dashboard', 'protexiomDefault');
         $protexiomCmd->setTemplate('mobile', 'protexiomDefault');
         $protexiomCmd->save();

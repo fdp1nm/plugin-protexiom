@@ -314,7 +314,7 @@ function protexiom_update() {
         				$cmd->save();
         			break;
         			case 'gsm_link';
-        				$cmd->setDisplay('generic_type','GENERIC');
+        				$cmd->setDisplay('generic_type','GENERIC_INFO');
         				$cmd->save();
         			break;
         			case 'gsm_signal';
@@ -322,7 +322,7 @@ function protexiom_update() {
         				$cmd->save();
         			break;
         			case 'gsm_operator';
-        				$cmd->setDisplay('generic_type','GENERIC');
+        				$cmd->setDisplay('generic_type','GENERIC_INFO');
         				$cmd->save();
         			break;
         			case 'camera';
