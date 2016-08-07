@@ -1311,16 +1311,19 @@ class protexiom extends eqLogic {
     						$elmtCmd->setTemplate('dashboard', 'protexiomElmtBattery');
     						$elmtCmd->setTemplate('mobile', 'protexiomElmtBattery');
     						$elmtCmd->setIsVisible(0);
+    						$elmtCmd->setDisplay('generic_type','BATTERY');
     						break;
     					case "tampered":
     						$elmtCmd->setTemplate('dashboard', 'protexiomElmtTampered');
     						$elmtCmd->setTemplate('mobile', 'protexiomElmtTampered');
     						$elmtCmd->setIsVisible(1);
+    						$elmtCmd->setDisplay('generic_type','SABOTAGE');
     						break;
     					case "alarm":
     						$elmtCmd->setTemplate('dashboard', 'protexiomAlarm');
     						$elmtCmd->setTemplate('mobile', 'protexiomAlarm');
     						$elmtCmd->setIsVisible(1);
+    						$elmtCmd->setDisplay('generic_type','ALARM_STATE');
     						break;
     					case "link":
     						$elmtCmd->setTemplate('dashboard', 'protexiomElmtLink');
@@ -1331,9 +1334,11 @@ class protexiom extends eqLogic {
     						if($eqLogic->getConfiguration('item_type')=='typedogarage'){
     							$elmtCmd->setTemplate('dashboard', 'protexiomElmtGarage');
     							$elmtCmd->setTemplate('mobile', 'protexiomElmtGarage');
+    							$elmtCmd->setDisplay('generic_type','OPENING');
     						}else{
     							$elmtCmd->setTemplate('dashboard', 'protexiomElmtDoor');
     							$elmtCmd->setTemplate('mobile', 'protexiomElmtDoor');
+    							$elmtCmd->setDisplay('generic_type','OPENING');
     						}
     						$elmtCmd->setIsVisible(1);
     						break;

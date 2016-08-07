@@ -96,6 +96,7 @@ class protexiom_ctrl extends eqLogic {
 			$ctrlCmd->setType('action');
 			$ctrlCmd->setSubType('other');
 			$ctrlCmd->setDisplay('icon', '<i class="icon jeedom-lumiere-on"></i>');
+			$ctrlCmd->setDisplay('generic_type','LIGHT_ON');
 			$ctrlCmd->setIsVisible(1);
 			$ctrlCmd->setOrder(1);
 			$ctrlCmd->save();
@@ -108,6 +109,7 @@ class protexiom_ctrl extends eqLogic {
 			$ctrlCmd->setType('action');
 			$ctrlCmd->setSubType('other');
 			$ctrlCmd->setDisplay('icon', '<i class="icon jeedom-lumiere-off"></i>');
+			$ctrlCmd->setDisplay('generic_type','LIGHT_OFF');
 			$ctrlCmd->setIsVisible(1);
 			$ctrlCmd->setOrder(2);
 			$ctrlCmd->save();
@@ -122,6 +124,7 @@ class protexiom_ctrl extends eqLogic {
 			$ctrlCmd->setType('action');
 			$ctrlCmd->setSubType('other');
 			$ctrlCmd->setDisplay('icon', '<i class="fa fa-chevron-up"></i>');
+			$ctrlCmd->setDisplay('generic_type','FLAP_UP');
 			$ctrlCmd->setIsVisible(1);
 			$ctrlCmd->setOrder(1);
 			$ctrlCmd->save();
@@ -134,6 +137,7 @@ class protexiom_ctrl extends eqLogic {
 			$ctrlCmd->setType('action');
 			$ctrlCmd->setSubType('other');
 			$ctrlCmd->setDisplay('icon', '<i class="fa fa-stop"></i>');
+			$ctrlCmd->setDisplay('generic_type','FLAP_STOP');
 			$ctrlCmd->setIsVisible(1);
 			$ctrlCmd->setOrder(2);
 			$ctrlCmd->save();
@@ -146,6 +150,7 @@ class protexiom_ctrl extends eqLogic {
 			$ctrlCmd->setType('action');
 			$ctrlCmd->setSubType('other');
 			$ctrlCmd->setDisplay('icon', '<i class="fa fa-chevron-down"></i>');
+			$ctrlCmd->setDisplay('generic_type','FLAP_DOWN');
 			$ctrlCmd->setIsVisible(1);
 			$ctrlCmd->setOrder(3);
 			$ctrlCmd->save();
