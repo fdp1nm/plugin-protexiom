@@ -417,6 +417,10 @@ function protexiom_update() {
 			}
 		}
 	}
+	//Adding the protexiom subClasses to configKey, to allow core or 3rd party plugin to list them
+	if(config::byKey('subClass', 'protexiom', '')==''){
+		config::save('subClass', config::getDefaultConfiguration('protexiom')['protexiom']['subClass'], 'protexiom');
+	}
 	
 	/*
 	 * End of version spécific upgrade actions. Let's run standard actions
