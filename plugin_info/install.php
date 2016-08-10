@@ -361,7 +361,62 @@ function protexiom_update() {
 		config::save('pollInt', $pollint_1_2_0, 'protexiom');
 		log::add('protexiom', 'debug', '[*-*] '.getmypid().' Polling interval set to '.$pollint_1_2_0, 'Protexiom');
 	}
-	
+	/*
+	 * Upgrade to v1.2.8
+	*/
+	//Let's now take care of subEqLogics
+	foreach (eqLogic::byType('protexiom_ctrl') as $eqLogic) {
+		foreach ($eqLogic->getCmd() as $cmd) {
+			if($cmd->getDisplay('generic_type')==''){
+				switch($cmd->getLogicalId())
+				{
+					case 'light_on';
+					$cmd->setDisplay('generic_type','LIGHT_ON');
+					$cmd->save();
+					break;
+					case 'light_off';
+					$cmd->setDisplay('generic_type','LIGHT_OFF');
+					$cmd->save();
+					break;
+					case 'shutter_up';
+					$cmd->setDisplay('generic_type','FLAP_UP');
+					$cmd->save();
+					break;
+					case 'shutter_stop';
+					$cmd->setDisplay('generic_type','FLAP_STOP');
+					$cmd->save();
+					break;
+					case 'shutter_down';
+					$cmd->setDisplay('generic_type','FLAP_DOWN');
+					$cmd->save();
+					break;
+				}
+			}
+		}
+	}
+	foreach (eqLogic::byType('protexiom_elmt') as $subEqLogic) {
+		if($cmd->getDisplay('generic_type')==''){
+			switch($cmd->getLogicalId())
+			{
+				case "battery":
+					$cmd->setDisplay('generic_type','BATTERY');
+					$cmd->save();
+					break;
+				case "tampered":
+					$cmd->setDisplay('generic_type','SABOTAGE');
+					$cmd->save();
+					break;
+				case "alarm":
+					$cmd->setDisplay('generic_type','ALARM_STATE');
+					$cmd->save();
+					break;
+				case "door":
+					$cmd->setDisplay('generic_type','OPENING');
+					$cmd->save();
+					break;
+			}
+		}
+	}
 	
 	/*
 	 * End of version spécific upgrade actions. Let's run standard actions
