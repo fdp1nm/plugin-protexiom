@@ -104,13 +104,11 @@ class protexiom extends eqLogic {
     	//Daemon is Launchable only if at least one eqLogic is enabled
     	foreach (eqLogic::byType('protexiom') as $eqLogic) {
     		if($eqLogic->getIsEnable()){
-    			$eqLogic->log('debug', 'Equipement enabled. Setting daemon to launchable');
     			$return['launchable'] = 'ok';
     			$return['launchable_message'] = '';
     		}
     	}
-    	log::add('protexiom', 'debug', '[*-*] '.getmypid().' Daemon_info:  launchable='.$return['launchable']);
-    	 
+    	
     	return $return;
     }//end deamon_info function
     
