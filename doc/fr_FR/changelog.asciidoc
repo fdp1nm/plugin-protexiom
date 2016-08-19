@@ -1,4 +1,8 @@
 :numbered!:
+==== v1.2.9 - 2016-08-20
+
+- Bugfix appli mobile
+
 ==== v1.2.8 - 2016-08-12
 
 - Compatibilité appli mobile

@@ -394,26 +394,34 @@ function protexiom_update() {
 			}
 		}
 	}
-	foreach (eqLogic::byType('protexiom_elmt') as $subEqLogic) {
-		if($cmd->getDisplay('generic_type')==''){
-			switch($cmd->getLogicalId())
-			{
-				case "battery":
-					$cmd->setDisplay('generic_type','BATTERY');
-					$cmd->save();
-					break;
-				case "tampered":
-					$cmd->setDisplay('generic_type','SABOTAGE');
-					$cmd->save();
-					break;
-				case "alarm":
-					$cmd->setDisplay('generic_type','ALARM_STATE');
-					$cmd->save();
-					break;
-				case "door":
-					$cmd->setDisplay('generic_type','OPENING');
-					$cmd->save();
-					break;
+	foreach (eqLogic::byType('protexiom_elmt') as $eqLogic) {
+		foreach ($eqLogic->getCmd() as $cmd) {
+			if($cmd->getDisplay('generic_type')==''){
+				switch($cmd->getLogicalId())
+				{
+					case "battery":
+						$cmd->setDisplay('generic_type','BATTERY');
+						$cmd->save();
+						break;
+					case "tampered":
+						$cmd->setDisplay('generic_type','SABOTAGE');
+						$cmd->setDisplay('invertBinary','1');
+						$cmd->save();
+						message::add('protexiom', 'Plugin Somfy alarme: Pour des raisons de compatibilité avec l\'appli mobile, l\'affichage des commandes tampered des détécteurs (sabotage) est maintenant inversé. Si vous utilisez des widgets personnalisés, vous devez les modifier en conséquence. Les valeurs récupérées dans les scénarios restent inchangées.', '', 'Protexiom');
+						break;
+					case "alarm":
+						if($eqLogic->getConfiguration('item_type')=='typedm'){
+							$cmd->setDisplay('generic_type','PRESENCE');
+						/*}else{
+							$cmd->setDisplay('generic_type','ALARM_STATE');*/
+						}
+						$cmd->save();
+						break;
+					case "door":
+						$cmd->setDisplay('generic_type','OPENING');
+						$cmd->save();
+						break;
+				}
 			}
 		}
 	}

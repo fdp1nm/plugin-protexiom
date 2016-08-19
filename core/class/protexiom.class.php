@@ -1316,6 +1316,7 @@ class protexiom extends eqLogic {
     						$elmtCmd->setTemplate('mobile', 'protexiomElmtTampered');
     						$elmtCmd->setIsVisible(1);
     						$elmtCmd->setDisplay('generic_type','SABOTAGE');
+    						$elmtCmd->setDisplay('invertBinary','1');
     						break;
     					case "alarm":
     						$elmtCmd->setTemplate('dashboard', 'protexiomAlarm');
