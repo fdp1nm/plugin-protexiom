@@ -987,9 +987,7 @@ class protexiom extends eqLogic {
 		$replace['#cmd#'] = $cmd_html;
 		self::$_templateArray[$version] = getTemplate('core', $version, 'eqLogic','protexiom');
 		
-		$html = template_replace($replace, self::$_templateArray[$version]);
-		cache::set('widgetHtml' . $_version . $this->getId(), $html, 0);
-		return $html;
+		return $this->postToHtml($_version, template_replace($replace, self::$_templateArray[$version]));
 	}//end toHtml function  
 
     /**
