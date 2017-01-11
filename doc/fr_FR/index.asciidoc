@@ -19,6 +19,26 @@ A ce jour la solution permet de :
 image::../images/protexiom_screenshot2.png[Widget dashboard]
 image::../images/protexiom_screenshot3.png[Widget mobile]
 
+== Installation / Paramétrage
+
+=== Paramétrage de l'alarme (Timeout)
+
+Il est conseillé d'augmenter le timout de l'alarme a sa valeur maximum.
+
+Connecter vous à l'alarme en mode Administrateur puis dans les réglages de l'interface, régler le délais d'expiration de la session.
+ 
+image::../images/timeout_setup.png[]
+ 
+=== Installation / configuration
+
+Une fois le plugin installé via le market, l'ensemble du paramétrage se fait depuis l'administration, comme n'importe quel plugin.
+Les champs sont tous documentés sur la page de paramétrage, et la validité des paramêtres est vérifiée avant l'enregistrement.
+
+image::../images/protexiom_screenshot1.png[] 
+
+NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
+Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
+
 == Les limites de la solution
 
 === Versions d'alarme compatible
@@ -43,25 +63,15 @@ L'interface d'amin de votre alarme permet de régler ce timeout. Je vous conseil
 
 Ce fonctionnement sera donc totalement transparent, si ce n'est l’apparition des logs de connexion dans le journal d’événement de l'alarme.
 
-== Installation / Paramétrage
+=== Surconsommation de piles
 
-=== Paramétrage de l'alarme (Timeout)
+L'activation du polling sur l'alarme l'empèche de se mettre en veille et augmente significativment la consommation de piles, qui passe alors d'environ 2 ans par jeu de piles, à environ 6 mois par jeu de piles. 3 options sont possibles:
 
-Il est conseillé d'augmenter le timout de l'alarme a sa valeur maximum.
+* Changer de piles tous les 6 mois
 
-Connecter vous à l'alarme en mode Administrateur puis dans les réglages de l'interface, régler le délais d'expiration de la session.
- 
-image::../images/timeout_setup.png[]
- 
-=== Installation / configuration
+* Changer la fréquence de polling dans la configuration globale du plugin, et l'augmenter à une valeur de 1 heure ou plus. La mise en veille se fera. La possibilité d'activer ou de désactiver l'alarme de manière très réactive reste disponible, mais la mise à jour en quasi temps réèl de l’état des détecteurs d'ouverture, ainsi que des status de l'alarme est perdue (de même que la possibilité de déclencher en temps réèl des scénarios sur ce type d'évènements). Selon l'usage fais du plugin, ça peut être acceptable.
 
-Une fois le plugin installé via le market, l'ensemble du paramétrage se fait depuis l'administration, comme n'importe quel plugin.
-Les champs sont tous documentés sur la page de paramétrage, et la validité des paramêtres est vérifiée avant l'enregistrement.
-
-image::../images/protexiom_screenshot1.png[] 
-
-NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
-Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
+* Bricoler un peu pour remplacer les piles par un powerbank. Un très bon exemple est documenté ici: https://www.jeedom.com/forum/viewtopic.php?f=28&t=2866&start=500#p378945 Dans ce cas, plus de problème de piles. Par contre, en cas de coupure de courant, l'autonomie passe de plusieurs jours avec les piles à une 10aine d'heure avec le powerbank. A chacun de juger si c'est acceptable.
 
 == FAQ
 include::faq.asciidoc[]
