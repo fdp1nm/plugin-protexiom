@@ -1,0 +1,12 @@
+{
+"id" : "protexiom",
+"name" : "Somfy alarme",
+"licence" : "WFTPL",
+"author" : "Fdp1",
+"installation" : "Aucune",
+"require" : "2.4",
+"version" : "1.2.9",
+"category" : "security",
+"hasOwnDeamon" : true
+}
+
