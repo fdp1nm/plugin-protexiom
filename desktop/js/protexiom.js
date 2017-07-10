@@ -85,8 +85,8 @@ function addCmdToTableProtexiom(_cmd) {
 	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
 	    tr += '</td>'; 
 	    tr += '<td>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}"/>{{Historiser}}</label></span> <br>';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/>{{Afficher}}</label></span> ';
 	    tr += '</td>';
 	    tr += '<td>';
 	    if (is_numeric(_cmd.id)) {
@@ -127,8 +127,8 @@ function addCmdToTableProtexiom(_cmd) {
 	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
 	    tr += '</td>'; 
 	    tr += '<td>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" />{{Historiser}}</label></span> <br>';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/>{{Afficher}}</label></span> ';
 	    tr += '</td>';
 	    tr += '<td>';
 	    if (is_numeric(_cmd.id)) {
@@ -164,8 +164,8 @@ function addCmdToTableSubDevice(_cmd) {
 	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
 	    tr += '</td>'; 
 	    tr += '<td>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" />{{Historiser}}</label></span> <br>';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/>{{Afficher}}</label></span> ';
 	    tr += '</td>';
 	    tr += '<td>';
 	    if (is_numeric(_cmd.id)) {
@@ -203,8 +203,8 @@ function addCmdToTableSubDevice(_cmd) {
 	    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="somfyCmd" style="display : none;">';
 	    tr += '</td>'; 
 	    tr += '<td>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" /></span> <br>';
-	    tr += '<span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/></span> ';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isHistorized" data-label-text="{{Historiser}}" />{{Historiser}}</label></span> <br>';
+	    tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-size="mini" data-l1key="isVisible" data-label-text="{{Afficher}}" checked/>{{Afficher}}</label></span> ';
 	    tr += '</td>';
 	    tr += '<td>';
 	    if (is_numeric(_cmd.id)) {
