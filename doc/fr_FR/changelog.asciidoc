@@ -1,4 +1,8 @@
 :numbered!:
+==== v1.3.0 - 2017-07-11
+
+- Compatibilité Jeedom v3.0
+
 ==== v1.2.9 - 2016-08-20
 
 - Bugfix appli mobile
