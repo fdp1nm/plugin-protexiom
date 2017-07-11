@@ -1,4 +1,8 @@
 :numbered!:
+==== v1.3.1 - 2017-07-11
+
+- Bugfix santé du plugin
+
 ==== v1.3.0 - 2017-07-11
 
 - Compatibilité Jeedom v3.0
