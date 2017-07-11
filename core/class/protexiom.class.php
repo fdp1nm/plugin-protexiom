@@ -203,7 +203,6 @@ class protexiom extends eqLogic {
     			'state' => $pluginVersion,
     		);	
     	} catch (Exception $e) {
-    		echo 'Exception reçue : ',  $e->getMessage(), "\n";
     		$return[] = array(
     				'test' => __('Version plugin', __FILE__),
     				'result' => __('NOK', __FILE__),
@@ -247,18 +246,19 @@ class protexiom extends eqLogic {
      * @return (string) pluginVersion
      */
     public static function getPluginVersion() {
-    	$infoXmlPath=plugin::getPathById('protexiom');
+    	$infoJsonPath=plugin::getPathById('protexiom');
     	
-    	if (!file_exists($infoXmlPath)) {
-    		throw new Exception('Plugin info introuvable : ' . $infoXmlPath);
+    	if (!file_exists($infoJsonPath)) {
+    		throw new Exception('Plugin info introuvable : ' . $infoJsonPath);
     	}
-    	libxml_use_internal_errors(true);
-    	$infoXmlPath = str_replace('//', '/', $infoXmlPath);
-    	$plugin_xml = @simplexml_load_file($infoXmlPath);
-    	if (!is_object($plugin_xml)) {
-    		throw new Exception('Plugin introuvable (xml invalide) : ' . $infoXmlPath . '. Description : ' . print_r(libxml_get_errors(), true));
+    	$infoJsonPath = str_replace('//', '/', $infoJsonPath);
+    	
+    	$plugin_json = json_decode(file_get_contents($infoJsonPath));
+    	
+    	if (!is_object($plugin_json)) {
+    		throw new Exception('Plugin introuvable (json invalide) : ' . $infoJsonPath . '. Description : ' . print_r(json_last_error_msg() , true));
     	}
-    	return (string) $plugin_xml->version;
+    	return (string) $plugin_json->version;
     }//End getPluginVersion func
     
 
