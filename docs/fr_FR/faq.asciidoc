@@ -1,3 +1,0 @@
-==== Ou obtenir de l'aide sur l'utilisation de ce plugin ?
-
-Poser votre question sur le topic link:https://forum.jeedom.fr/viewtopic.php?f=28&t=2866["Plugin alarme protexiom"] du forum jeedom, et soyez patient.

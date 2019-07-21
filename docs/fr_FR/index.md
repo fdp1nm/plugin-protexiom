@@ -1,10 +1,7 @@
-= Plugin Alarme Somfy
-fdp1
-v1.0, 2014-11-22 
+# Plugin Alarme Somfy
 
-:numbered:
 
-== description
+## Description
 
 Ce plugin permet de contrôler une alarme Somfy Protexiom via son interface web.
 
@@ -15,33 +12,32 @@ A ce jour la solution permet de :
 * Récupérer les status de l'alarme  (intrusion, sabotage, état des piles, défaut de liaison avec un détecteur, signal gsm si présent, porte ouverte, présence camera)
 * Reseter es defauts de l'alarme
 
+![Widget dashboard](../images/protexiom_screenshot2.png)
+![Widget mobile](../images/protexiom_screenshot3.png)
 
-image::../images/protexiom_screenshot2.png[Widget dashboard]
-image::../images/protexiom_screenshot3.png[Widget mobile]
+## Installation / Paramétrage
 
-== Installation / Paramétrage
-
-=== Paramétrage de l'alarme (Timeout)
+### Paramétrage de l'alarme (Timeout)
 
 Il est conseillé d'augmenter le timout de l'alarme a sa valeur maximum.
 
 Connecter vous à l'alarme en mode Administrateur puis dans les réglages de l'interface, régler le délais d'expiration de la session.
+
+![Paramétrage du timeout](../images/timeout_setup.png)
  
-image::../images/timeout_setup.png[]
- 
-=== Installation / configuration
+### Installation / configuration
 
 Une fois le plugin installé via le market, l'ensemble du paramétrage se fait depuis l'administration, comme n'importe quel plugin.
 Les champs sont tous documentés sur la page de paramétrage, et la validité des paramêtres est vérifiée avant l'enregistrement.
 
-image::../images/protexiom_screenshot1.png[] 
+![Ecran de configuration du plugin](../images/protexiom_screenshot1.png)
 
-NOTE: le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
+**NOTE:** le dernier paramètre, *Version hardware*, est détécté automatiquement lors de la sauvegarde du plugin.
 Il est affiché sur la page de paramétrage, car il peut être nécéssaire de le communiquer sur leforum en cas de bug
 
-== Les limites de la solution
+## Les limites de la solution
 
-=== Versions d'alarme compatible
+### Versions d'alarme compatible
 
 Pour une même version de l'alarme (Protexiom 600), il existe différentes versions de materiel et de firmware. Somfy ne permet pas de faire des mises à jour de firmware.
 
@@ -49,13 +45,14 @@ Somfy ne propose pas d'API, le device virtuel execute donc les pages webs comme 
 
 La solution supporte actuellement 4 version différente, aussi bien dans la gamme *protexiom* que *protexial*. Si la votre n'est pas compatible, informez le link:view-source:https://forum.jeedom.fr/memberlist.php?mode=viewprofile&u=366[développeur] afin de voir s'il est possible de l'intégrer. C'est probable, les différences étants marginales.
 
-=== Session unique
+### Session unique
 
 L'ouverture d'une session sur l'alarme est lente, et log une entrée dans son journal d’événement sur certaines versions. Afin de ne pas surcharger l'alarme, et d'avoir un plugin réactif, la session est maintenue ouverte par le plugin. L'alarme ne permet qu'une seule session active à la fois. Cela signifie que lorsque le device virtuel est connecté, vous ne pouvez pas vous connecter à l'alarme (par exemple pour consulter sont journal d’événement ou la paramétrer).
 
 Si vous souhaitez vous connecter sur l'alarme, il vous faudra donc désactiver temporairement le plugin.
 
-=== Timeout de session
+### Timeout de session
+
 
 La session de l'alarme a une durée de vie limitée. Même avec des interrogation régulière, la session est interrompue au bout du timeout.
 
@@ -63,7 +60,7 @@ L'interface d'amin de votre alarme permet de régler ce timeout. Je vous conseil
 
 Ce fonctionnement sera donc totalement transparent, si ce n'est l’apparition des logs de connexion dans le journal d’événement de l'alarme.
 
-=== Surconsommation de piles
+### Surconsommation de piles
 
 L'activation du polling sur l'alarme l'empèche de se mettre en veille et augmente significativment la consommation de piles, qui passe alors d'environ 2 ans par jeu de piles, à environ 6 mois par jeu de piles. 3 options sont possibles:
 
@@ -73,11 +70,14 @@ L'activation du polling sur l'alarme l'empèche de se mettre en veille et augmen
 
 * Bricoler un peu pour remplacer les piles par un powerbank. Un très bon exemple est documenté ici: https://www.jeedom.com/forum/viewtopic.php?f=28&t=2866&start=500#p378945 Dans ce cas, plus de problème de piles. Par contre, en cas de coupure de courant, l'autonomie passe de plusieurs jours avec les piles à une 10aine d'heure avec le powerbank. A chacun de juger si c'est acceptable.
 
-== FAQ
-include::faq.asciidoc[]
+### FAQ
+#### Ou obtenir de l'aide sur l'utilisation de ce plugin ?
 
-== Roadmap
-include::roadmap.asciidoc[]
+Poser votre question sur le topic [Plugin alarme protexiom](https://forum.jeedom.fr/viewtopic.php?f=28&t=2866) du forum jeedom, et soyez patient.
 
-== Changelog
-include::changelog.asciidoc[]
+### Roadmap
+* Récupération des logs de l'alarme
+* Création d'un panel
+
+### Changelog
+[https://github.com/fdp1nm/plugin-protexiom/releases](https://github.com/fdp1nm/plugin-protexiom/releases)

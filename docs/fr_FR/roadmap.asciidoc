@@ -1,2 +1,0 @@
-* Récupération des logs de l'alarme
-* Création d'un panel

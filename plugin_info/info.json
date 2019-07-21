@@ -5,8 +5,10 @@
 "author" : "Fdp1",
 "installation" : "Aucune",
 "require" : "2.4",
-"version" : "1.3.2",
+"version" : "1.3.3",
 "category" : "security",
-"hasOwnDeamon" : true
+"hasOwnDeamon" : true,
+"documentation" : "https://fdp1nm.github.io/plugin-protexiom/#language#/",
+"changelog" : "https://github.com/fdp1nm/plugin-protexiom/releases"
 }
 
