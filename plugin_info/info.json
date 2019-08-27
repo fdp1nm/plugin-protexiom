@@ -4,7 +4,7 @@
 "licence" : "WFTPL",
 "author" : "Fdp1",
 "installation" : "Aucune",
-"require" : "2.4",
+"require" : "3.3.16",
 "version" : "1.3.3",
 "category" : "security",
 "hasOwnDeamon" : true,

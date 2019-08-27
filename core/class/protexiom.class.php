@@ -1226,7 +1226,7 @@ class protexiom extends eqLogic {
     			//By default, objectId is the same as the parent device
     			$eqLogic->setObject_id($this->getObject_id());
     			//However, we can try and guess a better objectId in the device name
-    			foreach (object::all() as $object) {
+    			foreach (jeeObject::all() as $object) {
     				if (stristr($element['name'],$object->getName())){
     					$eqLogic->setObject_id($object->getId());
     					break;
